@@ -160,7 +160,8 @@ body {
     .hero-text h1 { font-size: 2.2rem; }
     .hero-sub { font-size: 1rem; }
     .section-intro h2 { font-size: 2rem; }
-    .profile-avatar { width: 130px; height: 130px; }
+    .profile-avatar { height: 220px; }
+    .profile-card-body { padding: 24px 20px 30px; }
     .profile-name { font-size: 1.6rem; }
     .profile-desc { font-size: 0.95rem; }
     .section { padding: 60px 0; }
