@@ -54,12 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const latest = ARTICLES.slice(0, 3);
         newsPreview.innerHTML = latest.map(article => `
             <article class="blog-card" onclick="window.location='articulo.html?id=${article.id}'">
-                <div class="blog-card-tag">${article.tag}</div>
-                <h3>${article.title}</h3>
-                <p>${article.excerpt}</p>
-                <div class="blog-card-meta">
-                    <span class="blog-date">${article.date}</span>
-                    <span class="blog-read">${article.read}</span>
+                <div class="blog-card-image">
+                    <img src="${article.image}" alt="${article.title}" loading="lazy">
+                </div>
+                <div class="blog-card-body">
+                    <div class="blog-card-tag">${article.tag}</div>
+                    <h3>${article.title}</h3>
+                    <p>${article.excerpt}</p>
+                    <div class="blog-card-meta">
+                        <span class="blog-date">${article.date}</span>
+                        <span class="blog-read">${article.read}</span>
+                    </div>
                 </div>
             </article>
         `).join('');

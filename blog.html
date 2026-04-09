@@ -33,71 +33,7 @@
             </div>
 
             <div class="blog-grid" id="blog-grid">
-                <!-- Artículo 1 -->
-                <article class="blog-card" onclick="window.location='articulo.html?id=1'">
-                    <div class="blog-card-tag">Agentes IA</div>
-                    <h2>Qué son los Agentes de IA y por qué tu negocio los necesita en 2026</h2>
-                    <p>Los agentes de inteligencia artificial han evolucionado de simples chatbots a sistemas autónomos capaces de gestionar procesos completos. Descubre cómo pueden transformar la atención al cliente, las ventas y la operativa de tu empresa.</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">9 Abril 2026</span>
-                        <span class="blog-read">5 min lectura</span>
-                    </div>
-                </article>
-
-                <!-- Artículo 2 -->
-                <article class="blog-card" onclick="window.location='articulo.html?id=2'">
-                    <div class="blog-card-tag">Automatización</div>
-                    <h2>n8n: La herramienta de automatización que está revolucionando las PYMEs</h2>
-                    <p>n8n se ha consolidado como la alternativa open-source a Zapier y Make. Con más de 400 integraciones nativas y la capacidad de ejecutar código personalizado, permite a las pequeñas empresas automatizar flujos que antes requerían equipos enteros de desarrollo.</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">8 Abril 2026</span>
-                        <span class="blog-read">7 min lectura</span>
-                    </div>
-                </article>
-
-                <!-- Artículo 3 -->
-                <article class="blog-card" onclick="window.location='articulo.html?id=3'">
-                    <div class="blog-card-tag">Marketing IA</div>
-                    <h2>Cómo la IA Generativa está transformando el marketing digital</h2>
-                    <p>Desde la creación de contenido hasta la segmentación hiperpersonalizada, la IA generativa está redefiniendo las reglas del marketing. Analizamos las herramientas más potentes y las estrategias que están generando resultados reales en 2026.</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">7 Abril 2026</span>
-                        <span class="blog-read">6 min lectura</span>
-                    </div>
-                </article>
-
-                <!-- Artículo 4 -->
-                <article class="blog-card" onclick="window.location='articulo.html?id=4'">
-                    <div class="blog-card-tag">Voice AI</div>
-                    <h2>Voice AI: El futuro de la atención al cliente ya está aquí</h2>
-                    <p>Los agentes de voz con IA pueden atender llamadas 24/7, gestionar reservas y resolver incidencias con una naturalidad sorprendente. Exploramos cómo empresas de hostelería, clínicas y servicios están implementando esta tecnología con resultados medibles.</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">5 Abril 2026</span>
-                        <span class="blog-read">5 min lectura</span>
-                    </div>
-                </article>
-
-                <!-- Artículo 5 -->
-                <article class="blog-card" onclick="window.location='articulo.html?id=5'">
-                    <div class="blog-card-tag">Protocolos</div>
-                    <h2>MCP Protocol: El nuevo estándar que conecta la IA con tus herramientas</h2>
-                    <p>El Model Context Protocol (MCP) de Anthropic está cambiando la forma en que los modelos de lenguaje interactúan con aplicaciones externas. Un análisis técnico de por qué este protocolo puede ser el USB-C de la inteligencia artificial.</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">3 Abril 2026</span>
-                        <span class="blog-read">8 min lectura</span>
-                    </div>
-                </article>
-
-                <!-- Artículo 6 -->
-                <article class="blog-card" onclick="window.location='articulo.html?id=6'">
-                    <div class="blog-card-tag">Desarrollo</div>
-                    <h2>Vibe Coding: Programa aplicaciones completas usando solo lenguaje natural</h2>
-                    <p>El concepto de "Vibe Coding" ha pasado de moda a metodología seria. Con herramientas como Cursor, Windsurf y Claude Code, profesionales sin formación técnica están construyendo SaaS completos en días. ¿Es el fin de la programación tradicional?</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">1 Abril 2026</span>
-                        <span class="blog-read">6 min lectura</span>
-                    </div>
-                </article>
+                <!-- Se carga dinámicamente desde articles-data.js -->
             </div>
         </div>
     </section>
@@ -118,6 +54,30 @@
         </div>
     </div>
 
+    <script src="articles-data.js"></script>
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('blog-grid');
+            if (grid && typeof ARTICLES !== 'undefined') {
+                grid.innerHTML = ARTICLES.map(a => `
+                    <article class="blog-card" onclick="window.location='articulo.html?id=${a.id}'">
+                        <div class="blog-card-image">
+                            <img src="${a.image}" alt="${a.title}" loading="lazy">
+                        </div>
+                        <div class="blog-card-body">
+                            <div class="blog-card-tag">${a.tag}</div>
+                            <h2>${a.title}</h2>
+                            <p>${a.excerpt}</p>
+                            <div class="blog-card-meta">
+                                <span class="blog-date">${a.date}</span>
+                                <span class="blog-read">${a.read}</span>
+                            </div>
+                        </div>
+                    </article>
+                `).join('');
+            }
+        });
+    </script>
 </body>
 </html>

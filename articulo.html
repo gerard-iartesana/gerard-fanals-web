@@ -36,6 +36,7 @@
                     <span class="blog-read" id="article-read"></span>
                 </div>
             </div>
+            <div class="article-hero" id="article-hero"></div>
             <div class="article-body" id="article-body">
                 <p>Cargando contenido...</p>
             </div>
@@ -72,6 +73,7 @@
                     document.getElementById('article-date').textContent = article.date;
                     document.getElementById('article-read').textContent = article.read;
                     document.getElementById('article-body').innerHTML = article.body;
+                    document.getElementById('article-hero').innerHTML = `<img src="${article.image}" alt="${article.title}">`;
                     document.title = article.title + ' - Gerard Fanals';
                     document.querySelector('meta[name="description"]').setAttribute('content', article.excerpt);
                 }

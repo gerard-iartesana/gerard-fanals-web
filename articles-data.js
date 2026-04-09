@@ -6,6 +6,7 @@ const ARTICLES = [
         title: "Qué son los Agentes de IA y por qué tu negocio los necesita en 2026",
         date: "9 Abril 2026",
         read: "5 min lectura",
+        image: "img/blog-1.png",
         excerpt: "Los agentes de inteligencia artificial han evolucionado de simples chatbots a sistemas autónomos capaces de gestionar procesos completos.",
         body: `
             <p>Los agentes de inteligencia artificial representan uno de los avances más significativos en la historia de la tecnología empresarial. A diferencia de los chatbots tradicionales, que seguían scripts predefinidos, los agentes modernos son <strong>sistemas autónomos</strong> capaces de razonar, planificar y ejecutar tareas complejas.</p>
@@ -34,6 +35,7 @@ const ARTICLES = [
         title: "n8n: La herramienta de automatización que está revolucionando las PYMEs",
         date: "8 Abril 2026",
         read: "7 min lectura",
+        image: "img/blog-2.png",
         excerpt: "n8n se ha consolidado como la alternativa open-source a Zapier y Make con más de 400 integraciones nativas.",
         body: `
             <p>En un ecosistema donde Zapier y Make dominaban el mercado de la automatización, <strong>n8n</strong> ha emergido como la opción preferida para empresas que necesitan control total sobre sus flujos de trabajo. Su naturaleza open-source y su capacidad de ejecutar código personalizado lo convierten en una herramienta sin límites.</p>
@@ -66,6 +68,7 @@ const ARTICLES = [
         title: "Cómo la IA Generativa está transformando el marketing digital",
         date: "7 Abril 2026",
         read: "6 min lectura",
+        image: "img/blog-3.png",
         excerpt: "Desde la creación de contenido hasta la segmentación hiperpersonalizada, la IA generativa está redefiniendo las reglas del marketing.",
         body: `
             <p>El marketing digital ha experimentado más cambios en los últimos dos años que en la década anterior. La <strong>IA generativa</strong> no es solo una herramienta más en el arsenal del marketer: es una revolución completa en la forma de crear, distribuir y medir contenido.</p>
@@ -89,6 +92,7 @@ const ARTICLES = [
         title: "Voice AI: El futuro de la atención al cliente ya está aquí",
         date: "5 Abril 2026",
         read: "5 min lectura",
+        image: "img/blog-4.png",
         excerpt: "Los agentes de voz con IA pueden atender llamadas 24/7, gestionar reservas y resolver incidencias con naturalidad sorprendente.",
         body: `
             <p>La revolución de la voz ha llegado. Los agentes de Voice AI de 2026 son prácticamente indistinguibles de un operador humano. Con latencias por debajo de los 500ms y capacidad de comprensión contextual avanzada, están transformando sectores enteros.</p>
@@ -120,6 +124,7 @@ const ARTICLES = [
         title: "MCP Protocol: El nuevo estándar que conecta la IA con tus herramientas",
         date: "3 Abril 2026",
         read: "8 min lectura",
+        image: "img/blog-5.png",
         excerpt: "El Model Context Protocol (MCP) de Anthropic está cambiando la forma en que los modelos de lenguaje interactúan con aplicaciones externas.",
         body: `
             <p>El <strong>Model Context Protocol (MCP)</strong>, introducido por Anthropic, se está posicionando como el estándar universal para conectar modelos de IA con herramientas externas. Muchos lo llaman "el USB-C de la inteligencia artificial", y no es una exageración.</p>
@@ -146,6 +151,7 @@ const ARTICLES = [
         title: "Vibe Coding: Programa aplicaciones completas usando solo lenguaje natural",
         date: "1 Abril 2026",
         read: "6 min lectura",
+        image: "img/blog-6.png",
         excerpt: "El concepto de Vibe Coding ha pasado de moda a metodología seria. Profesionales sin formación técnica construyen SaaS completos en días.",
         body: `
             <p>El término <strong>"Vibe Coding"</strong> fue acuñado por Andrej Karpathy, ex-director de IA en Tesla, y describe una nueva forma de programar donde el desarrollador describe lo que quiere en lenguaje natural y la IA genera el código. Lo que empezó como un concepto provocador se ha convertido en una metodología de desarrollo legítima.</p>
