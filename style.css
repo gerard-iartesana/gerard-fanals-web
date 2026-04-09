@@ -11,8 +11,8 @@
     --border-radius-card: 32px;
     --nav-height: 52px;
     --nav-bg: rgba(255, 255, 255, 0.8);
-    --border-color: rgba(0, 0, 0, 0.08);
-    --card-border: rgba(0, 0, 0, 0.05);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --card-border: rgba(0, 0, 0, 0.12);
     
     --btn-buy-bg: #1d1d1f;
     --btn-buy-text: #ffffff;
@@ -80,6 +80,53 @@ body {
 
 .btn-apple-buy { background: var(--btn-buy-bg); color: var(--btn-buy-text); border: none; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: transform 0.3s cubic-bezier(0.28, 0.11, 0.32, 1); }
 .btn-apple-buy:hover { transform: scale(1.05); background: var(--accent-blue); color: #fff;}
+
+/* Hamburger Menu */
+.hamburger-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-main);
+    padding: 4px;
+}
+.hamburger-btn svg { width: 24px; height: 24px; }
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: var(--nav-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 24px;
+    z-index: 1999;
+    flex-direction: column;
+    gap: 16px;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.mobile-menu.open {
+    display: flex;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.mobile-menu a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-menu a:last-child { border-bottom: none; }
 
 /* --- Hero Section --- */
 .hero { min-height: 100vh; display: flex; align-items: center; padding-top: var(--nav-height); }
@@ -161,6 +208,7 @@ body {
 /* Responsive General */
 @media (max-width: 900px) {
     .nav-links { display: none; }
+    .hamburger-btn { display: flex; align-items: center; justify-content: center; }
     .hero-container { flex-direction: column; text-align: center; padding-top: 40px; }
     .hero-visual { justify-content: center; width: 100%; margin-top: 20px; }
     .hero-actions { justify-content: center; flex-wrap: wrap; }
