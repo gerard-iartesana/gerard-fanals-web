@@ -47,4 +47,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // --- Cargar 3 últimas noticias en la homepage ---
+    const newsPreview = document.getElementById('news-preview');
+    if (newsPreview && typeof ARTICLES !== 'undefined') {
+        const latest = ARTICLES.slice(0, 3);
+        newsPreview.innerHTML = latest.map(article => `
+            <article class="blog-card" onclick="window.location='articulo.html?id=${article.id}'">
+                <div class="blog-card-tag">${article.tag}</div>
+                <h3>${article.title}</h3>
+                <p>${article.excerpt}</p>
+                <div class="blog-card-meta">
+                    <span class="blog-date">${article.date}</span>
+                    <span class="blog-read">${article.read}</span>
+                </div>
+            </article>
+        `).join('');
+    }
 });

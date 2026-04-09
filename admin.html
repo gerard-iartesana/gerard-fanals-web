@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gerard Fanals</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-login {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 32px;
+            padding: 50px 40px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-card .login-sub {
+            color: var(--text-grey);
+            font-size: 0.95rem;
+            margin-bottom: 35px;
+        }
+
+        .login-field {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-main);
+            margin-bottom: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .login-field:focus { border-color: var(--accent-blue); }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: transform 0.3s, opacity 0.3s;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover { transform: scale(1.02); opacity: 0.9; }
+
+        .login-error {
+            color: #ff3b30;
+            font-size: 0.85rem;
+            margin-top: 16px;
+            display: none;
+        }
+
+        /* Dashboard Layout */
+        .dashboard { display: none; min-height: 100vh; }
+        .dashboard.active { display: flex; }
+
+        .dash-sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+        }
+
+        .dash-sidebar-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            padding: 0 12px;
+        }
+
+        .dash-sidebar-logo span { color: var(--text-grey); font-weight: 400; }
+
+        .dash-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.3s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dash-nav-item:hover, .dash-nav-item.active { background: var(--bg-card); }
+        .dash-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        .dash-main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+        }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .dash-header h1 { font-size: 2rem; font-weight: 700; }
+
+        .dash-section { display: none; }
+        .dash-section.active { display: block; }
+
+        /* Article Editor */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .editor-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .editor-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-grey);
+        }
+
+        .editor-input {
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .editor-input:focus { border-color: var(--accent-blue); }
+
+        textarea.editor-input {
+            min-height: 300px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .editor-full { grid-column: span 2; }
+
+        /* Articles List */
+        .articles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .article-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+        }
+
+        .article-row-info h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+        .article-row-info span { font-size: 0.8rem; color: var(--text-grey); }
+
+        .article-row-actions { display: flex; gap: 10px; }
+        .article-row-actions button {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .article-row-actions button:hover { background: var(--bg-secondary); }
+        .article-row-actions .btn-delete { color: #ff3b30; border-color: #ff3b30; }
+
+        @media (max-width: 800px) {
+            .dash-sidebar { display: none; }
+            .dash-main { margin-left: 0; }
+            .editor-grid { grid-template-columns: 1fr; }
+            .editor-full { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div class="admin-login" id="login-screen">
+        <div class="login-card">
+            <h1>Dashboard</h1>
+            <p class="login-sub">Panel de administración de Gerard Fanals</p>
+            <input type="email" class="login-field" id="login-email" placeholder="Email" autocomplete="email">
+            <input type="password" class="login-field" id="login-password" placeholder="Contraseña" autocomplete="current-password">
+            <button class="login-btn" onclick="handleLogin()">Acceder</button>
+            <p class="login-error" id="login-error">Credenciales incorrectas</p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <aside class="dash-sidebar">
+            <div class="dash-sidebar-logo">Gerard<span>Fanals</span></div>
+            <button class="dash-nav-item active" data-section="overview">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Resumen
+            </button>
+            <button class="dash-nav-item" data-section="articles">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Artículos
+            </button>
+            <button class="dash-nav-item" data-section="new-article">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Nuevo Artículo
+            </button>
+            <div style="flex:1"></div>
+            <a href="index.html" class="dash-nav-item" style="opacity:0.6;text-decoration:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
+                Volver a la web
+            </a>
+        </aside>
+
+        <main class="dash-main">
+            <!-- Overview -->
+            <div class="dash-section active" id="sec-overview">
+                <div class="dash-header">
+                    <h1>Resumen</h1>
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Cambiar tema">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                </div>
+                <p style="color:var(--text-grey);font-size:1.1rem;margin-bottom:30px">Bienvenido al panel de administración. Desde aquí puedes gestionar los artículos del blog.</p>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start">
+                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos Publicados</span>
+                        <span style="font-size:2.5rem;font-weight:700" id="stat-articles">6</span>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start">
+                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Estado del Sitio</span>
+                        <span style="font-size:2.5rem;font-weight:700;color:#34c759">Online</span>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start">
+                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Dominio</span>
+                        <span style="font-size:1.2rem;font-weight:600">gerardfanals.online</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles List -->
+            <div class="dash-section" id="sec-articles">
+                <div class="dash-header">
+                    <h1>Artículos</h1>
+                </div>
+                <div class="articles-list" id="articles-list">
+                    <!-- Se carga dinámicamente -->
+                </div>
+            </div>
+
+            <!-- New Article -->
+            <div class="dash-section" id="sec-new-article">
+                <div class="dash-header">
+                    <h1>Nuevo Artículo</h1>
+                </div>
+                <div class="editor-grid">
+                    <div class="editor-field">
+                        <label>Título</label>
+                        <input type="text" class="editor-input" id="edit-title" placeholder="Título del artículo">
+                    </div>
+                    <div class="editor-field">
+                        <label>Categoría</label>
+                        <input type="text" class="editor-input" id="edit-tag" placeholder="Ej: Agentes IA, Marketing...">
+                    </div>
+                    <div class="editor-field">
+                        <label>Extracto (SEO)</label>
+                        <input type="text" class="editor-input" id="edit-excerpt" placeholder="Breve descripción para SEO">
+                    </div>
+                    <div class="editor-field">
+                        <label>Tiempo de lectura</label>
+                        <input type="text" class="editor-input" id="edit-read" placeholder="Ej: 5 min lectura">
+                    </div>
+                    <div class="editor-field editor-full">
+                        <label>Contenido (HTML)</label>
+                        <textarea class="editor-input" id="edit-body" placeholder="Escribe el contenido del artículo en HTML..."></textarea>
+                    </div>
+                </div>
+                <button class="login-btn" style="max-width:300px" onclick="alert('Funcionalidad disponible cuando se conecte Supabase')">Publicar Artículo</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="articles-data.js"></script>
+    <script>
+        // --- Login temporal (será reemplazado por Supabase Auth) ---
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Credenciales temporales
+            if (email === 'gerard@iartesana.es' && password === 'admin2026') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                loadArticlesList();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        // Password enter key
+        document.getElementById('login-password').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        // --- Sidebar Navigation ---
+        document.querySelectorAll('.dash-nav-item[data-section]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.dash-nav-item').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('sec-' + btn.dataset.section).classList.add('active');
+            });
+        });
+
+        // --- Load Articles List ---
+        function loadArticlesList() {
+            const list = document.getElementById('articles-list');
+            if (!list || typeof ARTICLES === 'undefined') return;
+            
+            list.innerHTML = ARTICLES.map(a => `
+                <div class="article-row">
+                    <div class="article-row-info">
+                        <h3>${a.title}</h3>
+                        <span>${a.tag} · ${a.date}</span>
+                    </div>
+                    <div class="article-row-actions">
+                        <button onclick="window.open('articulo.html?id=${a.id}','_blank')">Ver</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

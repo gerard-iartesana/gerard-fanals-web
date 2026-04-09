@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artículo - Gerard Fanals</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="apple-nav">
+        <div class="container nav-content">
+            <a href="index.html" class="logo" style="text-decoration:none;color:var(--text-main)">Gerard<span>Fanals</span></a>
+            <div class="nav-links">
+                <a href="index.html">Inicio</a>
+                <a href="blog.html">Noticias</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Cambiar tema">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <a href="https://wa.me/34629494167?text=Hola%20Gerard,%20me%20gustaría%20hablar%20contigo" target="_blank" class="btn-apple-buy">Contactar</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="section article-page">
+        <div class="container">
+            <a href="blog.html" class="article-back">&larr; Volver a Noticias</a>
+            <div class="article-header">
+                <span class="blog-card-tag" id="article-tag">Cargando...</span>
+                <h1 id="article-title">Cargando artículo...</h1>
+                <div class="blog-card-meta">
+                    <span class="blog-date" id="article-date"></span>
+                    <span class="blog-read" id="article-read"></span>
+                </div>
+            </div>
+            <div class="article-body" id="article-body">
+                <p>Cargando contenido...</p>
+            </div>
+        </div>
+    </article>
+
+    <div class="site-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="privacidad.html">Política de Privacidad</a>
+                <span class="footer-dot">·</span>
+                <a href="cookies.html">Cookies</a>
+                <span class="footer-dot">·</span>
+                <a href="terminos.html">Términos y Condiciones</a>
+                <span class="footer-dot">·</span>
+                <a href="admin.html">Dashboard</a>
+            </div>
+            <p class="footer-copyright">Creado por AISDI LLC @2026</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="articles-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            if (id && typeof ARTICLES !== 'undefined') {
+                const article = ARTICLES.find(a => a.id == id);
+                if (article) {
+                    document.getElementById('article-tag').textContent = article.tag;
+                    document.getElementById('article-title').textContent = article.title;
+                    document.getElementById('article-date').textContent = article.date;
+                    document.getElementById('article-read').textContent = article.read;
+                    document.getElementById('article-body').innerHTML = article.body;
+                    document.title = article.title + ' - Gerard Fanals';
+                    document.querySelector('meta[name="description"]').setAttribute('content', article.excerpt);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
