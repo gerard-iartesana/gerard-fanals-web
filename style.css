@@ -133,10 +133,28 @@ body {
 .section-intro p { font-size: 1.25rem; color: var(--text-grey); }
 
 /* --- Grid Apple --- */
-.apple-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
-.base-card { padding: 40px; border: 1px solid var(--card-border); }
-.base-card:hover { transform: scale(1.02); }
-.role-date { font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); margin: 8px 0 16px; }
+.apple-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.base-card { 
+    padding: 36px 32px; 
+    border: 1px solid var(--card-border); 
+    border-radius: 24px;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s;
+}
+.base-card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 16px 40px rgba(0,0,0,0.07);
+}
+.base-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.base-card p {
+    color: var(--text-grey);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+.role-date { font-size: 0.8rem; font-weight: 600; color: var(--accent-blue); margin: 6px 0 16px; letter-spacing: 0.01em; }
 
 .text-center { text-align: center; }
 
