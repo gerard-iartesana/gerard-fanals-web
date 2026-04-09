@@ -100,24 +100,22 @@ body {
 .profile-card { 
     width: 100%;
     max-width: 440px; 
-    padding: 0;
+    padding: 40px 32px; 
     box-shadow: 0 16px 40px rgba(0,0,0,0.06);
     border: 1px solid var(--border-color);
-    overflow: hidden;
 }
 .profile-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,0.1); }
 
 .profile-avatar { 
-    width: 100%; 
-    height: 260px; 
+    width: 180px; height: 180px; 
+    margin: 0 auto 35px; 
+    border-radius: 50%; 
+    border: 4px solid var(--accent-blue); 
+    display: flex; align-items: center; justify-content: center;
     overflow: hidden;
     background: var(--bg-secondary);
 }
-.profile-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
-
-.profile-card-body {
-    padding: 30px 32px 40px;
-}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 .profile-role { text-align: center; color: var(--accent-blue); font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 12px; }
 .profile-name { text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.02em; }
@@ -160,8 +158,7 @@ body {
     .hero-text h1 { font-size: 2.2rem; }
     .hero-sub { font-size: 1rem; }
     .section-intro h2 { font-size: 2rem; }
-    .profile-avatar { height: 220px; }
-    .profile-card-body { padding: 24px 20px 30px; }
+    .profile-avatar { width: 130px; height: 130px; }
     .profile-name { font-size: 1.6rem; }
     .profile-desc { font-size: 0.95rem; }
     .section { padding: 60px 0; }
