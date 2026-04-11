@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // --- Gestión de Temas (Dark/Light) ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     const currentTheme = localStorage.getItem('theme') || 'light';
@@ -50,24 +50,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Cargar 3 últimas noticias en la homepage ---
     const newsPreview = document.getElementById('news-preview');
-    if (newsPreview && typeof ARTICLES !== 'undefined') {
-        const latest = ARTICLES.slice(0, 3);
-        newsPreview.innerHTML = latest.map(article => `
-            <article class="blog-card" onclick="window.location='articulo.html?id=${article.id}'">
-                <div class="blog-card-image">
-                    <img src="${article.image}" alt="${article.title}" loading="lazy">
-                </div>
-                <div class="blog-card-body">
-                    <div class="blog-card-tag">${article.tag}</div>
-                    <h3>${article.title}</h3>
-                    <p>${article.excerpt}</p>
-                    <div class="blog-card-meta">
-                        <span class="blog-date">${article.date}</span>
-                        <span class="blog-read">${article.read}</span>
+    if (newsPreview) {
+        function renderNewsPreview(articles) {
+            newsPreview.innerHTML = articles.map(a => `
+                <article class="blog-card" onclick="window.location='articulo.html?slug=${a.slug || a.id}'">
+                    <div class="blog-card-image">
+                        <img src="${a.image}" alt="${a.title}" loading="lazy">
                     </div>
-                </div>
-            </article>
-        `).join('');
+                    <div class="blog-card-body">
+                        <div class="blog-card-tag">${a.tag}</div>
+                        <h3>${a.title}</h3>
+                        <p>${a.excerpt}</p>
+                        <div class="blog-card-meta">
+                            <span class="blog-date">${a.date || new Date(a.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'})}</span>
+                            <span class="blog-read">${a.read_time || a.read}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Try Supabase first
+        if (typeof _supabase !== 'undefined') {
+            try {
+                const { data, error } = await _supabase
+                    .from('articles')
+                    .select('*')
+                    .eq('published', true)
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                if (!error && data && data.length > 0) {
+                    renderNewsPreview(data);
+                } else {
+                    throw new Error('No data');
+                }
+            } catch (e) {
+                console.warn('Supabase fallback:', e.message);
+                if (typeof ARTICLES !== 'undefined') renderNewsPreview(ARTICLES.slice(0, 3));
+            }
+        } else if (typeof ARTICLES !== 'undefined') {
+            renderNewsPreview(ARTICLES.slice(0, 3));
+        }
     }
 
     // --- Hamburger Menu ---

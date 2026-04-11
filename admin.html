@@ -331,28 +331,47 @@
                         <textarea class="editor-input" id="edit-body" placeholder="Escribe el contenido del artículo en HTML..."></textarea>
                     </div>
                 </div>
-                <button class="login-btn" style="max-width:300px" onclick="alert('Funcionalidad disponible cuando se conecte Supabase')">Publicar Artículo</button>
+                <button class="login-btn" style="max-width:300px" id="btn-publish" onclick="publishArticle()">Publicar Artículo</button>
+                <p id="publish-status" style="margin-top:16px;font-size:0.9rem;display:none"></p>
             </div>
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
     <script src="script.js"></script>
-    <script src="articles-data.js"></script>
     <script>
-        // --- Login temporal (será reemplazado por Supabase Auth) ---
-        function handleLogin() {
+        // --- Supabase Auth Login ---
+        async function handleLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
-            // Credenciales temporales
-            if (email === 'gerard@iartesana.es' && password === 'admin2026') {
+            const errorEl = document.getElementById('login-error');
+            errorEl.style.display = 'none';
+
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard').classList.add('active');
                 loadArticlesList();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
+                loadStats();
+            } catch (e) {
+                errorEl.textContent = e.message || 'Credenciales incorrectas';
+                errorEl.style.display = 'block';
             }
         }
+
+        // Check if already logged in
+        (async () => {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                loadArticlesList();
+                loadStats();
+            }
+        })();
 
         // Password enter key
         document.getElementById('login-password').addEventListener('keydown', (e) => {
@@ -369,22 +388,134 @@
             });
         });
 
-        // --- Load Articles List ---
-        function loadArticlesList() {
+        // --- Load Stats ---
+        async function loadStats() {
+            try {
+                const { count } = await _supabase
+                    .from('articles')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('published', true);
+                document.getElementById('stat-articles').textContent = count || 0;
+            } catch (e) {}
+        }
+
+        // --- Load Articles List from Supabase ---
+        async function loadArticlesList() {
             const list = document.getElementById('articles-list');
-            if (!list || typeof ARTICLES === 'undefined') return;
-            
-            list.innerHTML = ARTICLES.map(a => `
-                <div class="article-row">
-                    <div class="article-row-info">
-                        <h3>${a.title}</h3>
-                        <span>${a.tag} · ${a.date}</span>
-                    </div>
-                    <div class="article-row-actions">
-                        <button onclick="window.open('articulo.html?id=${a.id}','_blank')">Ver</button>
-                    </div>
-                </div>
-            `).join('');
+            if (!list) return;
+
+            list.innerHTML = '<p style="color:var(--text-grey)">Cargando artículos...</p>';
+
+            try {
+                const { data, error } = await _supabase
+                    .from('articles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                list.innerHTML = data.map(a => {
+                    const date = new Date(a.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'short',year:'numeric'});
+                    const status = a.published ? '<span style="color:#34c759">●</span> Publicado' : '<span style="color:#ff9500">●</span> Borrador';
+                    return `
+                        <div class="article-row">
+                            <div class="article-row-info">
+                                <h3>${a.title}</h3>
+                                <span>${a.tag} · ${date} · ${status}</span>
+                            </div>
+                            <div class="article-row-actions">
+                                <button onclick="window.open('articulo.html?slug=${a.slug}','_blank')">Ver</button>
+                                <button onclick="togglePublish('${a.id}', ${!a.published})">${a.published ? 'Despublicar' : 'Publicar' }</button>
+                                <button class="btn-delete" onclick="deleteArticle('${a.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                list.innerHTML = '<p style="color:#ff3b30">Error cargando artículos: ' + e.message + '</p>';
+            }
+        }
+
+        // --- Publish / Unpublish Article ---
+        async function togglePublish(id, published) {
+            const { error } = await _supabase.from('articles').update({ published }).eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadArticlesList();
+            loadStats();
+        }
+
+        // --- Delete Article ---
+        async function deleteArticle(id) {
+            if (!confirm('¿Estás seguro de eliminar este artículo?')) return;
+            const { error } = await _supabase.from('articles').delete().eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadArticlesList();
+            loadStats();
+        }
+
+        // --- Generate Slug ---
+        function generateSlug(title) {
+            return title.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        }
+
+        // --- Publish New Article ---
+        async function publishArticle() {
+            const title = document.getElementById('edit-title').value;
+            const tag = document.getElementById('edit-tag').value;
+            const excerpt = document.getElementById('edit-excerpt').value;
+            const readTime = document.getElementById('edit-read').value;
+            const body = document.getElementById('edit-body').value;
+            const statusEl = document.getElementById('publish-status');
+
+            if (!title || !body) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#ff3b30';
+                statusEl.textContent = 'Título y contenido son obligatorios.';
+                return;
+            }
+
+            const slug = generateSlug(title);
+
+            statusEl.style.display = 'block';
+            statusEl.style.color = 'var(--accent-blue)';
+            statusEl.textContent = 'Publicando...';
+
+            try {
+                const { error } = await _supabase.from('articles').insert([{
+                    title, slug, tag,
+                    excerpt: excerpt || title,
+                    body, 
+                    read_time: readTime || '5 min lectura',
+                    image: 'img/blog-1.png',
+                    published: true
+                }]);
+
+                if (error) throw error;
+
+                statusEl.style.color = '#34c759';
+                statusEl.textContent = '✅ Artículo publicado correctamente.';
+
+                // Clear form
+                document.getElementById('edit-title').value = '';
+                document.getElementById('edit-tag').value = '';
+                document.getElementById('edit-excerpt').value = '';
+                document.getElementById('edit-read').value = '';
+                document.getElementById('edit-body').value = '';
+
+                loadStats();
+            } catch (e) {
+                statusEl.style.color = '#ff3b30';
+                statusEl.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        // --- Logout ---
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            location.reload();
         }
     </script>
 </body>

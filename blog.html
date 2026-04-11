@@ -67,28 +67,51 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
     <script src="articles-data.js"></script>
     <script src="script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        function renderBlogGrid(articles) {
             const grid = document.getElementById('blog-grid');
-            if (grid && typeof ARTICLES !== 'undefined') {
-                grid.innerHTML = ARTICLES.map(a => `
-                    <article class="blog-card" onclick="window.location='articulo.html?id=${a.id}'">
-                        <div class="blog-card-image">
-                            <img src="${a.image}" alt="${a.title}" loading="lazy">
+            if (!grid) return;
+            grid.innerHTML = articles.map(a => `
+                <article class="blog-card" onclick="window.location='articulo.html?slug=${a.slug || a.id}'">
+                    <div class="blog-card-image">
+                        <img src="${a.image}" alt="${a.title}" loading="lazy">
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-tag">${a.tag}</div>
+                        <h2>${a.title}</h2>
+                        <p>${a.excerpt}</p>
+                        <div class="blog-card-meta">
+                            <span class="blog-date">${a.date || new Date(a.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'})}</span>
+                            <span class="blog-read">${a.read_time || a.read}</span>
                         </div>
-                        <div class="blog-card-body">
-                            <div class="blog-card-tag">${a.tag}</div>
-                            <h2>${a.title}</h2>
-                            <p>${a.excerpt}</p>
-                            <div class="blog-card-meta">
-                                <span class="blog-date">${a.date}</span>
-                                <span class="blog-read">${a.read}</span>
-                            </div>
-                        </div>
-                    </article>
-                `).join('');
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const { data, error } = await _supabase
+                    .from('articles')
+                    .select('*')
+                    .eq('published', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    renderBlogGrid(data);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Supabase no disponible, usando datos locales:', e.message);
+            }
+            // Fallback to local data
+            if (typeof ARTICLES !== 'undefined') {
+                renderBlogGrid(ARTICLES);
             }
         });
     </script>
