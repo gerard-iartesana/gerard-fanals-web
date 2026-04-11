@@ -405,7 +405,10 @@
                     </div>
                     <div class="editor-field">
                         <label>Categoría</label>
-                        <input type="text" class="editor-input" id="edit-tag" placeholder="Ej: Agentes IA, Marketing...">
+                        <input type="text" class="editor-input" id="edit-tag" placeholder="Escribe o selecciona una categoría">
+                        <div id="tag-suggestions" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+                            <!-- Se cargan dinámicamente -->
+                        </div>
                     </div>
                     <div class="editor-field">
                         <label>Extracto (SEO)</label>
@@ -414,6 +417,23 @@
                     <div class="editor-field">
                         <label>Tiempo de lectura</label>
                         <input type="text" class="editor-input" id="edit-read" placeholder="Ej: 5 min lectura">
+                    </div>
+                    <div class="editor-field editor-full">
+                        <label>Imagen de cabecera</label>
+                        <div style="display:flex;gap:12px;align-items:start">
+                            <div style="flex:1">
+                                <input type="file" id="edit-image-file" accept="image/*,video/*" class="editor-input" style="padding:10px">
+                                <p style="font-size:0.75rem;color:var(--text-grey);margin-top:6px">Sube una imagen o vídeo (máx 50MB). Se almacenará en Supabase Storage.</p>
+                            </div>
+                            <div style="text-align:center">
+                                <span style="font-size:0.75rem;color:var(--text-grey);display:block;margin-bottom:6px">— o usa URL directa —</span>
+                                <input type="text" class="editor-input" id="edit-image-url" placeholder="https://... o img/blog-1.png" style="width:300px">
+                            </div>
+                        </div>
+                        <div id="image-preview" style="margin-top:12px;display:none">
+                            <img id="preview-img" style="max-height:200px;border-radius:12px;border:1px solid var(--border-color)">
+                        </div>
+                        <p id="upload-status" style="font-size:0.8rem;margin-top:8px;display:none"></p>
                     </div>
                     <div class="editor-field editor-full">
                         <label>Contenido (HTML)</label>
@@ -597,6 +617,7 @@
                 document.getElementById('sec-' + btn.dataset.section).classList.add('active');
                 // Auto-load analytics when section opens
                 if (btn.dataset.section === 'analytics') loadAnalytics(1);
+                if (btn.dataset.section === 'new-article') loadCategories();
             });
         });
 
@@ -673,6 +694,81 @@
                 .replace(/(^-|-$)/g, '');
         }
 
+        // --- Load Categories ---
+        async function loadCategories() {
+            try {
+                const { data } = await _supabase
+                    .from('articles')
+                    .select('tag')
+                    .order('tag');
+                if (data) {
+                    const tags = [...new Set(data.map(a => a.tag).filter(Boolean))];
+                    const container = document.getElementById('tag-suggestions');
+                    if (container) {
+                        container.innerHTML = tags.map(t =>
+                            '<button type="button" style="padding:4px 12px;border:1px solid var(--border-color);border-radius:100px;background:transparent;color:var(--text-main);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif" onclick="document.getElementById(\'edit-tag\').value=\'' + t + '\'">' + t + '</button>'
+                        ).join('');
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // --- Image Upload ---
+        let uploadedImageUrl = '';
+
+        document.getElementById('edit-image-file').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const uploadStatus = document.getElementById('upload-status');
+            const preview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+
+            uploadStatus.style.display = 'block';
+            uploadStatus.style.color = 'var(--accent-blue)';
+            uploadStatus.textContent = 'Subiendo archivo...';
+
+            const fileName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '');
+
+            try {
+                const { data, error } = await _supabase.storage
+                    .from('article-media')
+                    .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+                if (error) throw error;
+
+                const { data: urlData } = _supabase.storage
+                    .from('article-media')
+                    .getPublicUrl(fileName);
+
+                uploadedImageUrl = urlData.publicUrl;
+                document.getElementById('edit-image-url').value = uploadedImageUrl;
+
+                if (file.type.startsWith('image/')) {
+                    previewImg.src = uploadedImageUrl;
+                    preview.style.display = 'block';
+                }
+
+                uploadStatus.style.color = '#34c759';
+                uploadStatus.textContent = '✅ Archivo subido correctamente';
+            } catch (err) {
+                uploadStatus.style.color = '#ff3b30';
+                uploadStatus.textContent = 'Error: ' + err.message;
+            }
+        });
+
+        // Preview from URL input
+        document.getElementById('edit-image-url').addEventListener('input', (e) => {
+            const url = e.target.value;
+            if (url) {
+                document.getElementById('preview-img').src = url;
+                document.getElementById('image-preview').style.display = 'block';
+                uploadedImageUrl = url;
+            } else {
+                document.getElementById('image-preview').style.display = 'none';
+            }
+        });
+
         // --- Publish New Article ---
         async function publishArticle() {
             const title = document.getElementById('edit-title').value;
@@ -680,6 +776,7 @@
             const excerpt = document.getElementById('edit-excerpt').value;
             const readTime = document.getElementById('edit-read').value;
             const body = document.getElementById('edit-body').value;
+            const imageUrl = document.getElementById('edit-image-url').value || uploadedImageUrl || 'img/blog-1.png';
             const statusEl = document.getElementById('publish-status');
 
             if (!title || !body) {
@@ -701,7 +798,7 @@
                     excerpt: excerpt || title,
                     body, 
                     read_time: readTime || '5 min lectura',
-                    image: 'img/blog-1.png',
+                    image: imageUrl,
                     published: true
                 }]);
 
@@ -716,8 +813,14 @@
                 document.getElementById('edit-excerpt').value = '';
                 document.getElementById('edit-read').value = '';
                 document.getElementById('edit-body').value = '';
+                document.getElementById('edit-image-url').value = '';
+                document.getElementById('edit-image-file').value = '';
+                document.getElementById('image-preview').style.display = 'none';
+                document.getElementById('upload-status').style.display = 'none';
+                uploadedImageUrl = '';
 
                 loadStats();
+                loadCategories();
             } catch (e) {
                 statusEl.style.color = '#ff3b30';
                 statusEl.textContent = 'Error: ' + e.message;

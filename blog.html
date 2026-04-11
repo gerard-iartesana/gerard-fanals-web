@@ -53,6 +53,11 @@
                 <p>Artículos sobre inteligencia artificial, automatización y tecnología aplicada a negocios.</p>
             </div>
 
+            <!-- Dynamic Category Filters -->
+            <div id="blog-filters" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px">
+                <!-- Se carga dinámicamente -->
+            </div>
+
             <div class="blog-grid" id="blog-grid">
                 <!-- Se carga dinámicamente desde articles-data.js -->
             </div>
@@ -79,10 +84,33 @@
     <script src="supabase-client.js"></script>
     <script src="articles-data.js"></script>
     <script src="script.js"></script>
+    <style>
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 100px;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .filter-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+    </style>
     <script>
+        let allArticles = [];
+        let activeFilter = 'Todos';
+
         function renderBlogGrid(articles) {
             const grid = document.getElementById('blog-grid');
             if (!grid) return;
+            if (articles.length === 0) {
+                grid.innerHTML = '<p style="text-align:center;color:var(--text-grey);grid-column:1/-1;padding:40px">No hay artículos en esta categoría.</p>';
+                return;
+            }
             grid.innerHTML = articles.map(a => `
                 <article class="blog-card" onclick="window.location='articulo.html?slug=${a.slug || a.id}'">
                     <div class="blog-card-image">
@@ -101,6 +129,24 @@
             `).join('');
         }
 
+        function renderFilters(articles) {
+            const filtersEl = document.getElementById('blog-filters');
+            const tags = ['Todos', ...new Set(articles.map(a => a.tag).filter(Boolean))];
+            filtersEl.innerHTML = tags.map(tag =>
+                `<button class="filter-btn${tag === activeFilter ? ' active' : ''}" onclick="filterByTag('${tag}')">${tag}</button>`
+            ).join('');
+        }
+
+        function filterByTag(tag) {
+            activeFilter = tag;
+            renderFilters(allArticles);
+            if (tag === 'Todos') {
+                renderBlogGrid(allArticles);
+            } else {
+                renderBlogGrid(allArticles.filter(a => a.tag === tag));
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const { data, error } = await _supabase
@@ -111,6 +157,8 @@
 
                 if (error) throw error;
                 if (data && data.length > 0) {
+                    allArticles = data;
+                    renderFilters(data);
                     renderBlogGrid(data);
                     return;
                 }
@@ -119,6 +167,8 @@
             }
             // Fallback to local data
             if (typeof ARTICLES !== 'undefined') {
+                allArticles = ARTICLES;
+                renderFilters(ARTICLES);
                 renderBlogGrid(ARTICLES);
             }
         });
