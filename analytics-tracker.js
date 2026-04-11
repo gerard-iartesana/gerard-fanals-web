@@ -34,6 +34,7 @@
         trackedButtons.forEach(({ selector, name }) => {
             document.querySelectorAll(selector).forEach(el => {
                 el.addEventListener('click', () => {
+                    // Track to Supabase
                     _supabase.from('analytics_events').insert([{
                         event_type: 'button_click',
                         event_name: name,
@@ -41,6 +42,14 @@
                         referrer: null,
                         user_agent: navigator.userAgent
                     }]).then(() => {}).catch(() => {});
+                    // Track to GA4
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'click', {
+                            event_category: 'button',
+                            event_label: name,
+                            page_path: window.location.pathname
+                        });
+                    }
                 });
             });
         });
