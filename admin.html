@@ -435,43 +435,113 @@
                     <button class="period-btn" onclick="loadAnalytics(7, this)">7 días</button>
                     <button class="period-btn" onclick="loadAnalytics(30, this)">30 días</button>
                     <button class="period-btn" onclick="loadAnalytics(90, this)">90 días</button>
+                    <button class="period-btn" onclick="loadAnalytics(180, this)">180 días</button>
+                    <button class="period-btn" onclick="loadAnalytics(365, this)">1 año</button>
+                    <button class="period-btn" onclick="loadPreviousYear(this)">Año anterior</button>
+                    <span style="color:var(--text-grey);margin:0 8px;line-height:36px">|</span>
+                    <input type="date" id="date-from" class="editor-input" style="padding:8px 12px;border-radius:10px;font-size:0.8rem;width:140px">
+                    <span style="color:var(--text-grey);line-height:36px;margin:0 4px">→</span>
+                    <input type="date" id="date-to" class="editor-input" style="padding:8px 12px;border-radius:10px;font-size:0.8rem;width:140px">
+                    <button class="period-btn" onclick="loadCustomRange()" style="background:var(--accent-blue);color:white;border-color:var(--accent-blue)">Filtrar</button>
                 </div>
 
-                <div class="analytics-grid" id="analytics-stats">
+                <!-- Row 1: Main metrics -->
+                <div class="analytics-grid" style="grid-template-columns: repeat(4, 1fr);">
                     <div class="stat-card">
                         <div class="stat-label">Páginas vistas</div>
                         <div class="stat-number" id="stat-views">-</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-label">Visitantes únicos</div>
+                        <div class="stat-number" id="stat-unique">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total visitas</div>
+                        <div class="stat-number" id="stat-total-visits">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Tiempo medio</div>
+                        <div class="stat-number" id="stat-avg-time">-</div>
+                        <div class="stat-sub" id="stat-avg-time-sub"></div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Engagement -->
+                <div class="analytics-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: -10px;">
+                    <div class="stat-card">
                         <div class="stat-label">Clicks en botones</div>
                         <div class="stat-number" id="stat-clicks">-</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">WhatsApp clicks</div>
-                        <div class="stat-number" id="stat-whatsapp">-</div>
+                        <div class="stat-label">WhatsApp</div>
+                        <div class="stat-number" style="color:#25D366" id="stat-whatsapp">-</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Reuniones agendadas</div>
-                        <div class="stat-number" id="stat-calendar">-</div>
+                        <div class="stat-label">Reuniones</div>
+                        <div class="stat-number" style="color:#007AFF" id="stat-calendar">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Noticias leídas</div>
+                        <div class="stat-number" id="stat-news-clicks">-</div>
                     </div>
                 </div>
 
-                <h3 class="analytics-section-title">📄 Páginas más visitadas</h3>
-                <table class="analytics-table">
-                    <thead><tr><th>Página</th><th>Visitas</th></tr></thead>
-                    <tbody id="top-pages"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
-                </table>
+                <!-- Tables grid: 2 columns -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <div>
+                        <h3 class="analytics-section-title">🌍 Países</h3>
+                        <table class="analytics-table">
+                            <thead><tr><th>País</th><th>Visitas</th></tr></thead>
+                            <tbody id="top-countries"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h3 class="analytics-section-title">🏙️ Ciudades</h3>
+                        <table class="analytics-table">
+                            <thead><tr><th>Ciudad</th><th>Visitas</th></tr></thead>
+                            <tbody id="top-cities"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
 
-                <h3 class="analytics-section-title">🖱️ Clicks en botones</h3>
-                <table class="analytics-table">
-                    <thead><tr><th>Botón</th><th>Clicks</th></tr></thead>
-                    <tbody id="top-clicks"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
-                </table>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <div>
+                        <h3 class="analytics-section-title">📱 Dispositivos</h3>
+                        <table class="analytics-table">
+                            <thead><tr><th>Dispositivo</th><th>Visitas</th></tr></thead>
+                            <tbody id="top-devices"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h3 class="analytics-section-title">🌐 Navegadores</h3>
+                        <table class="analytics-table">
+                            <thead><tr><th>Navegador</th><th>Visitas</th></tr></thead>
+                            <tbody id="top-browsers"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <div>
+                        <h3 class="analytics-section-title">📄 Páginas más visitadas</h3>
+                        <table class="analytics-table">
+                            <thead><tr><th>Página</th><th>Visitas</th></tr></thead>
+                            <tbody id="top-pages"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h3 class="analytics-section-title">🖱️ Clicks en botones</h3>
+                        <table class="analytics-table">
+                            <thead><tr><th>Botón</th><th>Clicks</th></tr></thead>
+                            <tbody id="top-clicks"><tr><td colspan="2" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <h3 class="analytics-section-title">🕐 Últimos eventos</h3>
                 <table class="analytics-table">
-                    <thead><tr><th>Tipo</th><th>Detalle</th><th>Página</th><th>Fecha</th></tr></thead>
-                    <tbody id="recent-events"><tr><td colspan="4" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
+                    <thead><tr><th>Tipo</th><th>Detalle</th><th>Página</th><th>Dispositivo</th><th>País</th><th>Fecha</th></tr></thead>
+                    <tbody id="recent-events"><tr><td colspan="6" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
                 </table>
             </div>
         </main>
@@ -661,70 +731,111 @@
         }
 
         // --- Analytics ---
+        function renderTable(id, data, emptyMsg) {
+            const el = document.getElementById(id);
+            el.innerHTML = data.length
+                ? data.map(([k, v]) => `<tr><td>${k || 'Desconocido'}</td><td><strong>${v}</strong></td></tr>`).join('')
+                : `<tr><td colspan="2" style="color:var(--text-grey)">${emptyMsg}</td></tr>`;
+        }
+
+        function countBy(arr, key) {
+            const counts = {};
+            arr.forEach(e => { const k = e[key] || 'Desconocido'; counts[k] = (counts[k] || 0) + 1; });
+            return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        }
+
         async function loadAnalytics(days, btn) {
-            // Update period buttons
             if (btn) {
                 document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             }
-
             const since = new Date();
             since.setDate(since.getDate() - days);
-            const sinceISO = since.toISOString();
+            await loadAnalyticsRange(since.toISOString(), new Date().toISOString());
+        }
 
+        async function loadPreviousYear(btn) {
+            if (btn) {
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            const now = new Date();
+            const from = new Date(now.getFullYear() - 1, 0, 1).toISOString();
+            const to = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59).toISOString();
+            await loadAnalyticsRange(from, to);
+        }
+
+        function loadCustomRange() {
+            const from = document.getElementById('date-from').value;
+            const to = document.getElementById('date-to').value;
+            if (!from || !to) { alert('Selecciona ambas fechas'); return; }
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            loadAnalyticsRange(new Date(from).toISOString(), new Date(to + 'T23:59:59').toISOString());
+        }
+
+        async function loadAnalyticsRange(sinceISO, untilISO) {
             try {
-                // Fetch all events for the period
                 const { data, error } = await _supabase
                     .from('analytics_events')
                     .select('*')
                     .gte('created_at', sinceISO)
-                    .order('created_at', { ascending: false });
+                    .lte('created_at', untilISO)
+                    .order('created_at', { ascending: false })
+                    .limit(5000);
 
                 if (error) throw error;
 
                 const events = data || [];
                 const pageViews = events.filter(e => e.event_type === 'page_view');
                 const clicks = events.filter(e => e.event_type === 'button_click');
+                const sessions = events.filter(e => e.event_type === 'session_end');
                 const whatsapp = clicks.filter(e => e.event_name === 'WhatsApp');
                 const calendar = clicks.filter(e => e.event_name === 'Agendar Reunión');
+                const newsClicks = clicks.filter(e => e.event_name === 'Click Noticia');
 
-                // Update stat cards
+                const uniqueVisitors = new Set(pageViews.map(e => e.visitor_id).filter(Boolean));
+
+                let avgTime = '-';
+                let avgTimeSub = '';
+                if (sessions.length > 0) {
+                    const durations = sessions.map(e => e.session_duration).filter(d => d && d > 0 && d < 3600);
+                    if (durations.length > 0) {
+                        const avg = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length);
+                        const mins = Math.floor(avg / 60);
+                        const secs = avg % 60;
+                        avgTime = mins > 0 ? mins + 'm ' + secs + 's' : secs + 's';
+                        avgTimeSub = durations.length + ' sesiones';
+                    }
+                }
+
                 document.getElementById('stat-views').textContent = pageViews.length;
+                document.getElementById('stat-unique').textContent = uniqueVisitors.size || pageViews.length;
+                document.getElementById('stat-total-visits').textContent = pageViews.length + clicks.length;
+                document.getElementById('stat-avg-time').textContent = avgTime;
+                document.getElementById('stat-avg-time-sub').textContent = avgTimeSub;
                 document.getElementById('stat-clicks').textContent = clicks.length;
                 document.getElementById('stat-whatsapp').textContent = whatsapp.length;
                 document.getElementById('stat-calendar').textContent = calendar.length;
+                document.getElementById('stat-news-clicks').textContent = newsClicks.length;
 
-                // Top pages
+                renderTable('top-countries', countBy(pageViews, 'country'), 'Sin datos de países');
+                renderTable('top-cities', countBy(pageViews, 'city'), 'Sin datos de ciudades');
+                renderTable('top-devices', countBy(pageViews, 'device'), 'Sin datos de dispositivos');
+                renderTable('top-browsers', countBy(pageViews, 'browser'), 'Sin datos de navegadores');
+
                 const pageCounts = {};
-                pageViews.forEach(e => {
-                    const p = e.page || '/';
-                    pageCounts[p] = (pageCounts[p] || 0) + 1;
-                });
-                const sortedPages = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
-                document.getElementById('top-pages').innerHTML = sortedPages.length
-                    ? sortedPages.map(([page, count]) => `<tr><td>${page}</td><td><strong>${count}</strong></td></tr>`).join('')
-                    : '<tr><td colspan="2" style="color:var(--text-grey)">Sin datos para este periodo</td></tr>';
+                pageViews.forEach(e => { const p = e.page || '/'; pageCounts[p] = (pageCounts[p] || 0) + 1; });
+                renderTable('top-pages', Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 10), 'Sin datos');
+                renderTable('top-clicks', countBy(clicks, 'event_name'), 'Sin datos');
 
-                // Top clicks
-                const clickCounts = {};
-                clicks.forEach(e => {
-                    const name = e.event_name || 'Desconocido';
-                    clickCounts[name] = (clickCounts[name] || 0) + 1;
-                });
-                const sortedClicks = Object.entries(clickCounts).sort((a, b) => b[1] - a[1]);
-                document.getElementById('top-clicks').innerHTML = sortedClicks.length
-                    ? sortedClicks.map(([name, count]) => `<tr><td>${name}</td><td><strong>${count}</strong></td></tr>`).join('')
-                    : '<tr><td colspan="2" style="color:var(--text-grey)">Sin datos para este periodo</td></tr>';
-
-                // Recent events (last 20)
-                const recent = events.slice(0, 20);
+                const recent = events.filter(e => e.event_type !== 'session_end').slice(0, 25);
                 document.getElementById('recent-events').innerHTML = recent.length
                     ? recent.map(e => {
                         const date = new Date(e.created_at).toLocaleString('es-ES', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-                        const typeIcon = e.event_type === 'page_view' ? '👁️' : '🖱️';
-                        return `<tr><td>${typeIcon} ${e.event_type === 'page_view' ? 'Vista' : 'Click'}</td><td>${e.event_name || '-'}</td><td>${e.page || '-'}</td><td>${date}</td></tr>`;
+                        const icon = e.event_type === 'page_view' ? '👁️ Vista' : '🖱️ Click';
+                        return '<tr><td>' + icon + '</td><td>' + (e.event_name || '-') + '</td><td>' + (e.page || '-') + '</td><td>' + (e.device || '-') + '</td><td>' + (e.country || '-') + '</td><td>' + date + '</td></tr>';
                     }).join('')
-                    : '<tr><td colspan="4" style="color:var(--text-grey)">Sin eventos para este periodo</td></tr>';
+                    : '<tr><td colspan="6" style="color:var(--text-grey)">Sin eventos para este periodo</td></tr>';
 
             } catch (e) {
                 console.error('Analytics error:', e);
