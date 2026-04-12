@@ -1554,7 +1554,7 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
             status.textContent = '📤 Guardando fix en cola de aplicación...';
 
             try {
-                const { error } = await _supabase.from('seo_fixes').insert({
+                const { data, error } = await _supabase.from('seo_fixes').insert({
                     file: fix.file || 'index.html',
                     action: fix.action || 'modificar',
                     code: fix.code || '',
@@ -1562,19 +1562,51 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
                     description: fix.description || '',
                     instructions: fix.instructions || '',
                     status: 'pending'
-                });
+                }).select('id').single();
 
                 if (error) throw error;
 
-                status.style.color = '#34c759';
-                status.textContent = '✅ Fix guardado. Se aplicará automáticamente en segundos.';
-                btn.textContent = '✅ En cola';
-                btn.style.background = '#34c759';
+                const fixId = data.id;
+                status.style.color = '#ff9500';
+                status.textContent = '⏳ En cola — esperando aplicación...';
+                btn.textContent = '⏳ En cola';
+                btn.style.background = '#ff9500';
+                btn.disabled = false;
+
+                // Poll for status change
+                let attempts = 0;
+                const pollInterval = setInterval(async () => {
+                    attempts++;
+                    try {
+                        const { data: check } = await _supabase
+                            .from('seo_fixes')
+                            .select('status')
+                            .eq('id', fixId)
+                            .single();
+
+                        if (check && check.status === 'applied') {
+                            clearInterval(pollInterval);
+                            btn.textContent = '✅ Actualizado';
+                            btn.style.background = '#34c759';
+                            btn.style.border = 'none';
+                            btn.style.color = 'white';
+                            status.style.color = '#34c759';
+                            status.textContent = '✅ Fix aplicado y desplegado correctamente. Vercel actualizará en ~30s.';
+                        } else if (attempts >= 60) {
+                            clearInterval(pollInterval);
+                            status.textContent = '⏳ Fix en cola. Se aplicará cuando se ejecute el proceso.';
+                        } else {
+                            status.textContent = '⏳ En cola — esperando aplicación... (' + (attempts * 5) + 's)';
+                        }
+                    } catch (e) {
+                        // Ignore polling errors
+                    }
+                }, 5000);
+
             } catch (err) {
                 status.style.color = '#ff3b30';
                 status.textContent = '❌ Error: ' + err.message;
                 btn.textContent = '🚀 Aplicar automáticamente';
-            } finally {
                 btn.disabled = false;
             }
         }
