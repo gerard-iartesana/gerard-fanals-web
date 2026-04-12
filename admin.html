@@ -1525,19 +1525,24 @@
         }
 
         // Load latest audit on page load
+        let _auditPollActive = false;
         async function loadLatestAudit() {
+            if (_auditPollActive) return; // prevent duplicate polls
+
             try {
-                // First check if there's a pending audit to resume polling
+                // Check for RECENT pending audits (< 2 min old only)
+                const twoMinAgo = new Date(Date.now() - 120000).toISOString();
                 const { data: pendingAudit } = await _supabase
                     .from('seo_audits')
                     .select('*')
                     .eq('status', 'pending')
+                    .gte('created_at', twoMinAgo)
                     .order('created_at', { ascending: false })
                     .limit(1)
                     .maybeSingle();
 
                 if (pendingAudit) {
-                    // Resume polling for this audit
+                    _auditPollActive = true;
                     document.getElementById('seo-empty').style.display = 'none';
                     document.getElementById('seo-results').style.display = 'none';
                     document.getElementById('seo-loading').style.display = 'block';
@@ -1548,12 +1553,25 @@
                     let elapsed = 0;
                     const poll = setInterval(async () => {
                         elapsed += 3;
-                        document.getElementById('seo-loading-time').textContent = elapsed + 's transcurridos';
+                        const timeEl = document.getElementById('seo-loading-time');
+                        if (timeEl) timeEl.textContent = elapsed + 's transcurridos';
+
+                        if (elapsed >= 120) {
+                            clearInterval(poll);
+                            _auditPollActive = false;
+                            btn.textContent = '🚀 Ejecutar Auditoría Completa';
+                            btn.disabled = false;
+                            // Show latest done audit instead
+                            loadDoneAudit();
+                            return;
+                        }
+
                         try {
                             const { data: check } = await _supabase
                                 .from('seo_audits').select('*').eq('id', pendingAudit.id).single();
                             if (check && check.status === 'done') {
                                 clearInterval(poll);
+                                _auditPollActive = false;
                                 renderAuditResults(check);
                                 btn.textContent = '🚀 Ejecutar Auditoría Completa';
                                 btn.disabled = false;
@@ -1567,7 +1585,13 @@
                     return;
                 }
 
-                // Load latest completed audit
+                // No pending → load latest done
+                loadDoneAudit();
+            } catch (e) { console.warn('loadLatestAudit error:', e); }
+        }
+
+        async function loadDoneAudit() {
+            try {
                 const { data } = await _supabase
                     .from('seo_audits')
                     .select('*')
@@ -1577,13 +1601,14 @@
                     .maybeSingle();
 
                 if (data) {
+                    document.getElementById('seo-loading').style.display = 'none';
                     renderAuditResults(data);
                     const status = document.getElementById('seo-audit-status');
                     status.style.display = 'block';
                     status.style.color = '#34c759';
                     status.textContent = '✅ Última auditoría: Score ' + data.score + '/100';
                 }
-            } catch (e) { console.warn('loadLatestAudit error:', e); }
+            } catch(e) {}
         }
 
         // Auto-load when SEO section is shown
@@ -1593,7 +1618,7 @@
             if (id === 'seo') loadLatestAudit();
         };
 
-        // Also load on page init if SEO section is visible
+        // Load on page init
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { loadLatestAudit(); }, 2000);
         });
