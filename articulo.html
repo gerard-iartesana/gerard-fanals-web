@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artículo - Gerard Fanals</title>
     <meta name="description" content="">
+    <meta property="og:title" content="Gerard Fanals - Blog">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google Analytics 4 -->
@@ -93,7 +102,16 @@
             document.getElementById('article-body').innerHTML = article.body;
             document.getElementById('article-hero').innerHTML = `<img src="${article.image}" alt="${article.title}">`;
             document.title = article.title + ' - Gerard Fanals';
-            document.querySelector('meta[name="description"]').setAttribute('content', article.excerpt);
+            const desc = article.excerpt || article.title;
+            document.querySelector('meta[name="description"]').setAttribute('content', desc);
+            // Dynamic OG & Twitter
+            document.querySelector('meta[property="og:title"]').setAttribute('content', article.title);
+            document.querySelector('meta[property="og:description"]').setAttribute('content', desc);
+            document.querySelector('meta[property="og:image"]').setAttribute('content', article.image || '');
+            document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
+            document.querySelector('meta[name="twitter:title"]').setAttribute('content', article.title);
+            document.querySelector('meta[name="twitter:description"]').setAttribute('content', desc);
+            document.querySelector('meta[name="twitter:image"]').setAttribute('content', article.image || '');
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
