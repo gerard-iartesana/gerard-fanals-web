@@ -371,7 +371,7 @@
                     </button>
                 </div>
                 <p style="color:var(--text-grey);font-size:1.1rem;margin-bottom:30px">Bienvenido al panel de administración. Desde aquí puedes gestionar los artículos del blog.</p>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
                     <div class="article-row" style="flex-direction:column;align-items:flex-start">
                         <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos Publicados</span>
                         <span style="font-size:2.5rem;font-weight:700" id="stat-articles">6</span>
@@ -383,6 +383,10 @@
                     <div class="article-row" style="flex-direction:column;align-items:flex-start">
                         <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Dominio</span>
                         <span style="font-size:1.2rem;font-weight:600">gerardfanals.online</span>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('seo')">
+                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Score SEO</span>
+                        <div id="resumen-seo-score"><span style="font-size:2.5rem;font-weight:700;color:var(--text-grey)">—</span></div>
                     </div>
                 </div>
             </div>
@@ -1385,28 +1389,51 @@
             const score = audit.score || 0;
             const scoreColor = score >= 80 ? '#34c759' : score >= 50 ? '#ff9500' : '#ff3b30';
 
-            // Scores bar
+            // Parse summary (contains categories JSON)
+            let cats = {};
+            let summaryText = audit.summary || '';
+            try {
+                const parsed = JSON.parse(audit.summary);
+                cats = parsed.categories || {};
+                summaryText = `${parsed.pages_analyzed?.length || 0} páginas analizadas · ${parsed.passed_checks || 0}/${parsed.total_checks || 0} checks OK · ${parsed.warnings || 0} warnings`;
+            } catch(e) {}
+
             const scoresEl = document.getElementById('seo-scores');
+            const catColor = v => v >= 80 ? '#34c759' : v >= 50 ? '#ff9500' : '#ff3b30';
+
+            // Main score + category cards
             scoresEl.innerHTML = `
-                <div class="seo-score-card" style="grid-column:1/-1;text-align:center;padding:24px">
-                    <span class="score-value" style="color:${scoreColor};font-size:3rem;font-weight:700">${score}</span>
-                    <span class="score-label" style="font-size:1rem;display:block;margin-top:4px">PUNTUACIÓN GENERAL /100</span>
-                    <p style="color:var(--text-grey);font-size:0.8rem;margin-top:8px">${audit.summary || ''}</p>
+                <div class="seo-score-card" style="grid-column:1/-1;text-align:center;padding:28px;background:linear-gradient(135deg,rgba(0,113,227,0.04),rgba(52,199,89,0.04))">
+                    <span class="score-value" style="color:${scoreColor};font-size:3.5rem;font-weight:800">${score}</span>
+                    <span class="score-label" style="font-size:1.1rem;display:block;margin-top:4px;font-weight:600">PUNTUACIÓN SEO /100</span>
+                    <p style="color:var(--text-grey);font-size:0.8rem;margin-top:10px">${summaryText}</p>
                     <p style="color:var(--text-grey);font-size:0.7rem;margin-top:4px">Última auditoría: ${new Date(audit.completed_at || audit.created_at).toLocaleString('es-ES')}</p>
                 </div>
+                ${Object.entries(cats).map(([key, cat]) => `
+                    <div class="seo-score-card" style="padding:18px;text-align:left">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                            <span style="font-size:1rem">${cat.icon || '📋'} <strong style="font-size:0.85rem">${cat.label || key}</strong></span>
+                            <span style="font-size:1.2rem;font-weight:700;color:${catColor(cat.score)}">${cat.score}</span>
+                        </div>
+                        ${(cat.checks || []).map(c => `<div style="font-size:0.75rem;color:#34c759;padding:2px 0">✅ ${c}</div>`).join('')}
+                        ${(cat.warnings || []).map(w => `<div style="font-size:0.75rem;color:#ff9500;padding:2px 0">⚠️ ${w}</div>`).join('')}
+                    </div>
+                `).join('')}
             `;
 
-            // Issues list
+            // Issues section header
             const issuesEl = document.getElementById('seo-issues-list');
             if (results.length === 0) {
-                issuesEl.innerHTML = '<div class="seo-card" style="text-align:center;padding:40px"><span style="font-size:2rem">🎉</span><p style="margin-top:8px;color:var(--text-grey)">¡No se encontraron problemas pendientes!</p></div>';
+                issuesEl.innerHTML = '<div class="seo-card" style="text-align:center;padding:40px"><span style="font-size:2rem">🎉</span><p style="margin-top:8px;color:var(--text-grey)">¡Todo perfecto! No hay problemas pendientes.</p></div>';
                 return;
             }
 
             const prioIcons = { alta: '🔴', media: '🟡', baja: '🟢' };
             const prioColors = { alta: '#ff3b30', media: '#ff9500', baja: '#34c759' };
 
-            issuesEl.innerHTML = results.map((issue, i) => `
+            issuesEl.innerHTML = `
+                <h3 style="margin:24px 0 14px;font-size:1rem;display:flex;align-items:center;gap:8px">🛠️ Problemas a corregir <span style="font-size:0.75rem;background:var(--bg-secondary);padding:2px 10px;border-radius:8px;color:var(--text-grey)">${results.length}</span></h3>
+            ` + results.map((issue, i) => `
                 <div class="seo-card" style="margin-bottom:14px;border-left:4px solid ${prioColors[issue.priority] || '#ff9500'}">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
                         <div>
@@ -1417,13 +1444,19 @@
                         </div>
                         ${issue.status === 'fixed' 
                             ? '<span style="padding:6px 14px;border-radius:8px;background:#34c759;color:white;font-size:0.75rem;font-weight:600;white-space:nowrap">✅ Corregido</span>'
-                            : `<button type="button" onclick="requestSEOFix(${i})" class="seo-fix-btn" id="seo-fix-btn-${i}" style="padding:8px 16px;border-radius:8px;border:1px solid var(--accent-blue);background:transparent;color:var(--accent-blue);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s" onmouseover="this.style.background='var(--accent-blue)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--accent-blue)'">🔧 Solucionar</button>`
+                            : `<button type="button" onclick="requestSEOFix(${i})" class="seo-fix-btn" id="seo-fix-btn-${i}" style="padding:8px 16px;border-radius:8px;border:1px solid var(--accent-blue);background:transparent;color:var(--accent-blue);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s" onmouseover="this.style.background='var(--accent-blue)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--accent-blue)'"">🔧 Solucionar</button>`
                         }
                     </div>
                 </div>
             `).join('');
 
             window._auditIssues = results;
+
+            // Also update Resumen SEO card if exists
+            const seoResumenCard = document.getElementById('resumen-seo-score');
+            if (seoResumenCard) {
+                seoResumenCard.innerHTML = `<span style="font-size:2rem;font-weight:700;color:${scoreColor}">${score}</span><span style="font-size:0.75rem;color:var(--text-grey);display:block">/100</span>`;
+            }
         }
 
         async function requestSEOFix(index) {
