@@ -883,7 +883,7 @@
 
             try {
                 // Step 1: Generate text content
-                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial. Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo del artículo en HTML. Usa <h2>, <h3>, <p>, <ul>, <li>, <strong>. Mínimo 800 palabras. Tono profesional pero cercano. Incluye datos, ejemplos prácticos y conclusión.",\n  "image_prompt": "Descripción en inglés para generar una imagen de cabecera (sin texto en la imagen, estilo moderno y minimalista)"\n}';
+                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial. Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo del artículo en HTML. Usa <h2>, <h3>, <p>, <ul>, <li>, <strong>. Mínimo 800 palabras. Tono profesional pero cercano. Incluye datos, ejemplos prácticos y conclusión.",\n  "image_prompt": "Abstract tech concept in English. MUST have: deep black background, glowing neon blue/cyan/teal circuit lines, neural network nodes, holographic elements. Sci-fi futuristic. NO people, NO text, NO realistic objects."\n}';
 
                 const textData = await callGemini(textPrompt);
                 let textContent = textData.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -905,7 +905,7 @@
                 // Step 2: Generate image
                 try {
                     const imgData = await callGemini(
-                        'Generate a professional, high-quality blog header image. Modern, clean, minimalist, Apple-inspired aesthetic, vibrant gradients. NO text in the image. Topic: ' + (article.image_prompt || topic),
+                        'Generate a premium blog header image with this EXACT style: Pure deep BLACK background (#000000). Neon glowing elements in shades of BLUE, CYAN, TEAL or PURPLE. Abstract tech/futuristic concept art with glowing circuit lines, neural network nodes, light trails, or holographic elements. Ultra clean, high contrast, professional. NO people, NO realistic objects, NO text. Think sci-fi UI meets tech illustration. Topic: ' + (article.image_prompt || topic),
                         'gemini-2.5-flash-image'
                     );
 
