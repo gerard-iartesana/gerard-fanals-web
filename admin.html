@@ -1358,9 +1358,10 @@
                             status.textContent = '✅ Auditoría completada — Score: ' + audit.score + '/100';
                         } else if (elapsed >= 300) {
                             clearInterval(poll);
-                            status.textContent = '⏳ Auditoría pendiente. Se completará cuando Antigravity la procese.';
                             btn.textContent = '🚀 Ejecutar Auditoría Completa';
                             btn.disabled = false;
+                            // Try loading whatever result exists
+                            loadLatestAudit();
                         }
                     } catch (e) {}
                 }, 5000);
@@ -1476,13 +1477,54 @@
         // Load latest audit on page load
         async function loadLatestAudit() {
             try {
+                // First check if there's a pending audit to resume polling
+                const { data: pendingAudit } = await _supabase
+                    .from('seo_audits')
+                    .select('*')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (pendingAudit) {
+                    // Resume polling for this audit
+                    document.getElementById('seo-empty').style.display = 'none';
+                    document.getElementById('seo-results').style.display = 'none';
+                    document.getElementById('seo-loading').style.display = 'block';
+                    const btn = document.getElementById('btn-seo-audit');
+                    btn.textContent = '⏳ En proceso...';
+                    btn.disabled = true;
+
+                    let elapsed = 0;
+                    const poll = setInterval(async () => {
+                        elapsed += 3;
+                        document.getElementById('seo-loading-time').textContent = elapsed + 's transcurridos';
+                        try {
+                            const { data: check } = await _supabase
+                                .from('seo_audits').select('*').eq('id', pendingAudit.id).single();
+                            if (check && check.status === 'done') {
+                                clearInterval(poll);
+                                renderAuditResults(check);
+                                btn.textContent = '🚀 Ejecutar Auditoría Completa';
+                                btn.disabled = false;
+                                const st = document.getElementById('seo-audit-status');
+                                st.style.display = 'block';
+                                st.style.color = '#34c759';
+                                st.textContent = '✅ Auditoría completada — Score: ' + check.score + '/100';
+                            }
+                        } catch(e) {}
+                    }, 3000);
+                    return;
+                }
+
+                // Load latest completed audit
                 const { data } = await _supabase
                     .from('seo_audits')
                     .select('*')
                     .eq('status', 'done')
                     .order('created_at', { ascending: false })
                     .limit(1)
-                    .single();
+                    .maybeSingle();
 
                 if (data) {
                     renderAuditResults(data);
@@ -1491,15 +1533,20 @@
                     status.style.color = '#34c759';
                     status.textContent = '✅ Última auditoría: Score ' + data.score + '/100';
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('loadLatestAudit error:', e); }
         }
 
-        // Auto-load latest audit when SEO section is shown
+        // Auto-load when SEO section is shown
         const origShowSection = window.showSection;
         window.showSection = function(id) {
             if (origShowSection) origShowSection(id);
             if (id === 'seo') loadLatestAudit();
         };
+
+        // Also load on page init if SEO section is visible
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { loadLatestAudit(); }, 2000);
+        });
     </script>
 </body>
 </html>
