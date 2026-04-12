@@ -683,7 +683,24 @@
                             <pre id="seo-fix-code" style="background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:16px;font-size:0.8rem;overflow-x:auto;max-height:400px;white-space:pre-wrap"></pre>
                             <button type="button" onclick="copyFixCode()" style="position:absolute;top:8px;right:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif" id="btn-copy-fix">📋 Copiar</button>
                         </div>
+                        <div style="display:flex;gap:10px;margin-top:16px;align-items:center">
+                            <button type="button" onclick="applyFixToGitHub()" class="login-btn" style="max-width:250px;margin:0;padding:12px 20px;background:#34c759" id="btn-apply-fix">🚀 Aplicar automáticamente</button>
+                            <span style="font-size:0.75rem;color:var(--text-grey)">Commit directo a GitHub → deploy automático en Vercel</span>
+                        </div>
                         <p id="seo-fix-status" style="font-size:0.8rem;margin-top:8px;display:none"></p>
+                    </div>
+
+                    <!-- GitHub Token Config (shows if no token) -->
+                    <div id="github-token-config" style="display:none;margin-top:16px;padding:16px 20px;border:1px solid #ff9500;border-radius:12px;background:rgba(255,149,0,0.05)">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                            <span>🔐</span>
+                            <span style="font-weight:600;font-size:0.85rem">Configurar GitHub Token</span>
+                        </div>
+                        <p style="font-size:0.75rem;color:var(--text-grey);margin-bottom:10px">Necesario para aplicar cambios directamente. Créalo en <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color:var(--accent-blue)">github.com/settings/tokens</a> con permiso "Contents: Read & Write" en el repo.</p>
+                        <div style="display:flex;gap:10px">
+                            <input type="password" class="editor-input" id="github-token-input" placeholder="ghp_... o github_pat_..." style="flex:1">
+                            <button type="button" class="login-btn" onclick="saveGitHubToken()" style="max-width:120px;margin:0;padding:10px">Guardar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1488,7 +1505,8 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
   "description": "Explicación clara de qué hace la solución y por qué",
   "file": "Nombre del archivo a modificar (ej: index.html, robots.txt, sitemap.xml)",
   "action": "crear|modificar|añadir",
-  "code": "El código completo a usar. Si es un archivo nuevo (como robots.txt o sitemap.xml), incluye el contenido completo. Si es una modificación, incluye solo el bloque relevante con comentarios indicando dónde insertarlo.",
+  "code": "El código completo a usar. Si es un archivo nuevo (como robots.txt o sitemap.xml), incluye el contenido COMPLETO del archivo listo para guardar. Si es una modificación de un archivo existente, incluye SOLO el fragmento de código nuevo que hay que insertar o reemplazar.",
+  "search": "Si action es modificar, incluye aquí la línea o bloque exacto del HTML actual que hay que buscar y reemplazar. Copia el texto exacto.",
   "instructions": "Instrucciones paso a paso de cómo aplicar el cambio"
 }`;
 
@@ -1504,6 +1522,7 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
                 document.getElementById('seo-fix-description').innerHTML = '<strong>' + rec.text + '</strong><br><br>' + (fix.description || '');
                 document.getElementById('seo-fix-file').innerHTML = '📄 Archivo: <code>' + (fix.file || 'index.html') + '</code> · Acción: <code>' + (fix.action || 'modificar') + '</code>';
                 document.getElementById('seo-fix-code').textContent = fix.code || '';
+                window._currentFix = fix;
 
                 // Show instructions below code
                 if (fix.instructions) {
@@ -1531,6 +1550,131 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
                 btn.textContent = '✅ Copiado';
                 setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000);
             });
+        }
+
+        // --- GitHub Token Management ---
+        function getGitHubToken() { return localStorage.getItem('gf_github_token') || ''; }
+        function saveGitHubToken() {
+            const t = document.getElementById('github-token-input').value.trim();
+            if (!t) { alert('Pega un token válido'); return; }
+            localStorage.setItem('gf_github_token', t);
+            document.getElementById('github-token-config').style.display = 'none';
+            alert('✅ GitHub Token guardado');
+        }
+
+        // --- Apply Fix to GitHub ---
+        const GH_REPO = 'gerard-iartesana/gerard-fanals-web';
+
+        async function applyFixToGitHub() {
+            const fix = window._currentFix;
+            if (!fix) { alert('No hay fix generado'); return; }
+
+            const token = getGitHubToken();
+            if (!token) {
+                document.getElementById('github-token-config').style.display = 'block';
+                document.getElementById('github-token-config').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            const btn = document.getElementById('btn-apply-fix');
+            const status = document.getElementById('seo-fix-status');
+            btn.textContent = '⏳ Aplicando...';
+            btn.disabled = true;
+            status.style.display = 'block';
+            status.style.color = 'var(--accent-blue)';
+
+            try {
+                const filePath = fix.file || 'index.html';
+                const ghHeaders = {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                };
+
+                if (fix.action === 'crear') {
+                    // Create new file
+                    status.textContent = '📝 Creando ' + filePath + '...';
+                    const content = btoa(unescape(encodeURIComponent(fix.code)));
+                    const res = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + filePath, {
+                        method: 'PUT',
+                        headers: ghHeaders,
+                        body: JSON.stringify({
+                            message: 'seo: crear ' + filePath + ' (auto-fix IA)',
+                            content: content
+                        })
+                    });
+                    if (!res.ok) throw new Error('GitHub API: ' + (await res.json()).message);
+                } else {
+                    // Get current file
+                    status.textContent = '📥 Obteniendo ' + filePath + ' actual...';
+                    const getRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + filePath, {
+                        headers: ghHeaders
+                    });
+                    if (!getRes.ok) {
+                        // File doesn't exist, create it
+                        const content = btoa(unescape(encodeURIComponent(fix.code)));
+                        const createRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + filePath, {
+                            method: 'PUT',
+                            headers: ghHeaders,
+                            body: JSON.stringify({
+                                message: 'seo: crear ' + filePath + ' (auto-fix IA)',
+                                content: content
+                            })
+                        });
+                        if (!createRes.ok) throw new Error('GitHub API: ' + (await createRes.json()).message);
+                    } else {
+                        const fileData = await getRes.json();
+                        const currentContent = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+
+                        status.textContent = '🤖 Aplicando el fix con IA...';
+
+                        // Use Gemini to apply the fix to the full file
+                        const mergePrompt = `Eres un desarrollador web experto. Aplica esta corrección SEO al archivo HTML.
+
+ARCHIVO ACTUAL (${filePath}):
+${currentContent.substring(0, 25000)}
+
+CORRECCIÓN A APLICAR:
+${fix.code}
+
+INSTRUCCIONES:
+${fix.instructions || 'Insertar o reemplazar el código según corresponda.'}
+${fix.search ? 'BUSCAR Y REEMPLAZAR: ' + fix.search : ''}
+
+Devuelve SOLO el archivo HTML completo modificado, sin explicaciones, sin markdown, sin \`\`\`. Solo el HTML puro del archivo completo.`;
+
+                        const mergeData = await callGemini(mergePrompt);
+                        let mergedContent = mergeData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                        mergedContent = mergedContent.replace(/^```html\s*/i, '').replace(/```\s*$/g, '').trim();
+
+                        if (!mergedContent || mergedContent.length < 100) throw new Error('La IA no generó un archivo válido');
+
+                        status.textContent = '📤 Subiendo a GitHub...';
+                        const newContent = btoa(unescape(encodeURIComponent(mergedContent)));
+                        const updateRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + filePath, {
+                            method: 'PUT',
+                            headers: ghHeaders,
+                            body: JSON.stringify({
+                                message: 'seo: ' + (fix.description || 'auto-fix IA').substring(0, 72),
+                                content: newContent,
+                                sha: fileData.sha
+                            })
+                        });
+                        if (!updateRes.ok) throw new Error('GitHub API: ' + (await updateRes.json()).message);
+                    }
+                }
+
+                status.style.color = '#34c759';
+                status.textContent = '✅ Fix aplicado y desplegado. Vercel hará deploy automático en ~30s.';
+                btn.textContent = '✅ Aplicado';
+                btn.style.background = '#34c759';
+            } catch (err) {
+                status.style.color = '#ff3b30';
+                status.textContent = '❌ Error: ' + err.message;
+                btn.textContent = '🚀 Aplicar automáticamente';
+            } finally {
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
