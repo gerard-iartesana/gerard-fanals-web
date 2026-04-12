@@ -14,6 +14,8 @@
     <meta name="twitter:title" content="">
     <meta name="twitter:description" content="">
     <meta name="twitter:image" content="">
+    <link rel="canonical" href="">
+    <script type="application/ld+json" id="article-schema">{}</script>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google Analytics 4 -->
@@ -112,6 +114,21 @@
             document.querySelector('meta[name="twitter:title"]').setAttribute('content', article.title);
             document.querySelector('meta[name="twitter:description"]').setAttribute('content', desc);
             document.querySelector('meta[name="twitter:image"]').setAttribute('content', article.image || '');
+            // Dynamic canonical
+            document.querySelector('link[rel="canonical"]').setAttribute('href', window.location.href);
+            // Dynamic JSON-LD Article
+            const schema = {
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                 headline: article.title,
+                 description: desc,
+                 image: article.image || '',
+                 datePublished: article.created_at || '',
+                 author: { '@type': 'Person', name: 'Gerard Fanals' },
+                 publisher: { '@type': 'Person', name: 'Gerard Fanals' },
+                 mainEntityOfPage: { '@type': 'WebPage', '@id': window.location.href }
+            };
+            document.getElementById('article-schema').textContent = JSON.stringify(schema);
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
