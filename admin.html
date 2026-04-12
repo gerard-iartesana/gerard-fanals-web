@@ -350,6 +350,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
                 Analytics
             </button>
+            <button class="dash-nav-item" data-section="seo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                SEO
+            </button>
             <div style="flex:1"></div>
             <a href="index.html" class="dash-nav-item" style="opacity:0.6;text-decoration:none">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
@@ -593,6 +597,81 @@
                     <tbody id="recent-events"><tr><td colspan="6" style="color:var(--text-grey)">Cargando...</td></tr></tbody>
                 </table>
             </div>
+
+            <!-- SEO Section -->
+            <div class="dash-section" id="sec-seo">
+                <div class="dash-header">
+                    <h1>Auditoría SEO</h1>
+                </div>
+                <div style="padding:20px;border:2px solid var(--accent-blue);border-radius:20px;background:linear-gradient(135deg,rgba(0,122,255,0.04),rgba(52,199,89,0.04));margin-bottom:30px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                        <span style="font-size:1.5rem">🔍</span>
+                        <h2 style="margin:0;font-size:1.1rem">Analizar web con IA</h2>
+                        <span style="font-size:0.7rem;color:var(--text-grey);background:var(--bg-secondary);padding:3px 10px;border-radius:8px">Gemini</span>
+                    </div>
+                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Analiza automáticamente el SEO completo de tu web: meta tags, estructura de encabezados, tiempo de carga, robots.txt, sitemap, enlaces rotos y palabras clave.</p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                        <input type="text" class="editor-input" id="seo-url" value="https://www.gerardfanals.online" placeholder="URL a analizar" style="flex:1;min-width:250px">
+                        <button type="button" class="login-btn" onclick="runSEOAudit()" style="max-width:200px;margin:0;padding:12px 24px" id="btn-seo-audit">🚀 Analizar SEO</button>
+                    </div>
+                    <p id="seo-status" style="font-size:0.85rem;margin-top:12px;display:none"></p>
+                </div>
+
+                <!-- SEO Results Grid -->
+                <div id="seo-results" style="display:none">
+                    <!-- Score Card -->
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:30px" id="seo-scores">
+                    </div>
+
+                    <!-- Meta Tags -->
+                    <div class="seo-card" style="margin-bottom:20px">
+                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🏷️ Meta Tags</h3>
+                        <div id="seo-meta" style="font-size:0.85rem"></div>
+                    </div>
+
+                    <!-- Heading Structure -->
+                    <div class="seo-card" style="margin-bottom:20px">
+                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">📐 Estructura de Encabezados</h3>
+                        <div id="seo-headings" style="font-size:0.85rem"></div>
+                    </div>
+
+                    <!-- Performance -->
+                    <div class="seo-card" style="margin-bottom:20px">
+                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">⚡ Rendimiento y Carga</h3>
+                        <div id="seo-performance" style="font-size:0.85rem"></div>
+                    </div>
+
+                    <!-- Technical SEO -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+                        <div class="seo-card">
+                            <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🤖 robots.txt</h3>
+                            <div id="seo-robots" style="font-size:0.85rem"></div>
+                        </div>
+                        <div class="seo-card">
+                            <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🗺️ Sitemap</h3>
+                            <div id="seo-sitemap" style="font-size:0.85rem"></div>
+                        </div>
+                    </div>
+
+                    <!-- Links -->
+                    <div class="seo-card" style="margin-bottom:20px">
+                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🔗 Enlaces y URLs</h3>
+                        <div id="seo-links" style="font-size:0.85rem"></div>
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="seo-card" style="margin-bottom:20px">
+                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🔑 Palabras Clave</h3>
+                        <div id="seo-keywords" style="font-size:0.85rem"></div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="seo-card" style="border-color:var(--accent-blue)">
+                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">💡 Recomendaciones</h3>
+                        <div id="seo-recommendations" style="font-size:0.85rem"></div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -646,6 +725,7 @@
                 document.getElementById('sec-' + btn.dataset.section).classList.add('active');
                 // Auto-load analytics when section opens
                 if (btn.dataset.section === 'analytics') loadAnalytics(1);
+                if (btn.dataset.section === 'seo') checkGeminiKey();
                 if (btn.dataset.section === 'new-article') { loadCategories(); checkGeminiKey(); }
             });
         });
@@ -1117,6 +1197,247 @@
 
             } catch (e) {
                 console.error('Analytics error:', e);
+            }
+        }
+    </script>
+    <style>
+        .seo-card {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-secondary);
+        }
+        .seo-card h3 { margin: 0; font-size: 1rem; }
+        .seo-score-card {
+            padding: 16px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        .seo-score-card .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .seo-score-card .score-label {
+            font-size: 0.75rem;
+            color: var(--text-grey);
+            font-weight: 500;
+        }
+        .seo-item { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .seo-item:last-child { border-bottom: none; }
+        .seo-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .seo-ok { background: rgba(52,199,89,0.1); color: #34c759; }
+        .seo-warn { background: rgba(255,149,0,0.1); color: #ff9500; }
+        .seo-error { background: rgba(255,59,48,0.1); color: #ff3b30; }
+    </style>
+    <script>
+        // --- SEO Audit ---
+        async function runSEOAudit() {
+            const url = document.getElementById('seo-url').value.trim();
+            if (!url) { alert('Introduce una URL'); return; }
+            if (!checkGeminiKey()) return;
+
+            const btn = document.getElementById('btn-seo-audit');
+            const status = document.getElementById('seo-status');
+            const results = document.getElementById('seo-results');
+
+            btn.textContent = 'Analizando...';
+            btn.disabled = true;
+            status.style.display = 'block';
+            status.style.color = 'var(--accent-blue)';
+            status.textContent = '🔍 Paso 1/3 — Obteniendo HTML de la web...';
+            results.style.display = 'none';
+
+            try {
+                // Step 1: Fetch the page HTML
+                let pageHTML = '';
+                let robotsTxt = '';
+                let sitemapXml = '';
+                const baseUrl = new URL(url).origin;
+
+                const startTime = performance.now();
+
+                try {
+                    const res = await fetch(url);
+                    pageHTML = await res.text();
+                } catch (e) {
+                    pageHTML = 'ERROR: No se pudo obtener el HTML - ' + e.message;
+                }
+
+                const loadTime = Math.round(performance.now() - startTime);
+
+                status.textContent = '🤖 Paso 2/3 — Comprobando robots.txt y sitemap...';
+
+                try {
+                    const r = await fetch(baseUrl + '/robots.txt');
+                    robotsTxt = r.ok ? await r.text() : 'NO ENCONTRADO (404)';
+                } catch (e) { robotsTxt = 'NO ACCESIBLE'; }
+
+                try {
+                    const s = await fetch(baseUrl + '/sitemap.xml');
+                    sitemapXml = s.ok ? (await s.text()).substring(0, 2000) : 'NO ENCONTRADO (404)';
+                } catch (e) { sitemapXml = 'NO ACCESIBLE'; }
+
+                status.textContent = '🧠 Paso 3/3 — Analizando con IA...';
+
+                // Step 2: Send to Gemini for analysis
+                const truncatedHTML = pageHTML.substring(0, 15000);
+                const seoPrompt = `Eres un experto SEO. Analiza esta web y devuelve un JSON con la auditoría completa.
+
+URL analizada: ${url}
+Tiempo de carga del fetch: ${loadTime}ms
+
+HTML de la página (truncado):
+${truncatedHTML}
+
+robots.txt:
+${robotsTxt}
+
+sitemap.xml:
+${sitemapXml}
+
+Responde SOLO con JSON puro (sin markdown) con esta estructura:
+{
+  "scores": {
+    "seo_general": 85,
+    "meta_tags": 90,
+    "headings": 80,
+    "performance": 75,
+    "technical": 70,
+    "content": 80
+  },
+  "meta": {
+    "title": {"value": "...", "status": "ok|warn|error", "note": "..."},
+    "description": {"value": "...", "status": "ok|warn|error", "note": "..."},
+    "viewport": {"value": "...", "status": "ok|warn|error", "note": "..."},
+    "og_tags": {"value": "presentes/ausentes", "status": "ok|warn|error", "note": "..."},
+    "canonical": {"value": "...", "status": "ok|warn|error", "note": "..."}
+  },
+  "headings": {
+    "h1_count": 1,
+    "h1_text": ["..."],
+    "h2_count": 5,
+    "h2_texts": ["..."],
+    "h3_count": 3,
+    "status": "ok|warn|error",
+    "note": "..."
+  },
+  "performance": {
+    "load_time_ms": ${loadTime},
+    "images_without_alt": 0,
+    "images_without_lazy": 0,
+    "external_scripts": 3,
+    "css_files": 1,
+    "status": "ok|warn|error",
+    "notes": ["..."]
+  },
+  "robots": {
+    "exists": true,
+    "content_summary": "...",
+    "status": "ok|warn|error",
+    "note": "..."
+  },
+  "sitemap": {
+    "exists": true,
+    "urls_found": 5,
+    "status": "ok|warn|error",
+    "note": "..."
+  },
+  "links": {
+    "internal_count": 10,
+    "external_count": 5,
+    "potential_broken": ["..."],
+    "status": "ok|warn|error",
+    "note": "..."
+  },
+  "keywords": {
+    "detected": ["keyword1", "keyword2"],
+    "density_notes": "...",
+    "suggestions": ["..."]
+  },
+  "recommendations": [
+    {"priority": "alta|media|baja", "text": "..."},
+    {"priority": "alta|media|baja", "text": "..."}
+  ]
+}`;
+
+                const data = await callGemini(seoPrompt);
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                const seo = JSON.parse(text);
+
+                // Render results
+                results.style.display = 'block';
+
+                // Scores
+                const scoreColors = v => v >= 80 ? '#34c759' : v >= 50 ? '#ff9500' : '#ff3b30';
+                document.getElementById('seo-scores').innerHTML = Object.entries(seo.scores).map(([k, v]) => 
+                    '<div class="seo-score-card"><span class="score-value" style="color:' + scoreColors(v) + '">' + v + '</span><span class="score-label">' + k.replace(/_/g, ' ').toUpperCase() + '</span></div>'
+                ).join('');
+
+                // Meta tags
+                document.getElementById('seo-meta').innerHTML = Object.entries(seo.meta).map(([k, v]) =>
+                    '<div class="seo-item"><strong>' + k.replace(/_/g, ' ') + '</strong> <span class="seo-badge seo-' + v.status + '">' + v.status.toUpperCase() + '</span><br><code style="font-size:0.8rem;color:var(--text-grey)">' + (v.value || '-') + '</code><br><span style="font-size:0.8rem">' + (v.note || '') + '</span></div>'
+                ).join('');
+
+                // Headings
+                const h = seo.headings;
+                document.getElementById('seo-headings').innerHTML = '<div class="seo-item"><span class="seo-badge seo-' + h.status + '">' + h.status.toUpperCase() + '</span> ' + (h.note || '') + '</div>' +
+                    '<div class="seo-item"><strong>H1 (' + h.h1_count + '):</strong> ' + (h.h1_text || []).join(', ') + '</div>' +
+                    '<div class="seo-item"><strong>H2 (' + h.h2_count + '):</strong> ' + (h.h2_texts || []).slice(0, 8).join(' · ') + '</div>' +
+                    '<div class="seo-item"><strong>H3:</strong> ' + h.h3_count + ' encontrados</div>';
+
+                // Performance
+                const p = seo.performance;
+                document.getElementById('seo-performance').innerHTML = '<div class="seo-item"><span class="seo-badge seo-' + p.status + '">' + p.status.toUpperCase() + '</span></div>' +
+                    '<div class="seo-item">⏱️ Tiempo de respuesta: <strong>' + p.load_time_ms + 'ms</strong></div>' +
+                    '<div class="seo-item">🖼️ Imágenes sin alt: <strong>' + p.images_without_alt + '</strong></div>' +
+                    '<div class="seo-item">📦 Scripts externos: <strong>' + p.external_scripts + '</strong></div>' +
+                    (p.notes || []).map(n => '<div class="seo-item">' + n + '</div>').join('');
+
+                // Robots
+                const rb = seo.robots;
+                document.getElementById('seo-robots').innerHTML = '<span class="seo-badge seo-' + rb.status + '">' + (rb.exists ? 'ENCONTRADO' : 'NO ENCONTRADO') + '</span><p style="margin-top:8px">' + (rb.note || rb.content_summary || '') + '</p>';
+
+                // Sitemap
+                const sm = seo.sitemap;
+                document.getElementById('seo-sitemap').innerHTML = '<span class="seo-badge seo-' + sm.status + '">' + (sm.exists ? sm.urls_found + ' URLs' : 'NO ENCONTRADO') + '</span><p style="margin-top:8px">' + (sm.note || '') + '</p>';
+
+                // Links
+                const lk = seo.links;
+                document.getElementById('seo-links').innerHTML = '<div class="seo-item"><span class="seo-badge seo-' + lk.status + '">' + lk.status.toUpperCase() + '</span> ' + (lk.note || '') + '</div>' +
+                    '<div class="seo-item">🔗 Enlaces internos: <strong>' + lk.internal_count + '</strong> · Externos: <strong>' + lk.external_count + '</strong></div>' +
+                    ((lk.potential_broken || []).length > 0 ? '<div class="seo-item" style="color:#ff3b30">⚠️ Posibles rotos: ' + lk.potential_broken.join(', ') + '</div>' : '');
+
+                // Keywords
+                const kw = seo.keywords;
+                document.getElementById('seo-keywords').innerHTML = '<div class="seo-item"><strong>Detectadas:</strong> ' + (kw.detected || []).map(k => '<span style="display:inline-block;padding:3px 10px;margin:2px;border-radius:8px;background:var(--bg-main);border:1px solid var(--border-color);font-size:0.8rem">' + k + '</span>').join('') + '</div>' +
+                    '<div class="seo-item">' + (kw.density_notes || '') + '</div>' +
+                    '<div class="seo-item"><strong>Sugerencias:</strong> ' + (kw.suggestions || []).join(', ') + '</div>';
+
+                // Recommendations
+                const prioColors = { alta: 'seo-error', media: 'seo-warn', baja: 'seo-ok' };
+                document.getElementById('seo-recommendations').innerHTML = (seo.recommendations || []).map(r =>
+                    '<div class="seo-item"><span class="seo-badge ' + (prioColors[r.priority] || 'seo-warn') + '">' + (r.priority || '').toUpperCase() + '</span> ' + r.text + '</div>'
+                ).join('');
+
+                status.style.color = '#34c759';
+                status.textContent = '✅ Auditoría SEO completada';
+            } catch (err) {
+                status.style.color = '#ff3b30';
+                status.textContent = '❌ Error: ' + err.message;
+            } finally {
+                btn.textContent = '🚀 Analizar SEO';
+                btn.disabled = false;
             }
         }
     </script>
