@@ -670,6 +670,21 @@
                         <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">💡 Recomendaciones</h3>
                         <div id="seo-recommendations" style="font-size:0.85rem"></div>
                     </div>
+
+                    <!-- Fix Panel (shows when a fix is generated) -->
+                    <div id="seo-fix-panel" style="display:none;margin-top:20px;padding:24px;border:2px solid #34c759;border-radius:20px;background:rgba(52,199,89,0.03)">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                            <h3 style="margin:0;display:flex;align-items:center;gap:8px">🔧 Solución generada por IA</h3>
+                            <button type="button" onclick="document.getElementById('seo-fix-panel').style.display='none'" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-grey)">✕</button>
+                        </div>
+                        <p id="seo-fix-description" style="color:var(--text-grey);font-size:0.85rem;margin-bottom:12px"></p>
+                        <div id="seo-fix-file" style="font-size:0.8rem;color:var(--accent-blue);font-weight:600;margin-bottom:8px"></div>
+                        <div style="position:relative">
+                            <pre id="seo-fix-code" style="background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:16px;font-size:0.8rem;overflow-x:auto;max-height:400px;white-space:pre-wrap"></pre>
+                            <button type="button" onclick="copyFixCode()" style="position:absolute;top:8px;right:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif" id="btn-copy-fix">📋 Copiar</button>
+                        </div>
+                        <p id="seo-fix-status" style="font-size:0.8rem;margin-top:8px;display:none"></p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -1424,11 +1439,16 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
                     '<div class="seo-item">' + (kw.density_notes || '') + '</div>' +
                     '<div class="seo-item"><strong>Sugerencias:</strong> ' + (kw.suggestions || []).join(', ') + '</div>';
 
-                // Recommendations
+                // Recommendations - with fix buttons
                 const prioColors = { alta: 'seo-error', media: 'seo-warn', baja: 'seo-ok' };
-                document.getElementById('seo-recommendations').innerHTML = (seo.recommendations || []).map(r =>
-                    '<div class="seo-item"><span class="seo-badge ' + (prioColors[r.priority] || 'seo-warn') + '">' + (r.priority || '').toUpperCase() + '</span> ' + r.text + '</div>'
+                document.getElementById('seo-recommendations').innerHTML = (seo.recommendations || []).map((r, i) =>
+                    '<div class="seo-item" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><span class="seo-badge ' + (prioColors[r.priority] || 'seo-warn') + '">' + (r.priority || '').toUpperCase() + '</span> ' + r.text + '</div><button type="button" onclick="generateSEOFix(' + i + ')" class="seo-fix-btn" id="fix-btn-' + i + '" style="padding:6px 14px;border-radius:8px;border:1px solid var(--accent-blue);background:transparent;color:var(--accent-blue);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s" onmouseover="this.style.background=\'var(--accent-blue)\';this.style.color=\'white\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'var(--accent-blue)\'">🔧 Solucionar</button></div>'
                 ).join('');
+
+                // Store recommendations for fix generation
+                window._seoRecommendations = seo.recommendations;
+                window._seoUrl = url;
+                window._seoHTML = truncatedHTML;
 
                 status.style.color = '#34c759';
                 status.textContent = '✅ Auditoría SEO completada';
@@ -1439,6 +1459,78 @@ Responde SOLO con JSON puro (sin markdown) con esta estructura:
                 btn.textContent = '🚀 Analizar SEO';
                 btn.disabled = false;
             }
+        }
+
+        // --- Generate SEO Fix ---
+        async function generateSEOFix(index) {
+            const rec = window._seoRecommendations?.[index];
+            if (!rec) return;
+            if (!checkGeminiKey()) return;
+
+            const btn = document.getElementById('fix-btn-' + index);
+            const panel = document.getElementById('seo-fix-panel');
+            const fixStatus = document.getElementById('seo-fix-status');
+
+            btn.textContent = '⏳ Generando...';
+            btn.disabled = true;
+
+            try {
+                const fixPrompt = `Eres un experto en SEO y desarrollo web. Necesito que generes la solución exacta para este problema de SEO.
+
+Web: ${window._seoUrl}
+Problema (prioridad ${rec.priority}): ${rec.text}
+
+HTML actual de la web (parcial):
+${(window._seoHTML || '').substring(0, 8000)}
+
+Responde SOLO con JSON puro (sin markdown) con esta estructura:
+{
+  "description": "Explicación clara de qué hace la solución y por qué",
+  "file": "Nombre del archivo a modificar (ej: index.html, robots.txt, sitemap.xml)",
+  "action": "crear|modificar|añadir",
+  "code": "El código completo a usar. Si es un archivo nuevo (como robots.txt o sitemap.xml), incluye el contenido completo. Si es una modificación, incluye solo el bloque relevante con comentarios indicando dónde insertarlo.",
+  "instructions": "Instrucciones paso a paso de cómo aplicar el cambio"
+}`;
+
+                const data = await callGemini(fixPrompt);
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                const fix = JSON.parse(text);
+
+                // Show fix panel
+                panel.style.display = 'block';
+                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                document.getElementById('seo-fix-description').innerHTML = '<strong>' + rec.text + '</strong><br><br>' + (fix.description || '');
+                document.getElementById('seo-fix-file').innerHTML = '📄 Archivo: <code>' + (fix.file || 'index.html') + '</code> · Acción: <code>' + (fix.action || 'modificar') + '</code>';
+                document.getElementById('seo-fix-code').textContent = fix.code || '';
+
+                // Show instructions below code
+                if (fix.instructions) {
+                    fixStatus.style.display = 'block';
+                    fixStatus.style.color = 'var(--text-main)';
+                    fixStatus.innerHTML = '<strong>📋 Instrucciones:</strong><br>' + fix.instructions.replace(/\n/g, '<br>');
+                }
+
+                btn.textContent = '✅ Generado';
+                btn.style.borderColor = '#34c759';
+                btn.style.color = '#34c759';
+            } catch (err) {
+                alert('Error generando fix: ' + err.message);
+                btn.textContent = '🔧 Solucionar';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // --- Copy Fix Code ---
+        function copyFixCode() {
+            const code = document.getElementById('seo-fix-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.getElementById('btn-copy-fix');
+                btn.textContent = '✅ Copiado';
+                setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000);
+            });
         }
     </script>
 </body>
