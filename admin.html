@@ -622,7 +622,7 @@
 
                 <!-- Audit Results -->
                 <div id="seo-results" style="display:none">
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-bottom:24px" id="seo-scores"></div>
+                    <div id="seo-scores"></div>
                     <div id="seo-issues-list"></div>
                 </div>
 
@@ -1400,25 +1400,42 @@
 
             const scoresEl = document.getElementById('seo-scores');
             const catColor = v => v >= 80 ? '#34c759' : v >= 50 ? '#ff9500' : '#ff3b30';
+            const catBg = v => v >= 80 ? 'rgba(52,199,89,0.08)' : v >= 50 ? 'rgba(255,149,0,0.08)' : 'rgba(255,59,48,0.08)';
 
-            // Main score + category cards
+            // Main score card
             scoresEl.innerHTML = `
-                <div class="seo-score-card" style="grid-column:1/-1;text-align:center;padding:28px;background:linear-gradient(135deg,rgba(0,113,227,0.04),rgba(52,199,89,0.04))">
-                    <span class="score-value" style="color:${scoreColor};font-size:3.5rem;font-weight:800">${score}</span>
-                    <span class="score-label" style="font-size:1.1rem;display:block;margin-top:4px;font-weight:600">PUNTUACIÓN SEO /100</span>
-                    <p style="color:var(--text-grey);font-size:0.8rem;margin-top:10px">${summaryText}</p>
+                <div style="text-align:center;padding:32px 24px;border-radius:20px;border:1px solid var(--border-color);background:linear-gradient(135deg,rgba(0,113,227,0.03),rgba(52,199,89,0.03));margin-bottom:24px">
+                    <span style="color:${scoreColor};font-size:4rem;font-weight:800;line-height:1">${score}</span>
+                    <span style="font-size:1.1rem;display:block;margin-top:6px;font-weight:600;color:var(--text-main)">Puntuación SEO</span>
+                    <div style="width:200px;height:6px;border-radius:3px;background:var(--border-color);margin:16px auto 0;overflow:hidden">
+                        <div style="height:100%;width:${score}%;border-radius:3px;background:${scoreColor};transition:width 1s ease"></div>
+                    </div>
+                    <p style="color:var(--text-grey);font-size:0.8rem;margin-top:14px">${summaryText}</p>
                     <p style="color:var(--text-grey);font-size:0.7rem;margin-top:4px">Última auditoría: ${new Date(audit.completed_at || audit.created_at).toLocaleString('es-ES')}</p>
                 </div>
+
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px">
                 ${Object.entries(cats).map(([key, cat]) => `
-                    <div class="seo-score-card" style="padding:18px;text-align:left">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                            <span style="font-size:1rem">${cat.icon || '📋'} <strong style="font-size:0.85rem">${cat.label || key}</strong></span>
-                            <span style="font-size:1.2rem;font-weight:700;color:${catColor(cat.score)}">${cat.score}</span>
+                    <div style="padding:20px 24px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-secondary)">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                            <div style="display:flex;align-items:center;gap:8px">
+                                <span style="font-size:1.3rem">${cat.icon || '📋'}</span>
+                                <strong style="font-size:0.9rem">${cat.label || key}</strong>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:8px">
+                                <div style="width:60px;height:5px;border-radius:3px;background:var(--border-color);overflow:hidden">
+                                    <div style="height:100%;width:${cat.score}%;border-radius:3px;background:${catColor(cat.score)}"></div>
+                                </div>
+                                <span style="font-size:1.1rem;font-weight:700;color:${catColor(cat.score)};min-width:28px;text-align:right">${cat.score}</span>
+                            </div>
                         </div>
-                        ${(cat.checks || []).map(c => `<div style="font-size:0.75rem;color:#34c759;padding:2px 0">✅ ${c}</div>`).join('')}
-                        ${(cat.warnings || []).map(w => `<div style="font-size:0.75rem;color:#ff9500;padding:2px 0">⚠️ ${w}</div>`).join('')}
+                        <div style="display:flex;flex-direction:column;gap:4px">
+                            ${(cat.checks || []).map(c => `<div style="font-size:0.78rem;color:var(--text-main);padding:3px 0;display:flex;align-items:flex-start;gap:6px"><span style="color:#34c759;flex-shrink:0">✓</span><span>${c}</span></div>`).join('')}
+                            ${(cat.warnings || []).map(w => `<div style="font-size:0.78rem;color:#ff9500;padding:3px 0;display:flex;align-items:flex-start;gap:6px"><span style="flex-shrink:0">⚠</span><span>${w}</span></div>`).join('')}
+                        </div>
                     </div>
                 `).join('')}
+                </div>
             `;
 
             // Issues section header
