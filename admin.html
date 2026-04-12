@@ -324,7 +324,10 @@
             <h1>Dashboard</h1>
             <p class="login-sub">Panel de administración de Gerard Fanals</p>
             <input type="email" class="login-field" id="login-email" placeholder="Email" autocomplete="email">
-            <input type="password" class="login-field" id="login-password" placeholder="Contraseña" autocomplete="current-password">
+            <div style="position:relative">
+                <input type="password" class="login-field" id="login-password" placeholder="Contraseña" autocomplete="current-password" style="padding-right:44px">
+                <button type="button" id="toggle-password" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--text-grey);font-size:1.1rem;line-height:1" aria-label="Mostrar contraseña">👁</button>
+            </div>
             <button class="login-btn" onclick="handleLogin()">Acceder</button>
             <p class="login-error" id="login-error">Credenciales incorrectas</p>
         </div>
@@ -665,6 +668,19 @@
     <script src="supabase-client.js"></script>
     <script src="script.js"></script>
     <script>
+        // --- Toggle Password Visibility ---
+        function togglePassword() {
+            const input = document.getElementById('login-password');
+            const btn = document.getElementById('toggle-password');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+
         // --- Supabase Auth Login ---
         async function handleLogin() {
             const email = document.getElementById('login-email').value;
