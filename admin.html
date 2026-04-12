@@ -603,91 +603,36 @@
                 <div class="dash-header">
                     <h1>Auditoría SEO</h1>
                 </div>
-                <div style="padding:20px;border:2px solid var(--accent-blue);border-radius:20px;background:linear-gradient(135deg,rgba(0,122,255,0.04),rgba(52,199,89,0.04));margin-bottom:30px">
+
+                <!-- Trigger Audit -->
+                <div style="padding:24px;border:2px solid var(--accent-blue);border-radius:20px;background:linear-gradient(135deg,rgba(0,122,255,0.04),rgba(52,199,89,0.04));margin-bottom:30px">
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
                         <span style="font-size:1.5rem">🔍</span>
-                        <h2 style="margin:0;font-size:1.1rem">Analizar web con IA</h2>
-                        <span style="font-size:0.7rem;color:var(--text-grey);background:var(--bg-secondary);padding:3px 10px;border-radius:8px">Gemini</span>
+                        <h2 style="margin:0;font-size:1.1rem">Auditoría SEO Completa</h2>
+                        <span style="font-size:0.7rem;color:var(--text-grey);background:var(--bg-secondary);padding:3px 10px;border-radius:8px">Skill Antigravity</span>
                     </div>
-                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Analiza automáticamente el SEO completo de tu web: meta tags, estructura de encabezados, tiempo de carga, robots.txt, sitemap, enlaces rotos y palabras clave.</p>
-                    <div style="display:flex;gap:10px;flex-wrap:wrap">
-                        <input type="text" class="editor-input" id="seo-url" value="https://www.gerardfanals.online" placeholder="URL a analizar" style="flex:1;min-width:250px">
-                        <button type="button" class="login-btn" onclick="runSEOAudit()" style="max-width:200px;margin:0;padding:12px 24px" id="btn-seo-audit">🚀 Analizar SEO</button>
-                    </div>
-                    <p id="seo-status" style="font-size:0.85rem;margin-top:12px;display:none"></p>
+                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Analiza TODOS los archivos del sitio a la vez: index.html, blog.html, articulo.html, robots.txt, sitemap.xml. Detecta tags duplicados, metas faltantes, encabezados, datos estructurados y más.</p>
+                    <button type="button" class="login-btn" onclick="requestSEOAudit()" style="max-width:280px;margin:0;padding:14px 28px" id="btn-seo-audit">🚀 Ejecutar Auditoría Completa</button>
+                    <p id="seo-audit-status" style="font-size:0.85rem;margin-top:12px;display:none"></p>
                 </div>
 
-                <!-- SEO Results Grid -->
+                <!-- Audit Results -->
                 <div id="seo-results" style="display:none">
-                    <!-- Score Card -->
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:30px" id="seo-scores">
-                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-bottom:24px" id="seo-scores"></div>
+                    <div id="seo-issues-list"></div>
+                </div>
 
-                    <!-- Meta Tags -->
-                    <div class="seo-card" style="margin-bottom:20px">
-                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🏷️ Meta Tags</h3>
-                        <div id="seo-meta" style="font-size:0.85rem"></div>
-                    </div>
+                <!-- Loading -->
+                <div id="seo-loading" style="display:none;text-align:center;padding:60px 20px">
+                    <div style="font-size:2.5rem;margin-bottom:16px;animation:pulse 1.5s infinite">🔄</div>
+                    <p style="color:var(--text-grey);font-size:0.9rem">Auditoría en proceso...</p>
+                    <p style="color:var(--text-grey);font-size:0.75rem;margin-top:4px" id="seo-loading-time"></p>
+                </div>
 
-                    <!-- Heading Structure -->
-                    <div class="seo-card" style="margin-bottom:20px">
-                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">📐 Estructura de Encabezados</h3>
-                        <div id="seo-headings" style="font-size:0.85rem"></div>
-                    </div>
-
-                    <!-- Performance -->
-                    <div class="seo-card" style="margin-bottom:20px">
-                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">⚡ Rendimiento y Carga</h3>
-                        <div id="seo-performance" style="font-size:0.85rem"></div>
-                    </div>
-
-                    <!-- Technical SEO -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-                        <div class="seo-card">
-                            <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🤖 robots.txt</h3>
-                            <div id="seo-robots" style="font-size:0.85rem"></div>
-                        </div>
-                        <div class="seo-card">
-                            <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🗺️ Sitemap</h3>
-                            <div id="seo-sitemap" style="font-size:0.85rem"></div>
-                        </div>
-                    </div>
-
-                    <!-- Links -->
-                    <div class="seo-card" style="margin-bottom:20px">
-                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🔗 Enlaces y URLs</h3>
-                        <div id="seo-links" style="font-size:0.85rem"></div>
-                    </div>
-
-                    <!-- Keywords -->
-                    <div class="seo-card" style="margin-bottom:20px">
-                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">🔑 Palabras Clave</h3>
-                        <div id="seo-keywords" style="font-size:0.85rem"></div>
-                    </div>
-
-                    <!-- Recommendations -->
-                    <div class="seo-card" style="border-color:var(--accent-blue)">
-                        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">💡 Recomendaciones</h3>
-                        <div id="seo-recommendations" style="font-size:0.85rem"></div>
-                    </div>
-
-                    <!-- Fix Panel (shows when a fix is generated) -->
-                    <div id="seo-fix-panel" style="display:none;margin-top:20px;padding:24px;border:2px solid #34c759;border-radius:20px;background:rgba(52,199,89,0.03)">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-                            <h3 style="margin:0;display:flex;align-items:center;gap:8px">🔧 Solución generada por IA</h3>
-                            <button type="button" onclick="document.getElementById('seo-fix-panel').style.display='none'" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-grey)">✕</button>
-                        </div>
-                        <p id="seo-fix-description" style="color:var(--text-grey);font-size:0.85rem;margin-bottom:12px"></p>
-                        <div id="seo-fix-file" style="font-size:0.8rem;color:var(--accent-blue);font-weight:600;margin-bottom:8px"></div>
-                        <div style="position:relative">
-                            <pre id="seo-fix-code" style="background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:16px;font-size:0.8rem;overflow-x:auto;max-height:400px;white-space:pre-wrap"></pre>
-                            <button type="button" onclick="copyFixCode()" style="position:absolute;top:8px;right:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif" id="btn-copy-fix">📋 Copiar</button>
-                        </div>
-                        <div style="display:flex;gap:10px;margin-top:16px;align-items:center">
-                            <button type="button" onclick="applyFixToGitHub()" class="login-btn" style="max-width:250px;margin:0;padding:12px 20px;background:#34c759" id="btn-apply-fix">🚀 Aplicar automáticamente</button>
-                            <span style="font-size:0.75rem;color:var(--text-grey)">Commit directo a GitHub → deploy automático en Vercel</span>
-                        </div>
-                        <p id="seo-fix-status" style="font-size:0.8rem;margin-top:8px;display:none"></p>
+                <!-- Empty State -->
+                <div id="seo-empty" style="text-align:center;padding:60px 20px">
+                    <div style="font-size:3rem;margin-bottom:12px">📊</div>
+                    <p style="color:var(--text-grey);font-size:0.9rem">Pulsa el botón para ejecutar tu primera auditoría SEO completa</p>
                 </div>
             </div>
                 </div>
@@ -1261,355 +1206,204 @@
     </style>
     <script>
         // --- SEO Audit ---
-        async function runSEOAudit() {
-            const url = document.getElementById('seo-url').value.trim();
-            if (!url) { alert('Introduce una URL'); return; }
-            if (!checkGeminiKey()) return;
+        // =============================================
+        // SEO AUDIT (Skill-based via Supabase)
+        // =============================================
 
+        async function requestSEOAudit() {
             const btn = document.getElementById('btn-seo-audit');
-            const status = document.getElementById('seo-status');
-            const results = document.getElementById('seo-results');
+            const status = document.getElementById('seo-audit-status');
 
-            btn.textContent = 'Analizando...';
+            btn.textContent = '⏳ Solicitando...';
             btn.disabled = true;
             status.style.display = 'block';
             status.style.color = 'var(--accent-blue)';
-            status.textContent = '🔍 Paso 1/3 — Obteniendo HTML de la web...';
-            results.style.display = 'none';
+            status.textContent = '📤 Creando solicitud de auditoría...';
+
+            document.getElementById('seo-empty').style.display = 'none';
+            document.getElementById('seo-results').style.display = 'none';
+            document.getElementById('seo-loading').style.display = 'block';
 
             try {
-                // Step 1: Fetch the page HTML
-                let pageHTML = '';
-                let robotsTxt = '';
-                let sitemapXml = '';
-                const baseUrl = new URL(url).origin;
+                const { data, error } = await _supabase.from('seo_audits').insert({
+                    status: 'pending',
+                    score: 0,
+                    results: [],
+                    summary: ''
+                }).select('id').single();
 
-                const startTime = performance.now();
+                if (error) throw error;
 
-                try {
-                    const res = await fetch(url);
-                    pageHTML = await res.text();
-                } catch (e) {
-                    pageHTML = 'ERROR: No se pudo obtener el HTML - ' + e.message;
-                }
+                const auditId = data.id;
+                status.style.color = '#ff9500';
+                status.textContent = '⏳ Auditoría en cola — Antigravity la procesará automáticamente...';
+                btn.textContent = '⏳ En proceso...';
 
-                const loadTime = Math.round(performance.now() - startTime);
+                // Poll for completion
+                let elapsed = 0;
+                const poll = setInterval(async () => {
+                    elapsed += 5;
+                    document.getElementById('seo-loading-time').textContent = elapsed + 's transcurridos';
 
-                status.textContent = '🤖 Paso 2/3 — Comprobando robots.txt y sitemap...';
+                    try {
+                        const { data: audit } = await _supabase
+                            .from('seo_audits')
+                            .select('*')
+                            .eq('id', auditId)
+                            .single();
 
-                try {
-                    const r = await fetch(baseUrl + '/robots.txt');
-                    robotsTxt = r.ok ? await r.text() : 'NO ENCONTRADO (404)';
-                } catch (e) { robotsTxt = 'NO ACCESIBLE'; }
+                        if (audit && audit.status === 'done') {
+                            clearInterval(poll);
+                            renderAuditResults(audit);
+                            btn.textContent = '🚀 Ejecutar Auditoría Completa';
+                            btn.disabled = false;
+                            status.style.color = '#34c759';
+                            status.textContent = '✅ Auditoría completada — Score: ' + audit.score + '/100';
+                        } else if (elapsed >= 300) {
+                            clearInterval(poll);
+                            status.textContent = '⏳ Auditoría pendiente. Se completará cuando Antigravity la procese.';
+                            btn.textContent = '🚀 Ejecutar Auditoría Completa';
+                            btn.disabled = false;
+                        }
+                    } catch (e) {}
+                }, 5000);
 
-                try {
-                    const s = await fetch(baseUrl + '/sitemap.xml');
-                    sitemapXml = s.ok ? (await s.text()).substring(0, 2000) : 'NO ENCONTRADO (404)';
-                } catch (e) { sitemapXml = 'NO ACCESIBLE'; }
-
-                status.textContent = '🧠 Paso 3/3 — Analizando con IA...';
-
-                // Step 2: Send to Gemini for analysis
-                const truncatedHTML = pageHTML.substring(0, 15000);
-                const seoPrompt = `Eres un experto SEO. Analiza esta web y devuelve un JSON con la auditoría completa.
-
-URL analizada: ${url}
-Tiempo de carga del fetch: ${loadTime}ms
-
-HTML de la página (truncado):
-${truncatedHTML}
-
-robots.txt:
-${robotsTxt}
-
-sitemap.xml:
-${sitemapXml}
-
-Responde SOLO con JSON puro (sin markdown) con esta estructura:
-{
-  "scores": {
-    "seo_general": 85,
-    "meta_tags": 90,
-    "headings": 80,
-    "performance": 75,
-    "technical": 70,
-    "content": 80
-  },
-  "meta": {
-    "title": {"value": "...", "status": "ok|warn|error", "note": "..."},
-    "description": {"value": "...", "status": "ok|warn|error", "note": "..."},
-    "viewport": {"value": "...", "status": "ok|warn|error", "note": "..."},
-    "og_tags": {"value": "presentes/ausentes", "status": "ok|warn|error", "note": "..."},
-    "canonical": {"value": "...", "status": "ok|warn|error", "note": "..."}
-  },
-  "headings": {
-    "h1_count": 1,
-    "h1_text": ["..."],
-    "h2_count": 5,
-    "h2_texts": ["..."],
-    "h3_count": 3,
-    "status": "ok|warn|error",
-    "note": "..."
-  },
-  "performance": {
-    "load_time_ms": ${loadTime},
-    "images_without_alt": 0,
-    "images_without_lazy": 0,
-    "external_scripts": 3,
-    "css_files": 1,
-    "status": "ok|warn|error",
-    "notes": ["..."]
-  },
-  "robots": {
-    "exists": true,
-    "content_summary": "...",
-    "status": "ok|warn|error",
-    "note": "..."
-  },
-  "sitemap": {
-    "exists": true,
-    "urls_found": 5,
-    "status": "ok|warn|error",
-    "note": "..."
-  },
-  "links": {
-    "internal_count": 10,
-    "external_count": 5,
-    "potential_broken": ["..."],
-    "status": "ok|warn|error",
-    "note": "..."
-  },
-  "keywords": {
-    "detected": ["keyword1", "keyword2"],
-    "density_notes": "...",
-    "suggestions": ["..."]
-  },
-  "recommendations": [
-    {"priority": "alta|media|baja", "text": "..."},
-    {"priority": "alta|media|baja", "text": "..."}
-  ]
-}`;
-
-                const data = await callGemini(seoPrompt);
-                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-                const seo = JSON.parse(text);
-
-                // Render results
-                results.style.display = 'block';
-
-                // Scores
-                const scoreColors = v => v >= 80 ? '#34c759' : v >= 50 ? '#ff9500' : '#ff3b30';
-                document.getElementById('seo-scores').innerHTML = Object.entries(seo.scores).map(([k, v]) => 
-                    '<div class="seo-score-card"><span class="score-value" style="color:' + scoreColors(v) + '">' + v + '</span><span class="score-label">' + k.replace(/_/g, ' ').toUpperCase() + '</span></div>'
-                ).join('');
-
-                // Meta tags
-                document.getElementById('seo-meta').innerHTML = Object.entries(seo.meta).map(([k, v]) =>
-                    '<div class="seo-item"><strong>' + k.replace(/_/g, ' ') + '</strong> <span class="seo-badge seo-' + v.status + '">' + v.status.toUpperCase() + '</span><br><code style="font-size:0.8rem;color:var(--text-grey)">' + (v.value || '-') + '</code><br><span style="font-size:0.8rem">' + (v.note || '') + '</span></div>'
-                ).join('');
-
-                // Headings
-                const h = seo.headings;
-                document.getElementById('seo-headings').innerHTML = '<div class="seo-item"><span class="seo-badge seo-' + h.status + '">' + h.status.toUpperCase() + '</span> ' + (h.note || '') + '</div>' +
-                    '<div class="seo-item"><strong>H1 (' + h.h1_count + '):</strong> ' + (h.h1_text || []).join(', ') + '</div>' +
-                    '<div class="seo-item"><strong>H2 (' + h.h2_count + '):</strong> ' + (h.h2_texts || []).slice(0, 8).join(' · ') + '</div>' +
-                    '<div class="seo-item"><strong>H3:</strong> ' + h.h3_count + ' encontrados</div>';
-
-                // Performance
-                const p = seo.performance;
-                document.getElementById('seo-performance').innerHTML = '<div class="seo-item"><span class="seo-badge seo-' + p.status + '">' + p.status.toUpperCase() + '</span></div>' +
-                    '<div class="seo-item">⏱️ Tiempo de respuesta: <strong>' + p.load_time_ms + 'ms</strong></div>' +
-                    '<div class="seo-item">🖼️ Imágenes sin alt: <strong>' + p.images_without_alt + '</strong></div>' +
-                    '<div class="seo-item">📦 Scripts externos: <strong>' + p.external_scripts + '</strong></div>' +
-                    (p.notes || []).map(n => '<div class="seo-item">' + n + '</div>').join('');
-
-                // Robots
-                const rb = seo.robots;
-                document.getElementById('seo-robots').innerHTML = '<span class="seo-badge seo-' + rb.status + '">' + (rb.exists ? 'ENCONTRADO' : 'NO ENCONTRADO') + '</span><p style="margin-top:8px">' + (rb.note || rb.content_summary || '') + '</p>';
-
-                // Sitemap
-                const sm = seo.sitemap;
-                document.getElementById('seo-sitemap').innerHTML = '<span class="seo-badge seo-' + sm.status + '">' + (sm.exists ? sm.urls_found + ' URLs' : 'NO ENCONTRADO') + '</span><p style="margin-top:8px">' + (sm.note || '') + '</p>';
-
-                // Links
-                const lk = seo.links;
-                document.getElementById('seo-links').innerHTML = '<div class="seo-item"><span class="seo-badge seo-' + lk.status + '">' + lk.status.toUpperCase() + '</span> ' + (lk.note || '') + '</div>' +
-                    '<div class="seo-item">🔗 Enlaces internos: <strong>' + lk.internal_count + '</strong> · Externos: <strong>' + lk.external_count + '</strong></div>' +
-                    ((lk.potential_broken || []).length > 0 ? '<div class="seo-item" style="color:#ff3b30">⚠️ Posibles rotos: ' + lk.potential_broken.join(', ') + '</div>' : '');
-
-                // Keywords
-                const kw = seo.keywords;
-                document.getElementById('seo-keywords').innerHTML = '<div class="seo-item"><strong>Detectadas:</strong> ' + (kw.detected || []).map(k => '<span style="display:inline-block;padding:3px 10px;margin:2px;border-radius:8px;background:var(--bg-main);border:1px solid var(--border-color);font-size:0.8rem">' + k + '</span>').join('') + '</div>' +
-                    '<div class="seo-item">' + (kw.density_notes || '') + '</div>' +
-                    '<div class="seo-item"><strong>Sugerencias:</strong> ' + (kw.suggestions || []).join(', ') + '</div>';
-
-                // Recommendations - with fix buttons
-                const prioColors = { alta: 'seo-error', media: 'seo-warn', baja: 'seo-ok' };
-                document.getElementById('seo-recommendations').innerHTML = (seo.recommendations || []).map((r, i) =>
-                    '<div class="seo-item" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><span class="seo-badge ' + (prioColors[r.priority] || 'seo-warn') + '">' + (r.priority || '').toUpperCase() + '</span> ' + r.text + '</div><button type="button" onclick="generateSEOFix(' + i + ')" class="seo-fix-btn" id="fix-btn-' + i + '" style="padding:6px 14px;border-radius:8px;border:1px solid var(--accent-blue);background:transparent;color:var(--accent-blue);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s" onmouseover="this.style.background=\'var(--accent-blue)\';this.style.color=\'white\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'var(--accent-blue)\'">🔧 Solucionar</button></div>'
-                ).join('');
-
-                // Store recommendations for fix generation
-                window._seoRecommendations = seo.recommendations;
-                window._seoUrl = url;
-                window._seoHTML = truncatedHTML;
-
-                status.style.color = '#34c759';
-                status.textContent = '✅ Auditoría SEO completada';
             } catch (err) {
                 status.style.color = '#ff3b30';
                 status.textContent = '❌ Error: ' + err.message;
-            } finally {
-                btn.textContent = '🚀 Analizar SEO';
+                btn.textContent = '🚀 Ejecutar Auditoría Completa';
                 btn.disabled = false;
+                document.getElementById('seo-loading').style.display = 'none';
+                document.getElementById('seo-empty').style.display = 'block';
             }
         }
 
-        // --- Generate SEO Fix ---
-        async function generateSEOFix(index) {
-            const rec = window._seoRecommendations?.[index];
-            if (!rec) return;
-            if (!checkGeminiKey()) return;
+        function renderAuditResults(audit) {
+            document.getElementById('seo-loading').style.display = 'none';
+            document.getElementById('seo-empty').style.display = 'none';
+            document.getElementById('seo-results').style.display = 'block';
 
-            const btn = document.getElementById('fix-btn-' + index);
-            const panel = document.getElementById('seo-fix-panel');
-            const fixStatus = document.getElementById('seo-fix-status');
+            const results = audit.results || [];
+            const score = audit.score || 0;
+            const scoreColor = score >= 80 ? '#34c759' : score >= 50 ? '#ff9500' : '#ff3b30';
 
-            btn.textContent = '⏳ Generando...';
-            btn.disabled = true;
+            // Scores bar
+            const scoresEl = document.getElementById('seo-scores');
+            scoresEl.innerHTML = `
+                <div class="seo-score-card" style="grid-column:1/-1;text-align:center;padding:24px">
+                    <span class="score-value" style="color:${scoreColor};font-size:3rem;font-weight:700">${score}</span>
+                    <span class="score-label" style="font-size:1rem;display:block;margin-top:4px">PUNTUACIÓN GENERAL /100</span>
+                    <p style="color:var(--text-grey);font-size:0.8rem;margin-top:8px">${audit.summary || ''}</p>
+                    <p style="color:var(--text-grey);font-size:0.7rem;margin-top:4px">Última auditoría: ${new Date(audit.completed_at || audit.created_at).toLocaleString('es-ES')}</p>
+                </div>
+            `;
 
-            try {
-                const fixPrompt = `Eres un experto en SEO y desarrollo web. Necesito que generes la solución exacta para este problema de SEO.
-
-Web: ${window._seoUrl}
-Problema (prioridad ${rec.priority}): ${rec.text}
-
-HTML actual de la web (parcial):
-${(window._seoHTML || '').substring(0, 8000)}
-
-Responde SOLO con JSON puro (sin markdown) con esta estructura:
-{
-  "description": "Explicación clara de qué hace la solución y por qué",
-  "file": "Nombre del archivo a modificar (ej: index.html, robots.txt, sitemap.xml)",
-  "action": "crear|modificar|añadir",
-  "code": "El código completo a usar. Si es un archivo nuevo (como robots.txt o sitemap.xml), incluye el contenido COMPLETO del archivo listo para guardar. Si es una modificación de un archivo existente, incluye SOLO el fragmento de código nuevo que hay que insertar o reemplazar.",
-  "search": "Si action es modificar, incluye aquí la línea o bloque exacto del HTML actual que hay que buscar y reemplazar. Copia el texto exacto.",
-  "instructions": "Instrucciones paso a paso de cómo aplicar el cambio"
-}`;
-
-                const data = await callGemini(fixPrompt);
-                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-                const fix = JSON.parse(text);
-
-                // Show fix panel
-                panel.style.display = 'block';
-                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                document.getElementById('seo-fix-description').innerHTML = '<strong>' + rec.text + '</strong><br><br>' + (fix.description || '');
-                document.getElementById('seo-fix-file').innerHTML = '📄 Archivo: <code>' + (fix.file || 'index.html') + '</code> · Acción: <code>' + (fix.action || 'modificar') + '</code>';
-                document.getElementById('seo-fix-code').textContent = fix.code || '';
-                window._currentFix = fix;
-
-                // Show instructions below code
-                if (fix.instructions) {
-                    fixStatus.style.display = 'block';
-                    fixStatus.style.color = 'var(--text-main)';
-                    fixStatus.innerHTML = '<strong>📋 Instrucciones:</strong><br>' + fix.instructions.replace(/\n/g, '<br>');
-                }
-
-                btn.textContent = '✅ Generado';
-                btn.style.borderColor = '#34c759';
-                btn.style.color = '#34c759';
-            } catch (err) {
-                alert('Error generando fix: ' + err.message);
-                btn.textContent = '🔧 Solucionar';
-            } finally {
-                btn.disabled = false;
+            // Issues list
+            const issuesEl = document.getElementById('seo-issues-list');
+            if (results.length === 0) {
+                issuesEl.innerHTML = '<div class="seo-card" style="text-align:center;padding:40px"><span style="font-size:2rem">🎉</span><p style="margin-top:8px;color:var(--text-grey)">¡No se encontraron problemas pendientes!</p></div>';
+                return;
             }
+
+            const prioIcons = { alta: '🔴', media: '🟡', baja: '🟢' };
+            const prioColors = { alta: '#ff3b30', media: '#ff9500', baja: '#34c759' };
+
+            issuesEl.innerHTML = results.map((issue, i) => `
+                <div class="seo-card" style="margin-bottom:14px;border-left:4px solid ${prioColors[issue.priority] || '#ff9500'}">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                        <div>
+                            <span style="font-size:0.75rem;font-weight:700;color:${prioColors[issue.priority] || '#ff9500'}">${prioIcons[issue.priority] || '🟡'} ${(issue.priority || 'media').toUpperCase()}</span>
+                            <h4 style="margin:6px 0 4px;font-size:0.95rem">${issue.title || ''}</h4>
+                            <p style="color:var(--text-grey);font-size:0.8rem;margin:0">${issue.description || ''}</p>
+                            <p style="color:var(--accent-blue);font-size:0.75rem;margin:6px 0 0;font-weight:600">📄 ${issue.file || ''}</p>
+                        </div>
+                        ${issue.status === 'fixed' 
+                            ? '<span style="padding:6px 14px;border-radius:8px;background:#34c759;color:white;font-size:0.75rem;font-weight:600;white-space:nowrap">✅ Corregido</span>'
+                            : `<button type="button" onclick="requestSEOFix(${i})" class="seo-fix-btn" id="seo-fix-btn-${i}" style="padding:8px 16px;border-radius:8px;border:1px solid var(--accent-blue);background:transparent;color:var(--accent-blue);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s" onmouseover="this.style.background='var(--accent-blue)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--accent-blue)'">🔧 Solucionar</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
+
+            window._auditIssues = results;
         }
 
-        // --- Copy Fix Code ---
-        function copyFixCode() {
-            const code = document.getElementById('seo-fix-code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = document.getElementById('btn-copy-fix');
-                btn.textContent = '✅ Copiado';
-                setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000);
-            });
-        }
+        async function requestSEOFix(index) {
+            const issue = window._auditIssues?.[index];
+            if (!issue) return;
 
-        // --- Apply Fix via Supabase Queue ---
-        async function applyFixToGitHub() {
-            const fix = window._currentFix;
-            if (!fix) { alert('No hay fix generado'); return; }
-
-            const btn = document.getElementById('btn-apply-fix');
-            const status = document.getElementById('seo-fix-status');
-            btn.textContent = '⏳ Guardando...';
+            const btn = document.getElementById('seo-fix-btn-' + index);
+            btn.textContent = '⏳ En cola...';
+            btn.style.background = '#ff9500';
+            btn.style.color = 'white';
+            btn.style.borderColor = '#ff9500';
             btn.disabled = true;
-            status.style.display = 'block';
-            status.style.color = 'var(--accent-blue)';
-            status.textContent = '📤 Guardando fix en cola de aplicación...';
 
             try {
                 const { data, error } = await _supabase.from('seo_fixes').insert({
-                    file: fix.file || 'index.html',
-                    action: fix.action || 'modificar',
-                    code: fix.code || '',
-                    search: fix.search || '',
-                    description: fix.description || '',
-                    instructions: fix.instructions || '',
+                    file: issue.file || 'index.html',
+                    action: 'modificar',
+                    code: issue.fix_code || '',
+                    search: issue.fix_search || '',
+                    description: issue.title + ': ' + issue.description,
+                    instructions: issue.fix_instructions || '',
                     status: 'pending'
                 }).select('id').single();
 
                 if (error) throw error;
 
                 const fixId = data.id;
-                status.style.color = '#ff9500';
-                status.textContent = '⏳ En cola — esperando aplicación...';
-                btn.textContent = '⏳ En cola';
-                btn.style.background = '#ff9500';
-                btn.disabled = false;
-
-                // Poll for status change
                 let attempts = 0;
-                const pollInterval = setInterval(async () => {
+                const poll = setInterval(async () => {
                     attempts++;
                     try {
                         const { data: check } = await _supabase
-                            .from('seo_fixes')
-                            .select('status')
-                            .eq('id', fixId)
-                            .single();
-
+                            .from('seo_fixes').select('status').eq('id', fixId).single();
                         if (check && check.status === 'applied') {
-                            clearInterval(pollInterval);
-                            btn.textContent = '✅ Actualizado';
+                            clearInterval(poll);
+                            btn.textContent = '✅ Corregido';
                             btn.style.background = '#34c759';
-                            btn.style.border = 'none';
-                            btn.style.color = 'white';
-                            status.style.color = '#34c759';
-                            status.textContent = '✅ Fix aplicado y desplegado correctamente. Vercel actualizará en ~30s.';
+                            btn.style.borderColor = '#34c759';
                         } else if (attempts >= 60) {
-                            clearInterval(pollInterval);
-                            status.textContent = '⏳ Fix en cola. Se aplicará cuando se ejecute el proceso.';
-                        } else {
-                            status.textContent = '⏳ En cola — esperando aplicación... (' + (attempts * 5) + 's)';
+                            clearInterval(poll);
                         }
-                    } catch (e) {
-                        // Ignore polling errors
-                    }
+                    } catch (e) {}
                 }, 5000);
-
             } catch (err) {
-                status.style.color = '#ff3b30';
-                status.textContent = '❌ Error: ' + err.message;
-                btn.textContent = '🚀 Aplicar automáticamente';
-                btn.disabled = false;
+                btn.textContent = '❌ Error';
+                btn.style.background = '#ff3b30';
+                btn.style.borderColor = '#ff3b30';
             }
         }
+
+        // Load latest audit on page load
+        async function loadLatestAudit() {
+            try {
+                const { data } = await _supabase
+                    .from('seo_audits')
+                    .select('*')
+                    .eq('status', 'done')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (data) {
+                    renderAuditResults(data);
+                    const status = document.getElementById('seo-audit-status');
+                    status.style.display = 'block';
+                    status.style.color = '#34c759';
+                    status.textContent = '✅ Última auditoría: Score ' + data.score + '/100';
+                }
+            } catch (e) {}
+        }
+
+        // Auto-load latest audit when SEO section is shown
+        const origShowSection = window.showSection;
+        window.showSection = function(id) {
+            if (origShowSection) origShowSection(id);
+            if (id === 'seo') loadLatestAudit();
+        };
     </script>
 </body>
 </html>
+
