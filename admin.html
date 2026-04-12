@@ -1406,13 +1406,31 @@
             }
         }
 
-        function renderAuditResults(audit) {
+        async function renderAuditResults(audit) {
             document.getElementById('seo-loading').style.display = 'none';
             document.getElementById('seo-empty').style.display = 'none';
             document.getElementById('seo-results').style.display = 'block';
 
             const results = audit.results || [];
             const score = audit.score || 0;
+
+            // Cross-reference with seo_fixes to persist "fixed" status
+            try {
+                const { data: appliedFixes } = await _supabase
+                    .from('seo_fixes')
+                    .select('file, description, status')
+                    .eq('status', 'applied');
+                if (appliedFixes && appliedFixes.length > 0) {
+                    results.forEach(issue => {
+                        const desc = (issue.title || '') + ': ' + (issue.description || '');
+                        const file = issue.file || 'index.html';
+                        const match = appliedFixes.find(f =>
+                            f.description === desc && f.file === file
+                        );
+                        if (match) issue.status = 'fixed';
+                    });
+                }
+            } catch(e) { console.warn('Could not check applied fixes:', e); }
             const scoreColor = score >= 80 ? '#34c759' : score >= 50 ? '#ff9500' : '#ff3b30';
 
             // Parse summary (contains categories JSON)
