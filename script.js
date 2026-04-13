@@ -77,6 +77,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Try Supabase first
         if (typeof _supabase !== 'undefined') {
             try {
+                // Auto-publish scheduled articles whose time has come
+                const now = new Date().toISOString();
+                const { data: scheduled } = await _supabase
+                    .from('articles')
+                    .select('id')
+                    .eq('published', false)
+                    .not('scheduled_at', 'is', null)
+                    .lte('scheduled_at', now);
+                if (scheduled && scheduled.length > 0) {
+                    for (const art of scheduled) {
+                        await _supabase.from('articles').update({ published: true }).eq('id', art.id);
+                    }
+                }
+
                 const { data, error } = await _supabase
                     .from('articles')
                     .select('*')

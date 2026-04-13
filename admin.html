@@ -494,8 +494,51 @@
                         <textarea class="editor-input" id="edit-body" placeholder="Se genera con IA o escríbelo manualmente..."></textarea>
                     </div>
                 </div>
+
+                <!-- Schedule / Publish Controls -->
+                <div style="padding:20px 24px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:20px">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                        <span style="font-size:1.2rem">📅</span>
+                        <strong style="font-size:0.9rem">Publicación</strong>
+                        <div style="display:flex;border:1px solid var(--border-color);border-radius:10px;overflow:hidden;margin-left:auto">
+                            <button type="button" id="btn-pub-now" onclick="setScheduleMode(false)" style="padding:6px 16px;font-size:0.78rem;border:none;cursor:pointer;font-family:Inter,sans-serif;background:var(--accent-blue);color:white;transition:all 0.2s">Ahora</button>
+                            <button type="button" id="btn-pub-schedule" onclick="setScheduleMode(true)" style="padding:6px 16px;font-size:0.78rem;border:none;cursor:pointer;font-family:Inter,sans-serif;background:transparent;color:var(--text-main);transition:all 0.2s">Programar</button>
+                        </div>
+                    </div>
+                    <div id="schedule-picker" style="display:none;margin-top:12px">
+                        <input type="datetime-local" class="editor-input" id="edit-scheduled-at" style="max-width:300px">
+                        <p style="font-size:0.7rem;color:var(--text-grey);margin-top:6px">💡 El artículo se publicará automáticamente en la fecha seleccionada</p>
+                    </div>
+                </div>
+
                 <button class="login-btn" style="max-width:300px" id="btn-publish" onclick="publishArticle()">Publicar Artículo</button>
                 <p id="publish-status" style="margin-top:16px;font-size:0.9rem;display:none"></p>
+
+                <!-- Autopilot Section -->
+                <div style="margin-top:40px;padding:28px;border:2px solid #34c759;border-radius:20px;background:linear-gradient(135deg,rgba(52,199,89,0.04),rgba(0,122,255,0.04))">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span style="font-size:1.5rem">🤖</span>
+                            <div>
+                                <h2 style="margin:0;font-size:1.1rem">Autopilot de Contenido</h2>
+                                <p style="color:var(--text-grey);font-size:0.75rem;margin:2px 0 0">Genera 4 artículos/mes automáticamente (miércoles)</p>
+                            </div>
+                        </div>
+                        <div id="autopilot-status" style="padding:4px 14px;border-radius:100px;font-size:0.75rem;font-weight:700;background:rgba(255,59,48,0.08);color:#ff3b30">Inactivo</div>
+                    </div>
+                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Al activar, la IA generará 4 artículos con imágenes programados para cada miércoles del próximo mes. Se publican solos cuando llegue la fecha.</p>
+                    <div id="autopilot-progress" style="display:none;margin-bottom:16px">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                            <div style="flex:1;height:6px;border-radius:3px;background:var(--border-color);overflow:hidden">
+                                <div id="autopilot-bar" style="height:100%;width:0%;border-radius:3px;background:#34c759;transition:width 0.5s ease"></div>
+                            </div>
+                            <span id="autopilot-count" style="font-size:0.75rem;font-weight:600;color:var(--text-grey)">0/4</span>
+                        </div>
+                        <p id="autopilot-step" style="font-size:0.8rem;color:var(--accent-blue)"></p>
+                    </div>
+                    <div id="autopilot-queue" style="margin-bottom:16px"></div>
+                    <button type="button" class="login-btn" onclick="toggleAutopilot()" id="btn-autopilot" style="max-width:280px;margin:0;padding:14px 28px;background:#34c759">🚀 Activar Autopilot</button>
+                </div>
             </div>
 
             <!-- Analytics Section -->
@@ -795,7 +838,15 @@
 
                 list.innerHTML = data.map(a => {
                     const date = new Date(a.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'short',year:'numeric'});
-                    const status = a.published ? '<span style="color:#34c759">●</span> Publicado' : '<span style="color:#ff9500">●</span> Borrador';
+                    let status;
+                    if (a.published) {
+                        status = '<span style="color:#34c759">●</span> Publicado';
+                    } else if (a.scheduled_at) {
+                        const sd = new Date(a.scheduled_at).toLocaleDateString('es-ES', {day:'numeric',month:'short'});
+                        status = '<span style="color:#5856d6">●</span> Programado ' + sd;
+                    } else {
+                        status = '<span style="color:#ff9500">●</span> Borrador';
+                    }
                     return `
                         <div class="article-row">
                             <div class="article-row-info">
@@ -1151,23 +1202,39 @@
 
             statusEl.style.display = 'block';
             statusEl.style.color = 'var(--accent-blue)';
-            statusEl.textContent = 'Publicando...';
+
+            const scheduledAt = document.getElementById('edit-scheduled-at')?.value;
+            const isScheduled = document.getElementById('schedule-picker')?.style.display !== 'none' && scheduledAt;
+            const scheduledDate = isScheduled ? new Date(scheduledAt) : null;
+
+            if (isScheduled && scheduledDate <= new Date()) {
+                statusEl.style.color = '#ff3b30';
+                statusEl.textContent = 'La fecha programada debe ser en el futuro.';
+                return;
+            }
+
+            statusEl.textContent = isScheduled ? 'Programando...' : 'Publicando...';
 
             try {
-                const { error } = await _supabase.from('articles').insert([{
+                const articleData = {
                     title, slug, tag,
                     excerpt: excerpt || title,
                     body, 
                     read_time: readTime || '5 min lectura',
                     image: imageUrl,
-                    published: true,
+                    published: !isScheduled,
                     keywords: getArticleKeywords()
-                }]);
+                };
+                if (isScheduled) articleData.scheduled_at = scheduledDate.toISOString();
+
+                const { error } = await _supabase.from('articles').insert([articleData]);
 
                 if (error) throw error;
 
                 statusEl.style.color = '#34c759';
-                statusEl.textContent = '✅ Artículo publicado correctamente.';
+                statusEl.textContent = isScheduled
+                    ? '⏰ Programado: ' + scheduledDate.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})
+                    : '✅ Artículo publicado correctamente.';
 
                 // Clear form
                 document.getElementById('edit-title').value = '';
@@ -1971,6 +2038,233 @@
                 btn.textContent = '\u2728 Sugerir con IA';
                 btn.disabled = false;
             }
+        }
+    </script>
+    <script>
+        // =============================================
+        // SCHEDULING & AUTOPILOT
+        // =============================================
+
+        // --- Schedule Mode Toggle ---
+        function setScheduleMode(scheduled) {
+            const picker = document.getElementById('schedule-picker');
+            const btnNow = document.getElementById('btn-pub-now');
+            const btnSched = document.getElementById('btn-pub-schedule');
+            const btnPublish = document.getElementById('btn-publish');
+            if (scheduled) {
+                picker.style.display = 'block';
+                btnNow.style.background = 'transparent'; btnNow.style.color = 'var(--text-main)';
+                btnSched.style.background = 'var(--accent-blue)'; btnSched.style.color = 'white';
+                btnPublish.textContent = '\u23f0 Programar Art\u00edculo';
+            } else {
+                picker.style.display = 'none';
+                btnNow.style.background = 'var(--accent-blue)'; btnNow.style.color = 'white';
+                btnSched.style.background = 'transparent'; btnSched.style.color = 'var(--text-main)';
+                btnPublish.textContent = 'Publicar Art\u00edculo';
+            }
+        }
+
+        // --- Auto-publish scheduled articles on page load ---
+        async function autoPublishScheduled() {
+            try {
+                const now = new Date().toISOString();
+                const { data } = await _supabase
+                    .from('articles')
+                    .select('id')
+                    .eq('published', false)
+                    .not('scheduled_at', 'is', null)
+                    .lte('scheduled_at', now);
+                if (data && data.length > 0) {
+                    for (const art of data) {
+                        await _supabase.from('articles').update({ published: true }).eq('id', art.id);
+                    }
+                    console.log(`Auto-published ${data.length} scheduled articles`);
+                    loadStats();
+                }
+            } catch(e) { console.warn('Auto-publish check failed:', e); }
+        }
+        document.addEventListener('DOMContentLoaded', () => { setTimeout(autoPublishScheduled, 3000); });
+
+        // --- Autopilot ---
+        let _autopilotRunning = false;
+
+        function getNextWednesdays(count) {
+            const dates = [];
+            const now = new Date();
+            let d = new Date(now);
+            // Find next Wednesday
+            d.setDate(d.getDate() + ((3 - d.getDay() + 7) % 7 || 7));
+            d.setHours(10, 0, 0, 0);
+            for (let i = 0; i < count; i++) {
+                dates.push(new Date(d));
+                d.setDate(d.getDate() + 7);
+            }
+            return dates;
+        }
+
+        async function toggleAutopilot() {
+            if (_autopilotRunning) {
+                _autopilotRunning = false;
+                document.getElementById('btn-autopilot').textContent = '\ud83d\ude80 Activar Autopilot';
+                document.getElementById('btn-autopilot').style.background = '#34c759';
+                document.getElementById('autopilot-status').textContent = 'Detenido';
+                document.getElementById('autopilot-status').style.background = 'rgba(255,149,0,0.08)';
+                document.getElementById('autopilot-status').style.color = '#ff9500';
+                return;
+            }
+
+            if (!checkGeminiKey()) return;
+
+            _autopilotRunning = true;
+            const btn = document.getElementById('btn-autopilot');
+            btn.textContent = '\u23f9 Detener Autopilot';
+            btn.style.background = '#ff3b30';
+            document.getElementById('autopilot-status').textContent = 'Generando...';
+            document.getElementById('autopilot-status').style.background = 'rgba(52,199,89,0.08)';
+            document.getElementById('autopilot-status').style.color = '#34c759';
+            document.getElementById('autopilot-progress').style.display = 'block';
+
+            const wednesdays = getNextWednesdays(4);
+            const queueEl = document.getElementById('autopilot-queue');
+
+            // Generate topics first
+            document.getElementById('autopilot-step').textContent = '\ud83e\udde0 Generando temas relevantes...';
+            let topics = [];
+            try {
+                const { data: kwData } = await _supabase.from('seo_keywords').select('keyword').eq('type', 'global');
+                const keywords = (kwData || []).map(k => k.keyword).join(', ');
+                const topicPrompt = `Eres un content strategist experto en IA y automatizaci\u00f3n. Genera 4 temas de art\u00edculos de blog \u00fanicos, frescos y con alto potencial SEO para el sitio de Gerard Fanals (especialista en IA para negocios, automatizaci\u00f3n, agentes IA, n8n, LLMs).
+
+Keywords del sitio: ${keywords}
+
+Requisitos:
+- Temas actuales y relevantes para 2026
+- Con potencial de b\u00fasqueda en Google
+- Variados (no repetir enfoque)
+- En espa\u00f1ol
+
+Responde SOLO con un JSON array de 4 strings con los temas. Ejemplo: ["tema1", "tema2", "tema3", "tema4"]. Sin explicaciones.`;
+
+                const topicData = await callGemini(topicPrompt);
+                let text = topicData.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+                text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                topics = JSON.parse(text);
+            } catch(e) {
+                topics = [
+                    'C\u00f3mo los agentes de IA est\u00e1n revolucionando la atenci\u00f3n al cliente en 2026',
+                    'Automatizaci\u00f3n con n8n: gu\u00eda completa para negocios',
+                    '5 formas de usar LLMs para escalar tu empresa',
+                    'Voice AI: el futuro de las ventas automatizadas'
+                ];
+            }
+
+            // Show queue
+            queueEl.innerHTML = wednesdays.map((d, i) => `
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:12px;background:var(--bg-secondary);margin-bottom:8px;border:1px solid var(--border-color)" id="autopilot-item-${i}">
+                    <span style="font-size:1rem" id="autopilot-icon-${i}">\u23f3</span>
+                    <div style="flex:1">
+                        <div style="font-size:0.8rem;font-weight:600">${topics[i] || 'Art\u00edculo ' + (i+1)}</div>
+                        <div style="font-size:0.7rem;color:var(--text-grey)">\ud83d\udcc5 ${d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</div>
+                    </div>
+                    <span style="font-size:0.7rem;color:var(--text-grey)" id="autopilot-state-${i}">Pendiente</span>
+                </div>
+            `).join('');
+
+            // Generate each article
+            for (let i = 0; i < 4; i++) {
+                if (!_autopilotRunning) break;
+
+                document.getElementById('autopilot-step').textContent = `\u270d\ufe0f Generando art\u00edculo ${i+1}/4: ${topics[i]}...`;
+                document.getElementById('autopilot-bar').style.width = ((i) / 4 * 100) + '%';
+                document.getElementById('autopilot-count').textContent = `${i}/4`;
+                document.getElementById('autopilot-icon-' + i).textContent = '\u2699\ufe0f';
+                document.getElementById('autopilot-state-' + i).textContent = 'Generando...';
+                document.getElementById('autopilot-state-' + i).style.color = 'var(--accent-blue)';
+
+                try {
+                    // Generate article content
+                    const artPrompt = `Crea un art\u00edculo de blog profesional sobre: "${topics[i]}". Autor: Gerard Fanals, experto en IA y automatizaci\u00f3n.
+
+Responde en JSON con esta estructura exacta:
+{
+  "title": "t\u00edtulo SEO optimizado",
+  "tag": "categor\u00eda (AI, Automatizaci\u00f3n, Negocios, etc.)",
+  "excerpt": "descripci\u00f3n SEO de 150 chars",
+  "body": "contenido HTML completo con h2, p, ul. M\u00ednimo 800 palabras.",
+  "read_time": "X min lectura",
+  "keywords": ["kw1", "kw2", "kw3", "kw4", "kw5"]
+}
+
+Solo JSON, sin explicaciones ni markdown.`;
+
+                    const artData = await callGemini(artPrompt);
+                    let artText = artData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+                    artText = artText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                    const article = JSON.parse(artText);
+                    const slug = article.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+                    // Generate image
+                    let imgUrl = 'img/blog-1.png';
+                    try {
+                        const imgData = await callGemini(
+                            'Generate a premium blog header image: Pure deep BLACK background. Neon glowing elements in BLUE, CYAN, TEAL or PURPLE. Abstract tech/futuristic concept. NO people, NO text. Topic: ' + topics[i],
+                            'gemini-2.5-flash-image'
+                        );
+                        let imageBase64 = null, mimeType = 'image/png';
+                        if (imgData.candidates?.[0]?.content?.parts) {
+                            for (const part of imgData.candidates[0].content.parts) {
+                                if (part.inlineData) { imageBase64 = part.inlineData.data; mimeType = part.inlineData.mimeType; break; }
+                            }
+                        }
+                        if (imageBase64) {
+                            const ext = mimeType.includes('png') ? 'png' : 'jpg';
+                            const fileName = `autopilot-${slug.substring(0,30)}.${ext}`;
+                            const byteArray = Uint8Array.from(atob(imageBase64), c => c.charCodeAt(0));
+                            const file = new File([byteArray], fileName, { type: mimeType });
+                            const { data: uploadData } = await _supabase.storage.from('media').upload('blog/' + fileName, file, { upsert: true });
+                            if (uploadData) {
+                                const { data: urlData } = _supabase.storage.from('media').getPublicUrl('blog/' + fileName);
+                                imgUrl = urlData.publicUrl;
+                            }
+                        }
+                    } catch(imgErr) { console.warn('Image gen failed for autopilot:', imgErr); }
+
+                    // Insert scheduled article
+                    await _supabase.from('articles').insert([{
+                        title: article.title,
+                        slug,
+                        tag: article.tag || 'AI',
+                        excerpt: article.excerpt || article.title,
+                        body: article.body,
+                        read_time: article.read_time || '5 min lectura',
+                        image: imgUrl,
+                        keywords: article.keywords || [],
+                        published: false,
+                        scheduled_at: wednesdays[i].toISOString()
+                    }]);
+
+                    document.getElementById('autopilot-icon-' + i).textContent = '\u2705';
+                    document.getElementById('autopilot-state-' + i).textContent = 'Programado';
+                    document.getElementById('autopilot-state-' + i).style.color = '#34c759';
+                } catch(e) {
+                    console.warn('Autopilot article ' + i + ' failed:', e);
+                    document.getElementById('autopilot-icon-' + i).textContent = '\u274c';
+                    document.getElementById('autopilot-state-' + i).textContent = 'Error';
+                    document.getElementById('autopilot-state-' + i).style.color = '#ff3b30';
+                }
+            }
+
+            // Done
+            document.getElementById('autopilot-bar').style.width = '100%';
+            document.getElementById('autopilot-count').textContent = '4/4';
+            document.getElementById('autopilot-step').textContent = '\ud83c\udf89 \u00a1Autopilot completado! 4 art\u00edculos programados.';
+            _autopilotRunning = false;
+            btn.textContent = '\ud83d\ude80 Activar Autopilot';
+            btn.style.background = '#34c759';
+            document.getElementById('autopilot-status').textContent = 'Completado';
+            document.getElementById('autopilot-status').style.background = 'rgba(52,199,89,0.08)';
+            document.getElementById('autopilot-status').style.color = '#34c759';
+            loadStats();
         }
     </script>
 </body>
