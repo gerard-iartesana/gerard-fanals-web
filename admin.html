@@ -796,6 +796,7 @@
             if (error) alert('Error: ' + error.message);
             loadArticlesList();
             loadStats();
+            scheduleAutoAudit();
         }
 
         // --- Delete Article ---
@@ -805,6 +806,74 @@
             if (error) alert('Error: ' + error.message);
             loadArticlesList();
             loadStats();
+            scheduleAutoAudit();
+        }
+
+        // --- Auto SEO Audit (debounced) ---
+        let _autoAuditTimer = null;
+        const AUTO_AUDIT_DELAY = 120000; // 2 minutes debounce
+
+        function scheduleAutoAudit() {
+            // Clear any pending auto-audit
+            if (_autoAuditTimer) {
+                clearTimeout(_autoAuditTimer);
+            }
+            _autoAuditTimer = setTimeout(async () => {
+                _autoAuditTimer = null;
+                try {
+                    // Check there's no recent audit already pending/running
+                    const fiveMinAgo = new Date(Date.now() - 300000).toISOString();
+                    const { data: recent } = await _supabase
+                        .from('seo_audits')
+                        .select('id')
+                        .eq('status', 'pending')
+                        .gte('created_at', fiveMinAgo)
+                        .limit(1)
+                        .maybeSingle();
+                    if (recent) return; // Already one pending
+
+                    // Insert auto-audit request
+                    await _supabase.from('seo_audits').insert({
+                        status: 'pending',
+                        score: 0,
+                        results: [],
+                        summary: ''
+                    });
+                    showAutoAuditToast();
+                } catch(e) { console.warn('Auto-audit scheduling failed:', e); }
+            }, AUTO_AUDIT_DELAY);
+
+            // Show pending toast immediately
+            showAutoAuditToast('pending');
+        }
+
+        function showAutoAuditToast(state) {
+            let toast = document.getElementById('auto-audit-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'auto-audit-toast';
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:14px 22px;border-radius:14px;font-size:0.85rem;font-family:Inter,sans-serif;z-index:9999;transition:all 0.4s ease;opacity:0;transform:translateY(20px);display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);backdrop-filter:blur(12px);max-width:380px';
+                document.body.appendChild(toast);
+            }
+            if (state === 'pending') {
+                toast.style.background = 'rgba(255,149,0,0.95)';
+                toast.style.color = 'white';
+                toast.innerHTML = '🔍 <span><strong>Auditoría SEO programada</strong><br><span style="font-size:0.75rem;opacity:0.9">Se ejecutará en 2 min tras tus cambios</span></span>';
+            } else {
+                toast.style.background = 'rgba(0,113,227,0.95)';
+                toast.style.color = 'white';
+                toast.innerHTML = '🚀 <span><strong>Auditoría SEO lanzada</strong><br><span style="font-size:0.75rem;opacity:0.9">Revisa los resultados en la sección SEO</span></span>';
+            }
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            });
+            // Auto-hide after 5s
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+            }, state === 'pending' ? 4000 : 6000);
         }
 
         // --- Generate Slug ---
@@ -1088,6 +1157,7 @@
 
                 loadStats();
                 loadCategories();
+                scheduleAutoAudit();
             } catch (e) {
                 statusEl.style.color = '#ff3b30';
                 statusEl.textContent = 'Error: ' + e.message;
