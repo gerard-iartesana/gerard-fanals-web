@@ -1472,7 +1472,15 @@
                 </div>
 
                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px">
-                ${Object.entries(cats).map(([key, cat]) => `
+                ${Object.entries(cats).map(([key, cat]) => {
+                    // Recalculate score: boost proportionally for each fixed warning
+                    const totalWarnings = (cat.warnings || []).length;
+                    const fixedWarnings = (cat.warnings || []).filter(w => isWarningFixed(w)).length;
+                    let adjustedScore = cat.score;
+                    if (totalWarnings > 0 && fixedWarnings > 0) {
+                        adjustedScore = Math.min(100, Math.round(cat.score + (fixedWarnings / totalWarnings) * (100 - cat.score)));
+                    }
+                    return `
                     <div style="padding:20px 24px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-secondary)">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
                             <div style="display:flex;align-items:center;gap:8px">
@@ -1481,9 +1489,9 @@
                             </div>
                             <div style="display:flex;align-items:center;gap:8px">
                                 <div style="width:60px;height:5px;border-radius:3px;background:var(--border-color);overflow:hidden">
-                                    <div style="height:100%;width:${cat.score}%;border-radius:3px;background:${catColor(cat.score)}"></div>
+                                    <div style="height:100%;width:${adjustedScore}%;border-radius:3px;background:${catColor(adjustedScore)}"></div>
                                 </div>
-                                <span style="font-size:1.1rem;font-weight:700;color:${catColor(cat.score)};min-width:28px;text-align:right">${cat.score}</span>
+                                <span style="font-size:1.1rem;font-weight:700;color:${catColor(adjustedScore)};min-width:28px;text-align:right">${adjustedScore}</span>
                             </div>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:4px">
@@ -1494,7 +1502,7 @@
                             ).join('')}
                         </div>
                     </div>
-                `).join('')}
+                `}).join('')}
                 </div>
             `;
 
@@ -1511,10 +1519,10 @@
             issuesEl.innerHTML = `
                 <h3 style="margin:24px 0 14px;font-size:1rem;display:flex;align-items:center;gap:8px">🛠️ Problemas a corregir <span style="font-size:0.75rem;background:var(--bg-secondary);padding:2px 10px;border-radius:8px;color:var(--text-grey)">${results.filter(r => r.status !== 'fixed').length} pendientes / ${results.length} total</span></h3>
             ` + results.map((issue, i) => `
-                <div class="seo-card" style="margin-bottom:14px;border-left:4px solid ${prioColors[issue.priority] || '#ff9500'}">
+                <div class="seo-card" style="margin-bottom:14px;border-left:4px solid ${issue.status === 'fixed' ? '#34c759' : (prioColors[issue.priority] || '#ff9500')}">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
                         <div>
-                            <span style="font-size:0.75rem;font-weight:700;color:${prioColors[issue.priority] || '#ff9500'}">${prioIcons[issue.priority] || '🟡'} ${(issue.priority || 'media').toUpperCase()}</span>
+                            <span style="font-size:0.75rem;font-weight:700;color:${issue.status === 'fixed' ? '#34c759' : (prioColors[issue.priority] || '#ff9500')}">${issue.status === 'fixed' ? '✅' : (prioIcons[issue.priority] || '🟡')} ${issue.status === 'fixed' ? 'CORREGIDO' : (issue.priority || 'media').toUpperCase()}</span>
                             <h4 style="margin:6px 0 4px;font-size:0.95rem">${issue.title || ''}</h4>
                             <p style="color:var(--text-grey);font-size:0.8rem;margin:0">${issue.description || ''}</p>
                             <p style="color:var(--accent-blue);font-size:0.75rem;margin:6px 0 0;font-weight:600">📄 ${issue.file || ''}</p>
