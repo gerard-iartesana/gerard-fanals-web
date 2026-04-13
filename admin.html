@@ -1543,7 +1543,6 @@
                 });
             }
 
-            const scoreColor = score >= 80 ? '#34c759' : score >= 50 ? '#ff9500' : '#ff3b30';
 
             // Parse summary (contains categories JSON)
             let cats = {};
@@ -1558,27 +1557,37 @@
             const catColor = v => v >= 80 ? '#34c759' : v >= 50 ? '#ff9500' : '#ff3b30';
             const catBg = v => v >= 80 ? 'rgba(52,199,89,0.08)' : v >= 50 ? 'rgba(255,149,0,0.08)' : 'rgba(255,59,48,0.08)';
 
+            // Pre-calculate adjusted category scores
+            const catEntries = Object.entries(cats).map(([key, cat]) => {
+                const totalWarnings = (cat.warnings || []).length;
+                const fixedWarnings = (cat.warnings || []).filter(w => isWarningFixed(w)).length;
+                let adjustedScore = cat.score;
+                if (totalWarnings > 0 && fixedWarnings > 0) {
+                    adjustedScore = Math.min(100, Math.round(cat.score + (fixedWarnings / totalWarnings) * (100 - cat.score)));
+                }
+                return { key, cat, adjustedScore };
+            });
+
+            // Recalculate total score as average of adjusted category scores
+            const adjustedTotalScore = catEntries.length > 0
+                ? Math.round(catEntries.reduce((sum, e) => sum + e.adjustedScore, 0) / catEntries.length)
+                : score;
+            const scoreColor = adjustedTotalScore >= 80 ? '#34c759' : adjustedTotalScore >= 50 ? '#ff9500' : '#ff3b30';
+
             // Main score card
             scoresEl.innerHTML = `
                 <div style="text-align:center;padding:32px 24px;border-radius:20px;border:1px solid var(--border-color);background:linear-gradient(135deg,rgba(0,113,227,0.03),rgba(52,199,89,0.03));margin-bottom:24px">
-                    <span style="color:${scoreColor};font-size:4rem;font-weight:800;line-height:1">${score}</span>
+                    <span style="color:${scoreColor};font-size:4rem;font-weight:800;line-height:1">${adjustedTotalScore}</span>
                     <span style="font-size:1.1rem;display:block;margin-top:6px;font-weight:600;color:var(--text-main)">Puntuación SEO</span>
                     <div style="width:200px;height:6px;border-radius:3px;background:var(--border-color);margin:16px auto 0;overflow:hidden">
-                        <div style="height:100%;width:${score}%;border-radius:3px;background:${scoreColor};transition:width 1s ease"></div>
+                        <div style="height:100%;width:${adjustedTotalScore}%;border-radius:3px;background:${scoreColor};transition:width 1s ease"></div>
                     </div>
                     <p style="color:var(--text-grey);font-size:0.8rem;margin-top:14px">${summaryText}</p>
                     <p style="color:var(--text-grey);font-size:0.7rem;margin-top:4px">Última auditoría: ${new Date(audit.completed_at || audit.created_at).toLocaleString('es-ES')}</p>
                 </div>
 
                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px">
-                ${Object.entries(cats).map(([key, cat]) => {
-                    // Recalculate score: boost proportionally for each fixed warning
-                    const totalWarnings = (cat.warnings || []).length;
-                    const fixedWarnings = (cat.warnings || []).filter(w => isWarningFixed(w)).length;
-                    let adjustedScore = cat.score;
-                    if (totalWarnings > 0 && fixedWarnings > 0) {
-                        adjustedScore = Math.min(100, Math.round(cat.score + (fixedWarnings / totalWarnings) * (100 - cat.score)));
-                    }
+                ${catEntries.map(({ key, cat, adjustedScore }) => {
                     return `
                     <div style="padding:20px 24px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-secondary)">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
