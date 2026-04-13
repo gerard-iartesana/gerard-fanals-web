@@ -357,6 +357,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 SEO
             </button>
+            <button class="dash-nav-item" data-section="geo-aeo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 2v10l6.93 4"></path></svg>
+                GEO & AEO
+            </button>
             <div style="flex:1"></div>
             <a href="index.html" class="dash-nav-item" style="opacity:0.6;text-decoration:none">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
@@ -754,6 +758,66 @@
             </div>
                 </div>
             </div>
+
+            <!-- GEO & AEO Section -->
+            <div class="dash-section" id="sec-geo-aeo">
+                <div class="dash-header">
+                    <h1>GEO & AEO</h1>
+                </div>
+
+                <!-- Concepts Cards -->
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px">
+                    <!-- GEO Card -->
+                    <div style="padding:28px;border-radius:20px;border:2px solid #af52de;background:linear-gradient(135deg,rgba(175,82,222,0.04),rgba(88,86,214,0.04))">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                            <span style="font-size:2rem">🤖</span>
+                            <div>
+                                <h2 style="margin:0;font-size:1.2rem">GEO</h2>
+                                <span style="font-size:0.7rem;color:#af52de;font-weight:600">Generative Engine Optimization</span>
+                            </div>
+                        </div>
+                        <p style="color:var(--text-grey);font-size:0.85rem;line-height:1.6;margin-bottom:14px">Optimiza tu contenido para aparecer en <strong style="color:var(--text-main)">respuestas generadas por IA</strong> (ChatGPT, Gemini, Perplexity, Copilot). Los motores de IA citan fuentes que:</p>
+                        <ul style="list-style:none;padding:0;margin:0">
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#af52de">✓</span> Tienen datos específicos y citables</li>
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)""><span style="color:#af52de">✓</span> Usan lenguaje claro y directo</li>
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#af52de">✓</span> Incluyen Schema.org/JSON-LD rico</li>
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#af52de">✓</span> Muestran autoría y expertise (E-E-A-T)</li>
+                        </ul>
+                    </div>
+                    <!-- AEO Card -->
+                    <div style="padding:28px;border-radius:20px;border:2px solid #0071e3;background:linear-gradient(135deg,rgba(0,113,227,0.04),rgba(52,199,89,0.04))">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                            <span style="font-size:2rem">🎯</span>
+                            <div>
+                                <h2 style="margin:0;font-size:1.2rem">AEO</h2>
+                                <span style="font-size:0.7rem;color:#0071e3;font-weight:600">Answer Engine Optimization</span>
+                            </div>
+                        </div>
+                        <p style="color:var(--text-grey);font-size:0.85rem;line-height:1.6;margin-bottom:14px">Optimiza tu contenido para <strong style="color:var(--text-main)">Featured Snippets, People Also Ask y asistentes de voz</strong> (Siri, Alexa, Google Assistant). Los motores de respuesta priorizan:</p>
+                        <ul style="list-style:none;padding:0;margin:0">
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#0071e3">✓</span> Formato pregunta-respuesta claro</li>
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#0071e3">✓</span> Listas y pasos estructurados</li>
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#0071e3">✓</span> FAQPage Schema en JSON-LD</li>
+                            <li style="font-size:0.8rem;padding:4px 0;color:var(--text-grey)"><span style="color:#0071e3">✓</span> Respuestas directas en ≤50 palabras</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Analysis Button -->
+                <div style="padding:24px;border:2px solid var(--accent-blue);border-radius:20px;background:linear-gradient(135deg,rgba(0,122,255,0.04),rgba(175,82,222,0.04));margin-bottom:30px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                        <span style="font-size:1.5rem">✨</span>
+                        <h2 style="margin:0;font-size:1.1rem">Análisis GEO & AEO con IA</h2>
+                        <span style="font-size:0.7rem;color:var(--text-grey);background:var(--bg-secondary);padding:3px 10px;border-radius:8px">Gemini</span>
+                    </div>
+                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Analiza todos tus artículos y evalúa su preparación para motores de IA (GEO) y motores de respuesta (AEO). Genera recomendaciones específicas y FAQ Schema automático.</p>
+                    <button type="button" class="login-btn" onclick="runGeoAeoAnalysis()" style="max-width:300px;margin:0;padding:14px 28px" id="btn-geo-aeo">🚀 Analizar Artículos</button>
+                    <p id="geo-aeo-status" style="font-size:0.85rem;margin-top:12px;display:none"></p>
+                </div>
+
+                <!-- Results -->
+                <div id="geo-aeo-results"></div>
+            </div>
         </main>
     </div>
 
@@ -828,6 +892,7 @@
                 // Auto-load analytics when section opens
                 if (btn.dataset.section === 'analytics') loadAnalytics(1);
                 if (btn.dataset.section === 'seo') { checkGeminiKey(); loadGlobalKeywords(); }
+                if (btn.dataset.section === 'geo-aeo') { checkGeminiKey(); }
                 if (btn.dataset.section === 'new-article') { loadCategories(); checkGeminiKey(); loadArticleKeywordsUI(); loadScheduledArticles(); }
                 if (btn.dataset.section === 'articles') { loadArticleStats(); }
             });
@@ -2442,6 +2507,135 @@ Solo JSON, sin explicaciones ni markdown.`;
             document.getElementById('autopilot-status').style.background = 'rgba(52,199,89,0.08)';
             document.getElementById('autopilot-status').style.color = '#34c759';
             loadStats();
+        }
+    </script>
+    <script>
+        // =============================================
+        // GEO & AEO ANALYSIS
+        // =============================================
+        async function runGeoAeoAnalysis() {
+            if (!checkGeminiKey()) return;
+            
+            const btn = document.getElementById('btn-geo-aeo');
+            const status = document.getElementById('geo-aeo-status');
+            const results = document.getElementById('geo-aeo-results');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Analizando...';
+            status.style.display = 'block';
+            status.style.color = 'var(--accent-blue)';
+            status.textContent = 'Cargando artículos...';
+            
+            try {
+                const { data: articles } = await _supabase
+                    .from('articles')
+                    .select('id, title, slug, tag, excerpt, body, keywords')
+                    .eq('published', true)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (!articles || articles.length === 0) {
+                    results.innerHTML = '<p style="text-align:center;color:var(--text-grey);padding:40px">No hay artículos publicados para analizar</p>';
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Analizar Artículos';
+                    status.style.display = 'none';
+                    return;
+                }
+                
+                let html = '';
+                
+                for (let i = 0; i < articles.length; i++) {
+                    const art = articles[i];
+                    status.textContent = 'Analizando ' + (i+1) + '/' + articles.length + ': ' + art.title.substring(0, 40) + '...';
+                    
+                    const bodyText = art.body ? art.body.replace(/<[^>]*>/g, '').substring(0, 1500) : '';
+                    
+                    const prompt = 'Eres un experto en GEO (Generative Engine Optimization) y AEO (Answer Engine Optimization). Analiza este artículo y responde SOLO con JSON:\n\nTítulo: ' + art.title + '\nExcerpt: ' + (art.excerpt || '') + '\nKeywords: ' + (art.keywords || []).join(', ') + '\nContenido (primeros 1500 chars): ' + bodyText + '\n\nResponde con este JSON exacto:\n{\n  "geo_score": 0-100,\n  "aeo_score": 0-100,\n  "geo_checks": [{"item": "descripción check", "pass": true/false}],\n  "aeo_checks": [{"item": "descripción check", "pass": true/false}],\n  "faqs": [{"q": "pregunta frecuente", "a": "respuesta concisa ≤50 palabras"}],\n  "recommendations": ["mejora 1", "mejora 2", "mejora 3"]\n}\n\nChecks GEO (5): datos citables, lenguaje autoritativo, schema adecuado, E-E-A-T visible, párrafos concisos citables.\nChecks AEO (5): tiene formato Q&A, listas estructuradas, respuestas directas cortas, headings como preguntas, snippet-ready.\nGenera 3-4 FAQs reales y relevantes basadas en el contenido.\nSolo JSON, sin markdown.';
+                    
+                    try {
+                        const data = await callGemini(prompt);
+                        let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+                        text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                        const analysis = JSON.parse(text);
+                        
+                        const geoColor = analysis.geo_score >= 70 ? '#34c759' : analysis.geo_score >= 40 ? '#ff9500' : '#ff3b30';
+                        const aeoColor = analysis.aeo_score >= 70 ? '#34c759' : analysis.aeo_score >= 40 ? '#ff9500' : '#ff3b30';
+                        
+                        const geoChecks = (analysis.geo_checks || []).map(function(c) {
+                            return '<div style="font-size:0.78rem;padding:4px 0;color:var(--text-grey)">' + (c.pass ? '<span style="color:#34c759">✅</span>' : '<span style="color:#ff3b30">❌</span>') + ' ' + c.item + '</div>';
+                        }).join('');
+                        
+                        const aeoChecks = (analysis.aeo_checks || []).map(function(c) {
+                            return '<div style="font-size:0.78rem;padding:4px 0;color:var(--text-grey)">' + (c.pass ? '<span style="color:#34c759">✅</span>' : '<span style="color:#ff3b30">❌</span>') + ' ' + c.item + '</div>';
+                        }).join('');
+                        
+                        const faqs = (analysis.faqs || []).map(function(f) {
+                            return '<div style="padding:10px 14px;border-radius:10px;background:var(--bg-secondary);margin-bottom:6px">' +
+                                '<div style="font-size:0.8rem;font-weight:600;margin-bottom:4px">❓ ' + f.q + '</div>' +
+                                '<div style="font-size:0.75rem;color:var(--text-grey)">' + f.a + '</div></div>';
+                        }).join('');
+                        
+                        const recs = (analysis.recommendations || []).map(function(r) {
+                            return '<div style="font-size:0.78rem;padding:4px 0;color:var(--text-grey)">💡 ' + r + '</div>';
+                        }).join('');
+                        
+                        // Generate FAQ Schema JSON-LD
+                        const faqSchema = {
+                            '@context': 'https://schema.org',
+                            '@type': 'FAQPage',
+                            mainEntity: (analysis.faqs || []).map(function(f) {
+                                return {
+                                    '@type': 'Question',
+                                    name: f.q,
+                                    acceptedAnswer: { '@type': 'Answer', text: f.a }
+                                };
+                            })
+                        };
+                        const schemaStr = JSON.stringify(faqSchema, null, 2);
+                        
+                        html += '<div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);margin-bottom:16px">';
+                        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+                        html += '<div style="flex:1;min-width:0"><div style="font-size:0.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + art.title + '</div>';
+                        html += '<div style="font-size:0.72rem;color:var(--text-grey);margin-top:2px">' + (art.tag || '') + '</div></div>';
+                        html += '<div style="display:flex;gap:12px;flex-shrink:0">';
+                        html += '<div style="text-align:center"><div style="font-size:1.8rem;font-weight:800;color:' + geoColor + ';line-height:1">' + analysis.geo_score + '</div><div style="font-size:0.6rem;font-weight:600;color:#af52de">GEO</div></div>';
+                        html += '<div style="text-align:center"><div style="font-size:1.8rem;font-weight:800;color:' + aeoColor + ';line-height:1">' + analysis.aeo_score + '</div><div style="font-size:0.6rem;font-weight:600;color:#0071e3">AEO</div></div>';
+                        html += '</div></div>';
+                        
+                        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">';
+                        html += '<div><div style="font-size:0.75rem;font-weight:700;color:#af52de;margin-bottom:8px">🤖 GEO Checks</div>' + geoChecks + '</div>';
+                        html += '<div><div style="font-size:0.75rem;font-weight:700;color:#0071e3;margin-bottom:8px">🎯 AEO Checks</div>' + aeoChecks + '</div>';
+                        html += '</div>';
+                        
+                        if (faqs) {
+                            html += '<div style="margin-bottom:16px"><div style="font-size:0.75rem;font-weight:700;margin-bottom:8px">📋 FAQs Generadas (listas para Schema)</div>' + faqs + '</div>';
+                        }
+                        
+                        html += '<details style="margin-bottom:12px"><summary style="font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--accent-blue)">📄 Ver FAQ Schema JSON-LD</summary>';
+                        html += '<pre style="font-size:0.7rem;background:var(--bg-secondary);padding:12px;border-radius:10px;overflow-x:auto;margin-top:8px;white-space:pre-wrap">' + schemaStr.replace(/</g, '&lt;') + '</pre></details>';
+                        
+                        if (recs) {
+                            html += '<div><div style="font-size:0.75rem;font-weight:700;margin-bottom:8px">🎯 Recomendaciones</div>' + recs + '</div>';
+                        }
+                        
+                        html += '</div>';
+                    } catch(artErr) {
+                        html += '<div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);margin-bottom:12px">';
+                        html += '<div style="font-size:0.85rem;font-weight:600">' + art.title + '</div>';
+                        html += '<div style="font-size:0.78rem;color:#ff3b30;margin-top:6px">❌ Error al analizar: ' + artErr.message + '</div></div>';
+                    }
+                }
+                
+                results.innerHTML = html;
+                status.style.color = '#34c759';
+                status.textContent = '✅ Análisis completado — ' + articles.length + ' artículos analizados';
+            } catch(e) {
+                status.style.color = '#ff3b30';
+                status.textContent = '❌ Error: ' + e.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚀 Analizar Artículos';
+            }
         }
     </script>
 </body>
