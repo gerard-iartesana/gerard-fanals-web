@@ -83,6 +83,14 @@
         </div>
     </article>
 
+    <!-- Article FAQs -->
+    <div id="article-faqs" class="section" style="display:none">
+        <div class="container" style="max-width:800px">
+            <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:20px">Preguntas Frecuentes</h2>
+            <div id="article-faq-container" class="faq-list"></div>
+        </div>
+    </div>
+
     <div class="site-footer">
         <div class="container">
             <div class="footer-links">
@@ -163,6 +171,7 @@
 
                     if (!error && data) {
                         renderArticle(data);
+                        loadArticleFaqs(data.id);
                         return;
                     }
                 } catch (e) {
@@ -189,6 +198,59 @@
             }
         } catch(e) {}
     })();
+    <script>
+        async function loadArticleFaqs(articleId) {
+            if (!articleId || typeof _supabase === 'undefined') return;
+            try {
+                const { data } = await _supabase
+                    .from('faqs')
+                    .select('question, answer')
+                    .eq('type', 'article')
+                    .eq('article_id', articleId)
+                    .eq('published', true)
+                    .order('sort_order', { ascending: true });
+
+                if (!data || data.length === 0) return;
+
+                const section = document.getElementById('article-faqs');
+                const container = document.getElementById('article-faq-container');
+                section.style.display = 'block';
+
+                container.innerHTML = data.map(function(f) {
+                    return '<div class="faq-item">'
+                        + '<button class="faq-question" onclick="toggleFaq(this)">'
+                        + '<span>' + f.question + '</span>'
+                        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+                        + '</button>'
+                        + '<div class="faq-answer"><p>' + f.answer + '</p></div>'
+                        + '</div>';
+                }).join('');
+
+                // Inject FAQPage Schema
+                const schema = {
+                    '@context': 'https://schema.org',
+                    '@type': 'FAQPage',
+                    mainEntity: data.map(function(f) {
+                        return {
+                            '@type': 'Question',
+                            name: f.question,
+                            acceptedAnswer: { '@type': 'Answer', text: f.answer }
+                        };
+                    })
+                };
+                const s = document.createElement('script');
+                s.type = 'application/ld+json';
+                s.textContent = JSON.stringify(schema);
+                document.head.appendChild(s);
+            } catch(e) { console.error('Article FAQ error:', e); }
+        }
+
+        function toggleFaq(btn) {
+            const item = btn.parentElement;
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item').forEach(function(el) { el.classList.remove('open'); });
+            if (!isOpen) item.classList.add('open');
+        }
     </script>
 </body>
 </html>

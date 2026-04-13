@@ -941,3 +941,60 @@ footer h2 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; letter-spaci
     .blog-page .section-intro h1 { font-size: 2rem; }
     .article-body h2 { font-size: 1.3rem; }
 }
+
+/* ========== FAQ Accordion ========== */
+.faq-list { display: flex; flex-direction: column; gap: 10px; }
+
+.faq-item {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-card);
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+
+.faq-item:hover { border-color: var(--accent-blue); }
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    text-align: left;
+    gap: 16px;
+}
+
+.faq-question svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    color: var(--text-grey);
+}
+
+.faq-item.open .faq-question svg { transform: rotate(180deg); }
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+    padding: 0 24px;
+}
+
+.faq-item.open .faq-answer {
+    max-height: 300px;
+    padding: 0 24px 20px;
+}
+
+.faq-answer p {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text-grey);
+    margin: 0;
+}

@@ -136,3 +136,64 @@ function closeMobileMenu() {
     if (menu) menu.classList.remove('open');
     if (btn) btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
 }
+
+// --- Load FAQs from Supabase ---
+async function loadFAQs() {
+    if (typeof _supabase === 'undefined') return;
+    const container = document.getElementById('faq-container');
+    if (!container) return;
+
+    try {
+        const { data } = await _supabase
+            .from('faqs')
+            .select('question, answer')
+            .eq('type', 'global')
+            .eq('published', true)
+            .order('sort_order', { ascending: true });
+
+        if (!data || data.length === 0) {
+            // Hide FAQ section if no FAQs
+            const section = document.getElementById('faqs');
+            if (section) section.style.display = 'none';
+            return;
+        }
+
+        container.innerHTML = data.map(function(f, i) {
+            return '<div class="faq-item">'
+                + '<button class="faq-question" onclick="toggleFaq(this)">'
+                + '<span>' + f.question + '</span>'
+                + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+                + '</button>'
+                + '<div class="faq-answer"><p>' + f.answer + '</p></div>'
+                + '</div>';
+        }).join('');
+
+        // Inject FAQPage Schema (JSON-LD)
+        const schema = {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: data.map(function(f) {
+                return {
+                    '@type': 'Question',
+                    name: f.question,
+                    acceptedAnswer: { '@type': 'Answer', text: f.answer }
+                };
+            })
+        };
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify(schema);
+        document.head.appendChild(script);
+    } catch(e) { console.error('FAQ load error:', e); }
+}
+
+function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item').forEach(function(el) { el.classList.remove('open'); });
+    if (!isOpen) item.classList.add('open');
+}
+
+// Load FAQs on page load
+document.addEventListener('DOMContentLoaded', function() { loadFAQs(); });
