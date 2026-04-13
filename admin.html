@@ -1648,7 +1648,7 @@
             // Also update Resumen SEO card if exists
             const seoResumenCard = document.getElementById('resumen-seo-score');
             if (seoResumenCard) {
-                seoResumenCard.innerHTML = `<span style="font-size:2rem;font-weight:700;color:${scoreColor}">${score}</span><span style="font-size:0.75rem;color:var(--text-grey);display:block">/100</span>`;
+                seoResumenCard.innerHTML = `<span style="font-size:2rem;font-weight:700;color:${scoreColor}">${adjustedTotalScore}</span><span style="font-size:0.75rem;color:var(--text-grey);display:block">/100</span>`;
             }
         }
 
