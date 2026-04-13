@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <h3>${a.title}</h3>
                         <p>${a.excerpt}</p>
                         <div class="blog-card-meta">
+                            <div class="blog-author">
+                                <img src="img/profile.png" alt="Gerard Fanals" class="blog-author-avatar">
+                                <span>Gerard Fanals</span>
+                            </div>
                             <span class="blog-date">${a.date || new Date(a.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'})}</span>
                             <span class="blog-read">${a.read_time || a.read}</span>
                         </div>

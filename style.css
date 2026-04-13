@@ -793,12 +793,71 @@ footer h2 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; letter-spaci
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .blog-date, .blog-read {
     font-size: 0.75rem;
     color: var(--text-grey);
     font-weight: 500;
+}
+
+/* Blog Card Author */
+.blog-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.blog-author-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-color);
+}
+
+.blog-author span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* Article Page Author Bar */
+.article-author-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.article-author-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-blue);
+}
+
+.article-author-name {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.article-author-role {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-grey);
 }
 
 /* --- Article Page --- */
