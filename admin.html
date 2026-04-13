@@ -687,6 +687,66 @@
                 </table>
             </div>
 
+            <!-- GEO & AEO Section -->
+            <div class="dash-section" id="sec-geo-aeo">
+                <div class="dash-header">
+                    <h1>GEO &amp; AEO</h1>
+                </div>
+
+                <!-- Concepts Cards -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px">
+                    <!-- GEO Card -->
+                    <div style="padding:24px;border-radius:20px;border:2px solid #af52de;background:var(--bg-card)">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                            <div style="width:44px;height:44px;border-radius:12px;background:rgba(175,82,222,0.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🤖</div>
+                            <div>
+                                <h2 style="margin:0;font-size:1.1rem">GEO</h2>
+                                <span style="font-size:0.68rem;color:#af52de;font-weight:600">Generative Engine Optimization</span>
+                            </div>
+                        </div>
+                        <p style="color:var(--text-grey);font-size:0.8rem;line-height:1.6;margin-bottom:12px">Optimiza tu contenido para aparecer en <strong style="color:var(--text-main)">respuestas de IA</strong> (ChatGPT, Gemini, Perplexity).</p>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Datos específicos y citables</div>
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Lenguaje claro y directo</div>
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Schema.org/JSON-LD rico</div>
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Autoría y E-E-A-T visible</div>
+                        </div>
+                    </div>
+                    <!-- AEO Card -->
+                    <div style="padding:24px;border-radius:20px;border:2px solid #0071e3;background:var(--bg-card)">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                            <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,113,227,0.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🎯</div>
+                            <div>
+                                <h2 style="margin:0;font-size:1.1rem">AEO</h2>
+                                <span style="font-size:0.68rem;color:#0071e3;font-weight:600">Answer Engine Optimization</span>
+                            </div>
+                        </div>
+                        <p style="color:var(--text-grey);font-size:0.8rem;line-height:1.6;margin-bottom:12px">Optimiza para <strong style="color:var(--text-main)">Featured Snippets y asistentes de voz</strong> (Siri, Alexa, Google).</p>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> Formato pregunta-respuesta</div>
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> Listas y pasos estructurados</div>
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> FAQPage Schema JSON-LD</div>
+                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> Respuestas directas ≤50 palabras</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Button -->
+                <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);margin-bottom:30px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                        <span style="font-size:1.5rem">✨</span>
+                        <h2 style="margin:0;font-size:1.1rem">Análisis GEO &amp; AEO con IA</h2>
+                        <span style="font-size:0.7rem;color:var(--text-grey);background:var(--bg-secondary);padding:3px 10px;border-radius:8px">Gemini</span>
+                    </div>
+                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Analiza tus artículos y evalúa su preparación para motores de IA (GEO) y motores de respuesta (AEO). Genera recomendaciones y FAQ Schema automático.</p>
+                    <button type="button" class="login-btn" onclick="runGeoAeoAnalysis()" style="max-width:300px;margin:0;padding:14px 28px" id="btn-geo-aeo">🚀 Analizar Artículos</button>
+                    <p id="geo-aeo-status" style="font-size:0.85rem;margin-top:12px;display:none"></p>
+                </div>
+
+                <!-- Results -->
+                <div id="geo-aeo-results"></div>
+            </div>
+
             <!-- SEO Section -->
             <div class="dash-section" id="sec-seo">
                 <div class="dash-header">
@@ -757,65 +817,7 @@
                 </div>
             </div>
 
-            <!-- GEO & AEO Section -->
-            <div class="dash-section" id="sec-geo-aeo">
-                <div class="dash-header">
-                    <h1>GEO &amp; AEO</h1>
-                </div>
 
-                <!-- Concepts Cards -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px">
-                    <!-- GEO Card -->
-                    <div style="padding:24px;border-radius:20px;border:2px solid #af52de;background:var(--bg-card)">
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-                            <div style="width:44px;height:44px;border-radius:12px;background:rgba(175,82,222,0.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🤖</div>
-                            <div>
-                                <h2 style="margin:0;font-size:1.1rem">GEO</h2>
-                                <span style="font-size:0.68rem;color:#af52de;font-weight:600">Generative Engine Optimization</span>
-                            </div>
-                        </div>
-                        <p style="color:var(--text-grey);font-size:0.8rem;line-height:1.6;margin-bottom:12px">Optimiza tu contenido para aparecer en <strong style="color:var(--text-main)">respuestas de IA</strong> (ChatGPT, Gemini, Perplexity).</p>
-                        <div style="display:flex;flex-direction:column;gap:6px">
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Datos específicos y citables</div>
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Lenguaje claro y directo</div>
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Schema.org/JSON-LD rico</div>
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#af52de;font-weight:700">✓</span> Autoría y E-E-A-T visible</div>
-                        </div>
-                    </div>
-                    <!-- AEO Card -->
-                    <div style="padding:24px;border-radius:20px;border:2px solid #0071e3;background:var(--bg-card)">
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-                            <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,113,227,0.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🎯</div>
-                            <div>
-                                <h2 style="margin:0;font-size:1.1rem">AEO</h2>
-                                <span style="font-size:0.68rem;color:#0071e3;font-weight:600">Answer Engine Optimization</span>
-                            </div>
-                        </div>
-                        <p style="color:var(--text-grey);font-size:0.8rem;line-height:1.6;margin-bottom:12px">Optimiza para <strong style="color:var(--text-main)">Featured Snippets y asistentes de voz</strong> (Siri, Alexa, Google).</p>
-                        <div style="display:flex;flex-direction:column;gap:6px">
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> Formato pregunta-respuesta</div>
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> Listas y pasos estructurados</div>
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> FAQPage Schema JSON-LD</div>
-                            <div style="font-size:0.78rem;color:var(--text-grey)"><span style="color:#0071e3;font-weight:700">✓</span> Respuestas directas ≤50 palabras</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Analysis Button -->
-                <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);margin-bottom:30px">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-                        <span style="font-size:1.5rem">✨</span>
-                        <h2 style="margin:0;font-size:1.1rem">Análisis GEO &amp; AEO con IA</h2>
-                        <span style="font-size:0.7rem;color:var(--text-grey);background:var(--bg-secondary);padding:3px 10px;border-radius:8px">Gemini</span>
-                    </div>
-                    <p style="color:var(--text-grey);font-size:0.85rem;margin-bottom:16px">Analiza tus artículos y evalúa su preparación para motores de IA (GEO) y motores de respuesta (AEO). Genera recomendaciones y FAQ Schema automático.</p>
-                    <button type="button" class="login-btn" onclick="runGeoAeoAnalysis()" style="max-width:300px;margin:0;padding:14px 28px" id="btn-geo-aeo">🚀 Analizar Artículos</button>
-                    <p id="geo-aeo-status" style="font-size:0.85rem;margin-top:12px;display:none"></p>
-                </div>
-
-                <!-- Results -->
-                <div id="geo-aeo-results"></div>
-            </div>
         </main>
     </div>
 
