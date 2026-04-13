@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerard Fanals - CEO & Automation Architect</title>
     <meta name="description" content="Gerard Fanals: CEO & Automation Architect. Transforma tu negocio con IA, LLMs y automatización inteligente de procesos para escalar y optimizar resultados.">
+    <meta name="keywords" content="" id="meta-keywords">
     <link rel="canonical" href="https://www.gerardfanals.online">
     <!-- Open Graph -->
     <meta property="og:title" content="Gerard Fanals - CEO & Automation Architect">
@@ -408,5 +409,18 @@
     <script src="articles-data.js"></script>
     <script src="script.js"></script>
     <script src="analytics-tracker.js"></script>
+    <script>
+    // Load global SEO keywords from Supabase
+    (async () => {
+        try {
+            const { data } = await _supabase.from('seo_keywords').select('keyword').eq('type', 'global');
+            if (data && data.length > 0) {
+                const unique = [...new Set(data.map(k => k.keyword))];
+                const el = document.getElementById('meta-keywords');
+                if (el) el.setAttribute('content', unique.join(', '));
+            }
+        } catch(e) {}
+    })();
+    </script>
 </body>
 </html>

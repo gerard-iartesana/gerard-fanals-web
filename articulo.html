@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artículo - Gerard Fanals</title>
     <meta name="description" content="">
+    <meta name="keywords" content="" id="meta-keywords">
     <meta property="og:title" content="Gerard Fanals - Blog">
     <meta property="og:description" content="">
     <meta property="og:type" content="article">
@@ -129,6 +130,14 @@
                  mainEntityOfPage: { '@type': 'WebPage', '@id': window.location.href }
             };
             document.getElementById('article-schema').textContent = JSON.stringify(schema);
+            // Set article-specific keywords
+            const articleKw = article.keywords || [];
+            const kwEl = document.getElementById('meta-keywords');
+            if (kwEl && articleKw.length > 0) {
+                const existing = kwEl.getAttribute('content');
+                const merged = existing ? existing + ', ' + articleKw.join(', ') : articleKw.join(', ');
+                kwEl.setAttribute('content', merged);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -162,5 +171,17 @@
         });
     </script>
     <script src="analytics-tracker.js"></script>
+    <script>
+    (async () => {
+        try {
+            const { data } = await _supabase.from('seo_keywords').select('keyword').eq('type', 'global');
+            if (data && data.length > 0) {
+                const unique = [...new Set(data.map(k => k.keyword))];
+                const el = document.getElementById('meta-keywords');
+                if (el) el.setAttribute('content', unique.join(', '));
+            }
+        } catch(e) {}
+    })();
+    </script>
 </body>
 </html>

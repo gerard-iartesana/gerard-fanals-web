@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noticias IA - Gerard Fanals</title>
     <meta name="description" content="Últimas noticias y artículos sobre inteligencia artificial, automatización y tecnología para negocios. Por Gerard Fanals.">
+    <meta name="keywords" content="" id="meta-keywords">
     <link rel="canonical" href="https://www.gerardfanals.online/blog.html">
     <meta property="og:title" content="Noticias IA - Gerard Fanals">
     <meta property="og:description" content="Últimas noticias y artículos sobre inteligencia artificial, automatización y tecnología para negocios.">
@@ -183,5 +184,17 @@
         });
     </script>
     <script src="analytics-tracker.js"></script>
+    <script>
+    (async () => {
+        try {
+            const { data } = await _supabase.from('seo_keywords').select('keyword').eq('type', 'global');
+            if (data && data.length > 0) {
+                const unique = [...new Set(data.map(k => k.keyword))];
+                const el = document.getElementById('meta-keywords');
+                if (el) el.setAttribute('content', unique.join(', '));
+            }
+        } catch(e) {}
+    })();
+    </script>
 </body>
 </html>
