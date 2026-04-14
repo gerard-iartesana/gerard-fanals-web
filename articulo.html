@@ -123,30 +123,57 @@
             body.querySelectorAll('div[style*="border-left"]').forEach(function(box) {
                 const h3 = box.querySelector('h3');
                 if (!h3) return;
-                const isDataBox = h3.textContent.includes('Datos clave') || h3.textContent.includes('📊');
-                const isCaseBox = h3.textContent.includes('Caso práctico') || h3.textContent.includes('💼');
+                const titleText = h3.textContent || '';
+                const isDataBox = titleText.indexOf('Datos clave') !== -1 || titleText.indexOf('📊') !== -1;
+                const isCaseBox = titleText.indexOf('Caso práctico') !== -1 || titleText.indexOf('💼') !== -1;
 
                 if (isDataBox) {
                     // Find the content element (p or existing text)
-                    const contentEl = box.querySelector('p') || box.querySelector('ul');
-                    if (!contentEl || contentEl.tagName === 'UL') return; // already a list
+                    const contentEl = box.querySelector('p');
+                    const existingUl = box.querySelector('ul');
+                    if (existingUl || !contentEl) return; // already a list or no content
 
                     const text = contentEl.textContent.trim();
-                    // Try split by "Dato N:" pattern
-                    let items = text.split(/(?=Dato\s*\d)/i).filter(Boolean);
-                    if (items.length <= 1) {
-                        // Try split by "(Fuente:" which often separates data points
-                        items = text.split(/(?<=\))\s+(?=\S)/).filter(s => s.trim().length > 15);
+                    
+                    // Strategy 1: split by "Dato N:" pattern
+                    var items = [];
+                    var datoParts = text.split(/Dato\s*\d+\s*:\s*/i);
+                    if (datoParts.length > 2) {
+                        // First item is empty (before "Dato 1:"), skip it
+                        items = datoParts.filter(function(s) { return s.trim().length > 10; });
                     }
+                    
+                    // Strategy 2: split by closing parenthesis "(Fuente:...)" 
+                    if (items.length <= 1) {
+                        var fuenteParts = text.split(/\)\s+/);
+                        if (fuenteParts.length > 1) {
+                            items = fuenteParts.map(function(s, i) { 
+                                return i < fuenteParts.length - 1 ? s.trim() + ')' : s.trim(); 
+                            }).filter(function(s) { return s.length > 15; });
+                        }
+                    }
+
+                    // Strategy 3: split by sentence groups (every 2 sentences)
+                    if (items.length <= 1 && text.length > 200) {
+                        var sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+                        if (sentences.length >= 3) {
+                            items = [];
+                            for (var si = 0; si < sentences.length; si += 2) {
+                                var chunk = sentences.slice(si, si + 2).join(' ').trim();
+                                if (chunk) items.push(chunk);
+                            }
+                        }
+                    }
+
                     if (items.length > 1) {
-                        const ul = document.createElement('ul');
+                        var ul = document.createElement('ul');
                         ul.style.cssText = 'margin:12px 0 0;padding-left:0;list-style:none';
                         items.forEach(function(item) {
-                            const clean = item.replace(/^Dato\s*\d+\s*:\s*/i, '').trim();
+                            var clean = item.replace(/^Dato\s*\d+\s*:\s*/i, '').trim();
                             if (clean) {
-                                const li = document.createElement('li');
+                                var li = document.createElement('li');
                                 li.style.cssText = 'padding:10px 0;font-size:0.9rem;line-height:1.7;border-bottom:1px solid rgba(0,0,0,0.06)';
-                                li.textContent = '📌 ' + clean + (clean.endsWith('.') ? '' : '.');
+                                li.textContent = '📌 ' + clean + (clean.endsWith('.') || clean.endsWith(')') ? '' : '.');
                                 ul.appendChild(li);
                             }
                         });
@@ -155,21 +182,22 @@
                 }
 
                 if (isCaseBox) {
-                    const contentEl = box.querySelector('p');
+                    var contentEl = box.querySelector('p');
                     if (!contentEl) return;
-                    const text = contentEl.textContent.trim();
+                    var text = contentEl.textContent.trim();
+                    
                     // Check if the case study text is dense (long single paragraph)
-                    if (text.length > 200) {
-                        // Split by labeled fields: "Empresa/Sector:", "Problema:", "Solución:", "Resultados:"
-                        const parts = text.split(/(?=(?:Empresa|Sector|Problema|Solución|Resultados?)\s*(?:\/\w+)?(?:\s*(?:Implementada|Cuantificables?))?\s*:)/i).filter(Boolean);
+                    if (text.length > 150) {
+                        // Split before known field labels
+                        var parts = text.split(/\s+(?=(?:Empresa\/Sector|Empresa|Sector|Problema|Soluci[oó]n\s*Implementada|Soluci[oó]n|Resultados?\s*Cuantificables?|Resultados?|Resultado)\s*:)/i).filter(function(s) { return s.trim().length > 5; });
+                        
                         if (parts.length > 1) {
-                            const container = document.createDocumentFragment();
+                            var container = document.createDocumentFragment();
                             parts.forEach(function(part) {
-                                const p = document.createElement('p');
+                                var p = document.createElement('p');
                                 p.style.cssText = 'font-size:0.9rem;line-height:1.7;margin:0 0 10px';
-                                // Bold the field label
-                                const colonIdx = part.indexOf(':');
-                                if (colonIdx > 0 && colonIdx < 35) {
+                                var colonIdx = part.indexOf(':');
+                                if (colonIdx > 0 && colonIdx < 40) {
                                     p.innerHTML = '<strong>' + part.substring(0, colonIdx + 1) + '</strong>' + part.substring(colonIdx + 1);
                                 } else {
                                     p.textContent = part.trim();
