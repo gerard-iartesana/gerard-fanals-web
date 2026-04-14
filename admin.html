@@ -315,6 +315,49 @@
             .analytics-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
+
+    <style>
+        /* GEO AI Buttons */
+        .geo-ai-btn-sm {
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid #af52de;
+            background: rgba(175,82,222,0.08);
+            color: #af52de;
+            font-size: 0.68rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: Inter, -apple-system, sans-serif;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .geo-ai-btn-sm:hover {
+            background: rgba(175,82,222,0.18);
+            transform: scale(1.05);
+        }
+        .geo-ai-btn-sm:disabled, .geo-ai-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+        /* Pulse animation for generating state */
+        @keyframes geoPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(175,82,222,0.4); }
+            50% { box-shadow: 0 0 16px 4px rgba(175,82,222,0.3); }
+        }
+        .geo-generating {
+            animation: geoPulse 1.2s ease-in-out infinite;
+        }
+        /* Article FAQ generate button animation in GEO section */
+        @keyframes faqBtnShine {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .faq-gen-animate {
+            background: linear-gradient(90deg, #af52de 0%, #5856d6 25%, #ff6ec7 50%, #5856d6 75%, #af52de 100%) !important;
+            background-size: 400% 100% !important;
+            animation: faqBtnShine 2s linear infinite !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -512,45 +555,55 @@
 
                 <!-- GEO / AEO Optimization Fields -->
                 <div style="padding:24px;border-radius:20px;border:2px solid #af52de;background:var(--bg-card);margin-bottom:20px">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
                         <span style="font-size:1.3rem">🎯</span>
                         <h3 style="margin:0;font-size:1rem">Optimización GEO &amp; AEO</h3>
                         <span style="font-size:0.65rem;color:#af52de;background:rgba(175,82,222,0.1);padding:3px 10px;border-radius:8px;font-weight:600">Mejora tu posicionamiento IA</span>
+                        <button type="button" class="login-btn geo-ai-btn" onclick="generateAllGeoFields()" style="margin-left:auto;max-width:200px;margin-top:0;margin-bottom:0;padding:8px 16px;font-size:0.75rem;background:linear-gradient(135deg,#af52de,#5856d6)" id="btn-gen-all-geo">✨ Generar Todo con IA</button>
                     </div>
 
                     <div class="editor-grid">
                         <!-- Stats/Data -->
                         <div class="editor-field editor-full">
-                            <label>📊 Datos y estadísticas citables</label>
-                            <textarea class="editor-input" id="edit-stats" rows="2" placeholder="Ej: El 78% de empresas que adoptan IA ven un ROI positivo en 6 meses (McKinsey, 2026). Escribe datos concretos que las IAs puedan citar." style="font-size:0.85rem"></textarea>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                                <label style="margin-bottom:0">📊 Datos y estadísticas citables</label>
+                                <button type="button" class="geo-ai-btn-sm" onclick="generateGeoField('stats')" id="btn-ai-stats">🤖 IA</button>
+                            </div>
+                            <textarea class="editor-input" id="edit-stats" rows="2" placeholder="Ej: El 78% de empresas que adoptan IA ven un ROI positivo en 6 meses (McKinsey, 2026)." style="font-size:0.85rem"></textarea>
                             <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los motores de IA priorizan contenido con datos específicos y citables. Incluye fuentes.</p>
                         </div>
 
                         <!-- Case Study -->
                         <div class="editor-field editor-full">
-                            <label>💼 Caso de estudio / Ejemplo práctico</label>
-                            <textarea class="editor-input" id="edit-case-study" rows="2" placeholder="Ej: Un restaurante en Barcelona implementó automatización de pedidos con n8n, reduciendo errores un 40% y ahorrando 15h/semana." style="font-size:0.85rem"></textarea>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                                <label style="margin-bottom:0">💼 Caso de estudio / Ejemplo práctico</label>
+                                <button type="button" class="geo-ai-btn-sm" onclick="generateGeoField('case')" id="btn-ai-case">🤖 IA</button>
+                            </div>
+                            <textarea class="editor-input" id="edit-case-study" rows="2" placeholder="Ej: Un restaurante en Barcelona implementó automatización con n8n, reduciendo errores un 40%." style="font-size:0.85rem"></textarea>
                             <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los casos reales aumentan la autoridad E-E-A-T y la citabilidad en IAs generativas.</p>
+                        </div>
+
+                        <!-- Question Headings -->
+                        <div class="editor-field editor-full">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                                <label style="margin-bottom:0">🔍 Headings en formato pregunta (AEO)</label>
+                                <button type="button" class="geo-ai-btn-sm" onclick="generateGeoField('headings')" id="btn-ai-headings">🤖 IA</button>
+                            </div>
+                            <textarea class="editor-input" id="edit-question-headings" rows="2" placeholder="Ej: ¿Qué es la automatización inteligente?|¿Cómo puede la IA transformar mi negocio?" style="font-size:0.85rem"></textarea>
+                            <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los h2 en formato pregunta son captados por motores de respuesta (Siri, Alexa, Google). Sepáralos con |</p>
                         </div>
 
                         <!-- Article FAQs -->
                         <div class="editor-field editor-full">
-                            <label>❓ Preguntas frecuentes del artículo</label>
+                            <label>❓ Preguntas frecuentes del artículo <span style="font-size:0.68rem;color:var(--text-grey)">(mínimo 3)</span></label>
                             <div id="edit-faqs-list" style="margin-bottom:8px"></div>
                             <div style="display:flex;gap:8px;margin-bottom:6px">
                                 <input type="text" class="editor-input" id="edit-faq-q" placeholder="Pregunta..." style="flex:1;font-size:0.85rem">
                                 <input type="text" class="editor-input" id="edit-faq-a" placeholder="Respuesta corta (≤50 palabras)" style="flex:1;font-size:0.85rem">
                                 <button type="button" class="login-btn" onclick="addArticleFaqField()" style="max-width:80px;margin:0;padding:8px;font-size:0.75rem">+ FAQ</button>
                             </div>
-                            <button type="button" class="login-btn" onclick="generateArticleFaqsInForm()" style="max-width:200px;margin:0;padding:8px 16px;font-size:0.75rem;background:linear-gradient(135deg,#af52de,#5856d6)" id="btn-gen-faqs-form">🤖 Generar FAQs con IA</button>
+                            <button type="button" class="login-btn geo-ai-btn" onclick="generateArticleFaqsInForm()" style="max-width:220px;margin:0;padding:8px 16px;font-size:0.75rem;background:linear-gradient(135deg,#af52de,#5856d6)" id="btn-gen-faqs-form">🤖 Generar 3+ FAQs con IA</button>
                             <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Las FAQs generan schema FAQPage y aparecen en "People Also Ask" de Google y respuestas de IAs.</p>
-                        </div>
-
-                        <!-- Question Headings -->
-                        <div class="editor-field editor-full">
-                            <label>🔍 Headings en formato pregunta (AEO)</label>
-                            <textarea class="editor-input" id="edit-question-headings" rows="2" placeholder="Ej: ¿Qué es la automatización inteligente?|¿Cómo puede la IA transformar mi negocio?|¿Cuánto cuesta implementar n8n?" style="font-size:0.85rem"></textarea>
-                            <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los h2 en formato pregunta son captados por motores de respuesta (Siri, Alexa, Google). Sepáralos con |</p>
                         </div>
                     </div>
                 </div>
@@ -2966,7 +3019,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                     return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);margin-bottom:6px">'
                         + '<div style="flex:1;min-width:0"><div style="font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + a.title + '</div>'
                         + '<div style="font-size:0.68rem;color:var(--text-grey);margin-top:2px">' + (a.tag || '') + ' · ' + badge + '</div></div>'
-                        + '<button onclick="generateArticleFaqs(\'' + a.id + '\', \'' + a.title.replace(/'/g, "\\'") + '\')" style="padding:6px 12px;border-radius:8px;border:1px solid #0071e3;background:rgba(0,113,227,0.06);cursor:pointer;font-size:0.68rem;color:#0071e3;font-family:Inter,sans-serif;white-space:nowrap">' + (count > 0 ? '🔄 Regenerar' : '🤖 Generar') + '</button>'
+                        + '<button id="btn-faq-art-' + a.id + '" onclick="generateArticleFaqs(\'' + a.id + '\', \'' + a.title.replace(/'/g, "\\'") + '\')" class="geo-ai-btn-sm" style="padding:6px 14px;border-radius:10px;border:1px solid #af52de;background:linear-gradient(135deg,rgba(175,82,222,0.08),rgba(88,86,214,0.08));cursor:pointer;font-size:0.72rem;color:#af52de;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s">' + (count > 0 ? '🔄 Regenerar' : '🤖 Generar') + '</button>'
                         + '</div>';
                 }).join('');
             } catch(e) { container.innerHTML = '<p style="color:#ff3b30;font-size:0.8rem">Error: ' + e.message + '</p>'; }
@@ -2975,10 +3028,16 @@ Solo JSON, sin explicaciones ni markdown.`;
         // --- Generate Article FAQs ---
         async function generateArticleFaqs(articleId, articleTitle) {
             if (!checkGeminiKey()) return;
+            const btn = document.getElementById('btn-faq-art-' + articleId);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '⏳ Generando...';
+                btn.classList.add('geo-generating', 'faq-gen-animate');
+            }
             try {
                 const { data: art } = await _supabase.from('articles').select('title, body, excerpt, keywords').eq('id', articleId).single();
                 const bodyText = (art.body || '').replace(/<[^>]*>/g, '').substring(0, 2000);
-                const prompt = 'Genera 3-4 FAQs para este artículo de blog. Responde SOLO JSON array.\n\nTítulo: ' + art.title + '\nExcerpt: ' + (art.excerpt || '') + '\nKeywords: ' + (art.keywords || []).join(', ') + '\nContenido: ' + bodyText + '\n\nGenera preguntas relevantes con respuestas concisas ≤50 palabras.\nJSON: [{"q":"pregunta","a":"respuesta"}]\nSolo JSON, sin markdown.';
+                const prompt = 'Genera exactamente 3 FAQs para este artículo de blog. Responde SOLO JSON array.\n\nTítulo: ' + art.title + '\nExcerpt: ' + (art.excerpt || '') + '\nKeywords: ' + (art.keywords || []).join(', ') + '\nContenido: ' + bodyText + '\n\nGenera 3 preguntas relevantes que un usuario haría a Google. Respuestas concisas ≤50 palabras.\nJSON: [{"q":"pregunta","a":"respuesta"},{"q":"pregunta","a":"respuesta"},{"q":"pregunta","a":"respuesta"}]\nSolo JSON, sin markdown.';
 
                 const data = await callGemini(prompt);
                 let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
@@ -3000,6 +3059,13 @@ Solo JSON, sin explicaciones ni markdown.`;
                 alert('✅ ' + faqs.length + ' FAQs generadas para "' + articleTitle + '"');
                 loadArticleFaqsList();
             } catch(e) { alert('Error: ' + e.message); }
+            finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Regenerar';
+                    btn.classList.remove('geo-generating', 'faq-gen-animate');
+                }
+            }
         }
     </script>
     <script>
@@ -3043,9 +3109,10 @@ Solo JSON, sin explicaciones ni markdown.`;
             const btn = document.getElementById('btn-gen-faqs-form');
             btn.disabled = true;
             btn.textContent = '⏳ Generando...';
+            btn.classList.add('geo-generating', 'faq-gen-animate');
             try {
                 const bodyText = body.replace(/<[^>]*>/g, '').substring(0, 1500);
-                const prompt = 'Genera 3-4 FAQs para este artículo. Responde SOLO JSON array.\nTítulo: ' + title + '\nContenido: ' + bodyText + '\nJSON: [{"q":"pregunta clara","a":"respuesta ≤50 palabras"}]\nSolo JSON, sin markdown.';
+                const prompt = 'Genera exactamente 3 FAQs para este artículo. Responde SOLO JSON array.\nTítulo: ' + title + '\nContenido: ' + bodyText + '\nGenera 3 preguntas que un usuario haría a Google sobre este tema. Respuestas concisas ≤50 palabras.\nJSON: [{"q":"pregunta","a":"respuesta"},{"q":"pregunta","a":"respuesta"},{"q":"pregunta","a":"respuesta"}]\nSolo JSON, sin markdown.';
                 const data = await callGemini(prompt);
                 let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
                 text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
@@ -3053,7 +3120,11 @@ Solo JSON, sin explicaciones ni markdown.`;
                 articleFaqs = faqs;
                 renderArticleFaqFields();
             } catch(e) { alert('Error: ' + e.message); }
-            finally { btn.disabled = false; btn.textContent = '🤖 Generar FAQs con IA'; }
+            finally {
+                btn.disabled = false;
+                btn.textContent = '🤖 Generar 3+ FAQs con IA';
+                btn.classList.remove('geo-generating', 'faq-gen-animate');
+            }
         }
     </script>
     <script>
@@ -3097,6 +3168,62 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
 
             return enriched;
+        }
+    </script>
+    <script>
+        // =============================================
+        // GEO FIELD AI GENERATION
+        // =============================================
+
+        async function generateGeoField(field) {
+            if (!checkGeminiKey()) return;
+            const title = document.getElementById('edit-title')?.value || '';
+            const body = document.getElementById('edit-body')?.value || '';
+            const topic = title || body.replace(/<[^>]*>/g, '').substring(0, 200) || 'inteligencia artificial y automatización para negocios';
+
+            const btnId = 'btn-ai-' + field;
+            const btn = document.getElementById(btnId);
+            const origText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '⏳...';
+            btn.classList.add('geo-generating');
+
+            try {
+                let prompt = '';
+                if (field === 'stats') {
+                    prompt = 'Genera 2-3 datos/estadísticas citables y verificables sobre el tema: "' + topic + '". Incluye la fuente (ej: McKinsey 2026, Gartner, Statista). Responde SOLO con el texto plano, sin JSON ni markdown. Máximo 150 palabras.';
+                } else if (field === 'case') {
+                    prompt = 'Genera un caso de estudio corto y realista sobre el tema: "' + topic + '". Incluye empresa/sector, problema, solución implementada y resultados cuantificables. Responde SOLO con texto plano, sin JSON ni markdown. Máximo 120 palabras.';
+                } else if (field === 'headings') {
+                    prompt = 'Genera 3-4 headings H2 en formato PREGUNTA para un artículo sobre: "' + topic + '". Las preguntas deben ser las que un usuario haría a Google o a un asistente IA. Responde SOLO con las preguntas separadas por | (pipe). Sin numeración, sin markdown. Ejemplo: ¿Qué es X?|¿Cómo funciona Y?|¿Cuánto cuesta Z?';
+                }
+
+                const data = await callGemini(prompt);
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                text = text.replace(/```[\s\S]*?```/g, '').trim();
+
+                if (field === 'stats') document.getElementById('edit-stats').value = text;
+                else if (field === 'case') document.getElementById('edit-case-study').value = text;
+                else if (field === 'headings') document.getElementById('edit-question-headings').value = text;
+
+            } catch(e) { alert('Error: ' + e.message); }
+            finally { btn.disabled = false; btn.textContent = origText; btn.classList.remove('geo-generating'); }
+        }
+
+        async function generateAllGeoFields() {
+            if (!checkGeminiKey()) return;
+            const btn = document.getElementById('btn-gen-all-geo');
+            btn.disabled = true;
+            btn.textContent = '⏳ Generando todo...';
+            btn.classList.add('geo-generating');
+
+            try {
+                await generateGeoField('stats');
+                await generateGeoField('case');
+                await generateGeoField('headings');
+                await generateArticleFaqsInForm();
+            } catch(e) { console.error(e); }
+            finally { btn.disabled = false; btn.textContent = '✨ Generar Todo con IA'; btn.classList.remove('geo-generating'); }
         }
     </script>
 </body>
