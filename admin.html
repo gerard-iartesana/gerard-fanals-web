@@ -3909,17 +3909,20 @@ Solo JSON, sin explicaciones ni markdown.`;
         async function deleteMeeting(id) {
             if (!confirm('¿Eliminar esta reunión?')) return;
             try {
-                // Get meeting to check for GCal event ID
-                if (_gcalConnected) {
-                    var { data: mtg } = await _supabase.from('meetings').select('gcal_event_id').eq('id', id).single();
-                    if (mtg && mtg.gcal_event_id) {
-                        await deleteGCalEvent(mtg.gcal_event_id);
-                        showGCalStatus('🗑️ Evento eliminado de Google Calendar', '#ff9500');
-                        setTimeout(function() {
-                            var iframe = document.querySelector('#sec-meetings iframe');
-                            if (iframe) iframe.src = iframe.src;
-                        }, 2000);
+                // Try to sync with Google Calendar (non-blocking)
+                try {
+                    if (_gcalConnected) {
+                        var { data: mtg } = await _supabase.from('meetings').select('gcal_event_id').eq('id', id).single();
+                        if (mtg && mtg.gcal_event_id) {
+                            await deleteGCalEvent(mtg.gcal_event_id);
+                            setTimeout(function() {
+                                var iframe = document.querySelector('#sec-meetings iframe');
+                                if (iframe) iframe.src = iframe.src;
+                            }, 2000);
+                        }
                     }
+                } catch(gcalErr) {
+                    console.log('GCal sync skip:', gcalErr.message);
                 }
 
                 var { error } = await _supabase.from('meetings').delete().eq('id', id);
