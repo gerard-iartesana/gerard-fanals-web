@@ -3783,6 +3783,20 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
 
+        function showMtgNotif(msg, type) {
+            var colors = { error: '#ff3b30', success: '#34c759', info: '#4285F4', warn: '#ff9500' };
+            var color = colors[type] || colors.info;
+            var el = document.getElementById('gcal-status');
+            el.style.display = 'flex';
+            el.style.color = color;
+            el.style.background = color + '10';
+            el.style.border = '1px solid ' + color + '30';
+            el.innerHTML = msg;
+            if (type !== 'error') {
+                setTimeout(function() { el.style.display = 'none'; }, 5000);
+            }
+        }
+
         function renderMeetingCard(m, isPast) {
             var d = new Date(m.meeting_date);
             var dateStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -3842,7 +3856,7 @@ Solo JSON, sin explicaciones ni markdown.`;
             var notes = document.getElementById('mtg-notes').value.trim();
 
             if (!name || !date) {
-                alert('Nombre y fecha son obligatorios');
+                showMtgNotif('⚠️ Nombre y fecha son obligatorios', 'warn');
                 return;
             }
 
@@ -3893,7 +3907,7 @@ Solo JSON, sin explicaciones ni markdown.`;
 
                 loadMeetings();
             } catch (err) {
-                alert('Error guardando reunión: ' + err.message);
+                showMtgNotif('❌ Error guardando: ' + err.message, 'error');
             }
         }
 
@@ -3905,7 +3919,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 if (error) throw error;
                 // Don't reload - the select already shows the new value
             } catch (err) {
-                alert('Error actualizando: ' + err.message);
+                showMtgNotif('❌ Error actualizando: ' + err.message, 'error');
                 loadMeetings(); // Reload to reset state on error
             }
         }
@@ -3959,7 +3973,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 if (error) throw error;
                 loadMeetings();
             } catch (err) {
-                alert('Error eliminando: ' + err.message);
+                showMtgNotif('❌ Error eliminando: ' + err.message, 'error');
             }
         }
     </script>
@@ -4164,7 +4178,7 @@ Solo JSON, sin explicaciones ni markdown.`;
         // Sync a single meeting to Google Calendar
         async function syncMeetingToGCal(id) {
             if (!_gcalConnected || !_gcalToken) {
-                alert('Primero conecta Google Calendar con el botón verde de arriba.');
+                showMtgNotif('🔑 Primero conecta Google Calendar con el botón de arriba', 'warn');
                 return;
             }
 
@@ -4202,7 +4216,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 loadMeetings();
 
             } catch(err) {
-                alert('Error sincronizando: ' + err.message);
+                showMtgNotif('❌ Error sincronizando: ' + err.message, 'error');
                 if (btn) { btn.innerHTML = '📅'; btn.style.pointerEvents = 'auto'; }
             }
         }
