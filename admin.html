@@ -1042,7 +1042,7 @@
                                 <div>
                                     <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Tipo</label>
                                     <select id="mtg-type" class="editor-input" style="padding:10px 14px">
-                                        <option value="discovery">🔍 Discovery</option>
+                                        <option value="discovery">📅 Reunión</option>
                                         <option value="followup">🔄 Follow-up</option>
                                         <option value="closing">🤝 Cierre</option>
                                         <option value="support">🛠️ Soporte</option>
@@ -3801,13 +3801,15 @@ Solo JSON, sin explicaciones ni markdown.`;
             '</select>';
 
             var typeSelect = '<select onchange="updateMeetingField(\'' + m.id + '\',\'meeting_type\',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
-                '<option value="discovery"' + (m.meeting_type === 'discovery' ? ' selected' : '') + '>🔍 Discovery</option>' +
+                '<option value="discovery"' + (m.meeting_type === 'discovery' ? ' selected' : '') + '>📅 Reunión</option>' +
                 '<option value="followup"' + (m.meeting_type === 'followup' ? ' selected' : '') + '>🔄 Follow-up</option>' +
                 '<option value="closing"' + (m.meeting_type === 'closing' ? ' selected' : '') + '>🤝 Cierre</option>' +
                 '<option value="support"' + (m.meeting_type === 'support' ? ' selected' : '') + '>🛠️ Soporte</option>' +
             '</select>';
 
-            var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer;margin-left:auto" title="Eliminar">🗑️</button>';
+            var syncBtn = (!isPast && !m.gcal_event_id) ? '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" id="sync-' + m.id + '" style="padding:3px 8px;border-radius:8px;border:1px solid #4285F4;background:transparent;color:#4285F4;font-size:0.72rem;cursor:pointer;font-weight:600" title="Sincronizar con Google Calendar">📅</button>' : (m.gcal_event_id ? '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>' : '');
+
+            var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer" title="Eliminar">🗑️</button>';
 
             return '<div style="padding:14px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);' + (isPast ? 'opacity:0.7' : '') + '">' +
                 '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
@@ -3817,7 +3819,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                         (contactInfo ? '<div style="margin-top:4px">' + contactInfo + '</div>' : '') +
                     '</div>' +
                     '<div style="display:flex;gap:6px;align-items:center">' +
-                        typeSelect + statusSelect + deleteBtn +
+                        typeSelect + statusSelect + syncBtn + deleteBtn +
                     '</div>' +
                 '</div>' +
                 (m.notes ? '<p style="font-size:0.8rem;color:var(--text-grey);margin:8px 0 0;line-height:1.5">💬 ' + m.notes + '</p>' : '') +
@@ -4150,6 +4152,52 @@ Solo JSON, sin explicaciones ni markdown.`;
                 }
             } catch(e) {
                 console.error('Error loading GCal events:', e);
+            }
+        }
+
+        // Sync a single meeting to Google Calendar
+        async function syncMeetingToGCal(id) {
+            if (!_gcalConnected || !_gcalToken) {
+                alert('Primero conecta Google Calendar con el botón verde de arriba.');
+                return;
+            }
+
+            var btn = document.getElementById('sync-' + id);
+            if (btn) { btn.innerHTML = '⏳'; btn.style.pointerEvents = 'none'; }
+
+            try {
+                // Get meeting data
+                var { data: mtg, error } = await _supabase.from('meetings').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                // Create GCal event
+                var gcalId = await createGCalEvent(
+                    mtg.contact_name,
+                    mtg.meeting_date,
+                    60,
+                    mtg.notes,
+                    mtg.contact_email
+                );
+
+                if (!gcalId) throw new Error('No se pudo crear el evento en Google Calendar');
+
+                // Save gcal_event_id back to Supabase
+                try {
+                    await _supabase.from('meetings').update({ gcal_event_id: gcalId }).eq('id', id);
+                } catch(e) { console.log('Could not save gcal_event_id:', e); }
+
+                // Refresh iframe
+                setTimeout(function() {
+                    var iframe = document.querySelector('#sec-meetings iframe');
+                    if (iframe) iframe.src = iframe.src;
+                }, 1500);
+
+                // Reload cards to show synced state
+                loadMeetings();
+
+            } catch(err) {
+                alert('Error sincronizando: ' + err.message);
+                if (btn) { btn.innerHTML = '📅'; btn.style.pointerEvents = 'auto'; }
             }
         }
 
