@@ -404,6 +404,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 2v10l6.93 4"></path></svg>
                 GEO & AEO
             </button>
+            <button class="dash-nav-item" data-section="meetings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Reuniones
+            </button>
             <div style="flex:1"></div>
             <a href="index.html" class="dash-nav-item" style="opacity:0.6;text-decoration:none">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
@@ -975,6 +979,89 @@
                 </div>
             </div>
 
+            <!-- Meetings Section -->
+            <div class="dash-section" id="sec-meetings">
+                <div class="dash-header">
+                    <h1>Reuniones</h1>
+                    <a href="https://calendar.app.google/QMiJY3UbKChYgEcu6" target="_blank" style="padding:10px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-weight:700;font-size:0.85rem;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:8px">
+                        📅 Abrir Booking Page
+                    </a>
+                </div>
+
+                <!-- Google Calendar Embed -->
+                <div style="border-radius:20px;overflow:hidden;border:1px solid var(--border-color);margin-bottom:30px">
+                    <iframe src="https://calendar.google.com/calendar/embed?src=gerard%40iartesana.es&ctz=Europe%2FMadrid&mode=WEEK&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&bgcolor=%23ffffff" style="border:0;width:100%;height:500px" frameborder="0" scrolling="no"></iframe>
+                </div>
+
+                <!-- Meeting Tracker -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <!-- Add Meeting Form -->
+                    <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                        <h2 style="font-size:1.1rem;margin:0 0 20px;display:flex;align-items:center;gap:8px">
+                            <span style="font-size:1.3rem">➕</span> Registrar Reunión
+                        </h2>
+                        <div style="display:flex;flex-direction:column;gap:14px">
+                            <div>
+                                <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Nombre del contacto</label>
+                                <input type="text" id="mtg-name" class="editor-input" placeholder="Nombre completo">
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                                <div>
+                                    <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Email</label>
+                                    <input type="email" id="mtg-email" class="editor-input" placeholder="email@ejemplo.com">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Teléfono</label>
+                                    <input type="tel" id="mtg-phone" class="editor-input" placeholder="+34 600 000 000">
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                                <div>
+                                    <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Fecha y hora</label>
+                                    <input type="datetime-local" id="mtg-date" class="editor-input">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Tipo</label>
+                                    <select id="mtg-type" class="editor-input" style="padding:10px 14px">
+                                        <option value="discovery">🔍 Discovery</option>
+                                        <option value="followup">🔄 Follow-up</option>
+                                        <option value="closing">🤝 Cierre</option>
+                                        <option value="support">🛠️ Soporte</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Notas</label>
+                                <textarea id="mtg-notes" class="editor-input" rows="2" placeholder="Notas sobre la reunión..." style="resize:vertical"></textarea>
+                            </div>
+                            <button onclick="addMeeting()" class="login-btn" style="margin:0;padding:12px;font-size:0.85rem">
+                                ➕ Añadir Reunión
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Meetings -->
+                    <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                        <h2 style="font-size:1.1rem;margin:0 0 20px;display:flex;align-items:center;gap:8px">
+                            <span style="font-size:1.3rem">📋</span> Próximas Reuniones
+                        </h2>
+                        <div id="meetings-list" style="display:flex;flex-direction:column;gap:10px">
+                            <p style="color:var(--text-grey);font-size:0.85rem;text-align:center;padding:30px 0">Cargando reuniones...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Past Meetings -->
+                <div style="margin-top:24px;padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                    <h2 style="font-size:1.1rem;margin:0 0 20px;display:flex;align-items:center;gap:8px">
+                        <span style="font-size:1.3rem">📜</span> Historial de Reuniones
+                    </h2>
+                    <div id="meetings-history" style="display:flex;flex-direction:column;gap:8px">
+                        <p style="color:var(--text-grey);font-size:0.85rem;text-align:center;padding:20px 0">Sin reuniones pasadas</p>
+                    </div>
+                </div>
+            </div>
+
 
         </main>
     </div>
@@ -1053,6 +1140,7 @@
                 if (btn.dataset.section === 'geo-aeo') { checkGeminiKey(); loadGlobalFaqs(); loadArticleFaqsList(); }
                 if (btn.dataset.section === 'new-article') { loadCategories(); checkGeminiKey(); loadArticleKeywordsUI(); loadScheduledArticles(); }
                 if (btn.dataset.section === 'articles') { loadArticleStats(); }
+                if (btn.dataset.section === 'meetings') { loadMeetings(); }
             });
         });
 
@@ -3594,6 +3682,179 @@ Solo JSON, sin explicaciones ni markdown.`;
                 await generateArticleFaqsInForm();
             } catch(e) { console.error(e); }
             finally { btn.disabled = false; btn.textContent = '✨ Generar Todo con IA'; btn.classList.remove('geo-generating'); }
+        }
+    </script>
+    <script>
+        // =============================================
+        // MEETINGS MANAGEMENT
+        // =============================================
+        
+        let _meetingsTableReady = false;
+
+        async function ensureMeetingsTable() {
+            if (_meetingsTableReady) return true;
+            // Try to query the table - if it fails, table doesn't exist
+            const { error } = await _supabase.from('meetings').select('id').limit(1);
+            if (error && error.code === '42P01') {
+                // Table doesn't exist - show message to create it
+                const list = document.getElementById('meetings-list');
+                if (list) {
+                    list.innerHTML = '<div style="text-align:center;padding:30px"><p style="font-size:0.9rem;color:#ff9500;margin-bottom:12px">⚠️ La tabla <strong>meetings</strong> no existe en Supabase.</p><p style="font-size:0.8rem;color:var(--text-grey)">Créala en Supabase con estas columnas:</p><pre style="font-size:0.7rem;text-align:left;background:rgba(0,0,0,0.04);padding:12px;border-radius:10px;margin-top:8px;overflow-x:auto">CREATE TABLE meetings (\n  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,\n  contact_name TEXT NOT NULL,\n  contact_email TEXT,\n  contact_phone TEXT,\n  meeting_date TIMESTAMPTZ NOT NULL,\n  meeting_type TEXT DEFAULT \'discovery\',\n  status TEXT DEFAULT \'pending\',\n  notes TEXT,\n  created_at TIMESTAMPTZ DEFAULT now()\n);\n\n-- Enable RLS\nALTER TABLE meetings ENABLE ROW LEVEL SECURITY;\n\n-- Allow authenticated users full access\nCREATE POLICY "Allow all for authenticated" ON meetings\n  FOR ALL USING (auth.role() = \'authenticated\');\n\n-- Allow anon to read\nCREATE POLICY "Allow anon read" ON meetings\n  FOR SELECT USING (true);</pre></div>';
+                }
+                return false;
+            }
+            _meetingsTableReady = true;
+            return true;
+        }
+
+        async function loadMeetings() {
+            const ready = await ensureMeetingsTable();
+            if (!ready) return;
+
+            const now = new Date().toISOString();
+            const listEl = document.getElementById('meetings-list');
+            const historyEl = document.getElementById('meetings-history');
+
+            try {
+                // Upcoming meetings
+                const { data: upcoming, error: e1 } = await _supabase
+                    .from('meetings')
+                    .select('*')
+                    .gte('meeting_date', now)
+                    .order('meeting_date', { ascending: true });
+
+                // Past meetings (last 20)
+                const { data: past, error: e2 } = await _supabase
+                    .from('meetings')
+                    .select('*')
+                    .lt('meeting_date', now)
+                    .order('meeting_date', { ascending: false })
+                    .limit(20);
+
+                if (e1 || e2) throw (e1 || e2);
+
+                // Render upcoming
+                if (!upcoming || upcoming.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center;padding:30px 0"><div style="font-size:2.5rem;margin-bottom:8px">📭</div><p style="color:var(--text-grey);font-size:0.85rem">No hay reuniones programadas</p></div>';
+                } else {
+                    listEl.innerHTML = upcoming.map(renderMeetingCard).join('');
+                }
+
+                // Render past
+                if (!past || past.length === 0) {
+                    historyEl.innerHTML = '<p style="color:var(--text-grey);font-size:0.85rem;text-align:center;padding:20px 0">Sin reuniones anteriores</p>';
+                } else {
+                    historyEl.innerHTML = past.map(function(m) { return renderMeetingCard(m, true); }).join('');
+                }
+
+            } catch (err) {
+                listEl.innerHTML = '<p style="color:#ff3b30;font-size:0.85rem">Error: ' + err.message + '</p>';
+            }
+        }
+
+        function renderMeetingCard(m, isPast) {
+            var d = new Date(m.meeting_date);
+            var dateStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+            var timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+            var typeLabels = { discovery: '🔍 Discovery', followup: '🔄 Follow-up', closing: '🤝 Cierre', support: '🛠️ Soporte' };
+            var statusColors = { pending: '#ff9500', confirmed: '#34c759', done: '#007AFF', cancelled: '#ff3b30' };
+            var statusLabels = { pending: 'Pendiente', confirmed: 'Confirmada', done: 'Realizada', cancelled: 'Cancelada' };
+
+            var statusColor = statusColors[m.status] || '#ff9500';
+            var statusLabel = statusLabels[m.status] || m.status;
+            var typeLabel = typeLabels[m.meeting_type] || m.meeting_type;
+
+            var contactInfo = '';
+            if (m.contact_email) contactInfo += '<a href="mailto:' + m.contact_email + '" style="font-size:0.75rem;color:var(--accent-blue);text-decoration:none">' + m.contact_email + '</a> ';
+            if (m.contact_phone) contactInfo += '<a href="tel:' + m.contact_phone + '" style="font-size:0.75rem;color:var(--text-grey);text-decoration:none">' + m.contact_phone + '</a>';
+
+            var actions = '';
+            if (!isPast) {
+                actions = '<div style="display:flex;gap:6px;margin-top:8px">';
+                if (m.status === 'pending') actions += '<button onclick="updateMeetingStatus(\'' + m.id + '\',\'confirmed\')" style="padding:4px 10px;border-radius:8px;border:1px solid #34c759;background:transparent;color:#34c759;font-size:0.7rem;cursor:pointer;font-weight:600">✓ Confirmar</button>';
+                if (m.status !== 'done') actions += '<button onclick="updateMeetingStatus(\'' + m.id + '\',\'done\')" style="padding:4px 10px;border-radius:8px;border:1px solid #007AFF;background:transparent;color:#007AFF;font-size:0.7rem;cursor:pointer;font-weight:600">✓ Realizada</button>';
+                if (m.status !== 'cancelled') actions += '<button onclick="updateMeetingStatus(\'' + m.id + '\',\'cancelled\')" style="padding:4px 10px;border-radius:8px;border:1px solid #ff3b30;background:transparent;color:#ff3b30;font-size:0.7rem;cursor:pointer;font-weight:600">✕ Cancelar</button>';
+                actions += '<button onclick="deleteMeeting(\'' + m.id + '\')" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.7rem;cursor:pointer">🗑️</button>';
+                actions += '</div>';
+            }
+
+            return '<div style="padding:14px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);' + (isPast ? 'opacity:0.7' : '') + '">' +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+                    '<div>' +
+                        '<div style="font-weight:700;font-size:0.95rem">' + (m.contact_name || 'Sin nombre') + '</div>' +
+                        '<div style="font-size:0.8rem;color:var(--text-grey);margin-top:2px">📅 ' + dateStr + ' · ' + timeStr + '</div>' +
+                        (contactInfo ? '<div style="margin-top:4px">' + contactInfo + '</div>' : '') +
+                    '</div>' +
+                    '<div style="display:flex;gap:6px;align-items:center">' +
+                        '<span style="font-size:0.7rem;padding:4px 10px;border-radius:8px;background:rgba(88,86,214,0.1);color:#5856d6;font-weight:600">' + typeLabel + '</span>' +
+                        '<span style="font-size:0.7rem;padding:4px 10px;border-radius:8px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600">' + statusLabel + '</span>' +
+                    '</div>' +
+                '</div>' +
+                (m.notes ? '<p style="font-size:0.8rem;color:var(--text-grey);margin:8px 0 0;line-height:1.5">💬 ' + m.notes + '</p>' : '') +
+                actions +
+            '</div>';
+        }
+
+        async function addMeeting() {
+            var name = document.getElementById('mtg-name').value.trim();
+            var email = document.getElementById('mtg-email').value.trim();
+            var phone = document.getElementById('mtg-phone').value.trim();
+            var date = document.getElementById('mtg-date').value;
+            var type = document.getElementById('mtg-type').value;
+            var notes = document.getElementById('mtg-notes').value.trim();
+
+            if (!name || !date) {
+                alert('Nombre y fecha son obligatorios');
+                return;
+            }
+
+            try {
+                var { error } = await _supabase.from('meetings').insert({
+                    contact_name: name,
+                    contact_email: email || null,
+                    contact_phone: phone || null,
+                    meeting_date: new Date(date).toISOString(),
+                    meeting_type: type,
+                    status: 'pending',
+                    notes: notes || null
+                });
+
+                if (error) throw error;
+
+                // Clear form
+                document.getElementById('mtg-name').value = '';
+                document.getElementById('mtg-email').value = '';
+                document.getElementById('mtg-phone').value = '';
+                document.getElementById('mtg-date').value = '';
+                document.getElementById('mtg-notes').value = '';
+                document.getElementById('mtg-type').value = 'discovery';
+
+                loadMeetings();
+            } catch (err) {
+                alert('Error guardando reunión: ' + err.message);
+            }
+        }
+
+        async function updateMeetingStatus(id, status) {
+            try {
+                var { error } = await _supabase.from('meetings').update({ status: status }).eq('id', id);
+                if (error) throw error;
+                loadMeetings();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function deleteMeeting(id) {
+            if (!confirm('¿Eliminar esta reunión?')) return;
+            try {
+                var { error } = await _supabase.from('meetings').delete().eq('id', id);
+                if (error) throw error;
+                loadMeetings();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         }
     </script>
 </body>
