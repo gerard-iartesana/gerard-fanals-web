@@ -4235,35 +4235,47 @@ Solo JSON, sin explicaciones ni markdown.`;
         // Restore saved Google Calendar session
         var _gcalRestoreAttempted = false;
         function tryRestoreGCalSession() {
+            console.log('[GCal Restore] Starting...', { connected: _gcalConnected, attempted: _gcalRestoreAttempted });
             if (_gcalConnected || _gcalRestoreAttempted) return;
             _gcalRestoreAttempted = true;
             
             var savedToken = localStorage.getItem('gf_gcal_token');
             var savedExpiry = localStorage.getItem('gf_gcal_token_expiry');
             
-            if (!savedToken || !savedExpiry) return;
+            console.log('[GCal Restore] Token:', savedToken ? 'EXISTS (' + savedToken.substring(0,20) + '...)' : 'NULL');
+            console.log('[GCal Restore] Expiry:', savedExpiry, savedExpiry ? '(expires in ' + Math.round((parseInt(savedExpiry) - Date.now())/1000) + 's)' : '');
+            
+            if (!savedToken || !savedExpiry) {
+                console.log('[GCal Restore] No saved session found');
+                return;
+            }
             
             if (Date.now() >= parseInt(savedExpiry)) {
-                // Token expired - clean up
+                console.log('[GCal Restore] Token EXPIRED, cleaning up');
                 localStorage.removeItem('gf_gcal_token');
                 localStorage.removeItem('gf_gcal_token_expiry');
                 return;
             }
             
+            console.log('[GCal Restore] Token valid, validating with API...');
             // Validate token with a quick API call
             fetch('https://www.googleapis.com/calendar/v3/calendars/primary', {
                 headers: { 'Authorization': 'Bearer ' + savedToken }
             }).then(function(res) {
+                console.log('[GCal Restore] API response:', res.status, res.statusText);
                 if (res.ok) {
                     _gcalToken = savedToken;
                     _gcalConnected = true;
                     updateGCalButton(true);
                     showMtgNotif('✅ Google Calendar reconectado automáticamente', 'success');
+                    console.log('[GCal Restore] SUCCESS - reconnected!');
                 } else {
+                    console.log('[GCal Restore] Token invalid, cleaning up');
                     localStorage.removeItem('gf_gcal_token');
                     localStorage.removeItem('gf_gcal_token_expiry');
                 }
-            }).catch(function() {
+            }).catch(function(err) {
+                console.log('[GCal Restore] Fetch error:', err);
                 localStorage.removeItem('gf_gcal_token');
                 localStorage.removeItem('gf_gcal_token_expiry');
             });
