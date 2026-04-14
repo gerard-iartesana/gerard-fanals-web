@@ -3695,7 +3695,7 @@ Solo JSON, sin explicaciones ni markdown.`;
             if (_meetingsTableReady) return true;
             // Try to query the table - if it fails, table doesn't exist
             const { error } = await _supabase.from('meetings').select('id').limit(1);
-            if (error && error.code === '42P01') {
+            if (error && (error.code === '42P01' || (error.message && error.message.includes('meetings')))) {
                 // Table doesn't exist - show message to create it
                 const list = document.getElementById('meetings-list');
                 if (list) {
