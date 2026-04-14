@@ -1404,27 +1404,11 @@
                     try {
                         addLog('🎨 ' + num + ' Generando imagen para: ' + art.title);
 
-                        // Call Gemini image generation
+                        // Use callGemini with the same model that works in article generation
                         var imgPrompt = 'Generate a premium photorealistic blog header image. Style: editorial magazine quality, cinematic lighting, shallow depth of field, warm natural tones. The image should realistically represent the topic and feel like a professional tech publication cover. Include relevant real-world elements (modern workspace, devices, tools, architecture, or conceptual still-life). Ultra high quality, clean composition, no clutter. Absolutely NO text, NO watermarks, NO logos, NO UI overlays. Topic context: ' + art.title;
 
-                        var imgRes = await fetch(
-                            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' + apiKey,
-                            {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    contents: [{ parts: [{ text: imgPrompt }] }],
-                                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-                                })
-                            }
-                        );
+                        var imgData = await callGemini(imgPrompt, 'gemini-2.5-flash-image');
 
-                        if (!imgRes.ok) {
-                            var errBody = await imgRes.json().catch(function() { return {}; });
-                            throw new Error('API ' + imgRes.status + ': ' + (errBody.error?.message || 'Error desconocido'));
-                        }
-
-                        var imgData = await imgRes.json();
                         var imageBase64 = null;
                         var mimeType = 'image/png';
 
@@ -1440,36 +1424,7 @@
                         }
 
                         if (!imageBase64) {
-                            addLog('⚠️ ' + num + ' Gemini no devolvió imagen (solo texto). Reintentando...', true);
-                            // Retry with different model
-                            var retryRes = await fetch(
-                                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=' + apiKey,
-                                {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        contents: [{ parts: [{ text: imgPrompt }] }],
-                                        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-                                    })
-                                }
-                            );
-                            if (retryRes.ok) {
-                                var retryData = await retryRes.json();
-                                if (retryData.candidates && retryData.candidates[0] && retryData.candidates[0].content) {
-                                    var retryParts = retryData.candidates[0].content.parts;
-                                    for (var k = 0; k < retryParts.length; k++) {
-                                        if (retryParts[k].inlineData) {
-                                            imageBase64 = retryParts[k].inlineData.data;
-                                            mimeType = retryParts[k].inlineData.mimeType || 'image/png';
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (!imageBase64) {
-                            addLog('❌ ' + num + ' Sin imagen generada para: ' + shortTitle, true);
+                            addLog('❌ ' + num + ' Gemini no devolvió imagen para: ' + shortTitle, true);
                             failed++;
                             await new Promise(function(r) { setTimeout(r, 1000); });
                             continue;
