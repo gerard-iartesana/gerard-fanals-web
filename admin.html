@@ -1325,97 +1325,181 @@
 
         // --- Regenerate images for ALL existing articles ---
         async function regenerateAllImages() {
-            if (!checkGeminiKey()) return;
-            if (!confirm('¿Regenerar las imágenes de TODOS los artículos publicados?\n\nEsto puede tardar varios minutos. No cierres la pestaña.')) return;
-
             const btn = document.getElementById('btn-regen-images');
             const statusBox = document.getElementById('regen-status');
             const statusText = document.getElementById('regen-status-text');
             const progress = document.getElementById('regen-progress');
             const log = document.getElementById('regen-log');
 
+            // Show UI immediately
             btn.disabled = true;
             btn.style.opacity = '0.5';
-            btn.textContent = '⏳ Procesando...';
+            btn.innerHTML = '⏳ Procesando...';
             statusBox.style.display = 'block';
             log.innerHTML = '';
+            statusText.textContent = '🔄 Iniciando regeneración de imágenes...';
+            statusText.style.color = '#ff9500';
+            progress.style.width = '0%';
+            progress.style.background = 'linear-gradient(90deg,#ff9500,#ff6b00)';
 
             function addLog(msg, isError) {
-                const p = document.createElement('p');
+                var p = document.createElement('p');
                 p.style.cssText = 'margin:4px 0;padding:4px 8px;border-radius:6px;' + (isError ? 'color:#ff3b30;background:rgba(255,59,48,0.06)' : 'color:var(--text-grey)');
                 p.textContent = msg;
                 log.appendChild(p);
                 log.scrollTop = log.scrollHeight;
             }
 
+            function resetBtn() {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.innerHTML = '🔄 Regenerar Todas las Imágenes';
+            }
+
+            // Check API key
+            var apiKey = localStorage.getItem('gf_gemini_key');
+            if (!apiKey) {
+                statusText.textContent = '❌ No hay API Key de Gemini configurada';
+                statusText.style.color = '#ff3b30';
+                addLog('Configura tu API Key en la sección "Nuevo Artículo" primero.', true);
+                resetBtn();
+                return;
+            }
+            addLog('✅ API Key encontrada');
+
             try {
                 // Fetch all articles
-                statusText.textContent = '📋 Cargando artículos...';
-                const { data: articles, error } = await _supabase
+                statusText.textContent = '📋 Cargando artículos de la base de datos...';
+                addLog('Conectando con Supabase...');
+                
+                var result = await _supabase
                     .from('articles')
                     .select('id, title, slug, image')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
+                if (result.error) {
+                    throw new Error('Supabase error: ' + result.error.message);
+                }
+                
+                var articles = result.data;
+                if (!articles || articles.length === 0) {
+                    statusText.textContent = '⚠️ No se encontraron artículos';
+                    addLog('La tabla de artículos está vacía.', true);
+                    resetBtn();
+                    return;
+                }
 
-                const total = articles.length;
-                addLog('Encontrados ' + total + ' artículos para regenerar.');
-                let success = 0;
-                let failed = 0;
+                var total = articles.length;
+                addLog('📚 Encontrados ' + total + ' artículos para regenerar.');
+                var success = 0;
+                var failed = 0;
 
-                for (let i = 0; i < total; i++) {
-                    const art = articles[i];
-                    const num = (i + 1) + '/' + total;
-                    statusText.textContent = '🎨 ' + num + ' — Generando imagen para: ' + art.title.substring(0, 50) + '...';
-                    progress.style.width = ((i / total) * 100) + '%';
+                for (var i = 0; i < total; i++) {
+                    var art = articles[i];
+                    var num = (i + 1) + '/' + total;
+                    var shortTitle = art.title.length > 45 ? art.title.substring(0, 45) + '...' : art.title;
+                    statusText.textContent = '🎨 ' + num + ' — Generando: ' + shortTitle;
+                    progress.style.width = Math.round((i / total) * 100) + '%';
 
                     try {
-                        // Generate new realistic image
-                        const imgData = await callGemini(
-                            'Generate a premium photorealistic blog header image. Style: editorial magazine quality, cinematic lighting, shallow depth of field, warm natural tones. The image should realistically represent the topic and feel like a professional tech publication cover. Include relevant real-world elements (modern workspace, devices, tools, architecture, or conceptual still-life). Ultra high quality, clean composition, no clutter. Absolutely NO text, NO watermarks, NO logos, NO UI overlays. Topic context: ' + art.title,
-                            'gemini-2.5-flash-image'
+                        addLog('🎨 ' + num + ' Generando imagen para: ' + art.title);
+
+                        // Call Gemini image generation
+                        var imgPrompt = 'Generate a premium photorealistic blog header image. Style: editorial magazine quality, cinematic lighting, shallow depth of field, warm natural tones. The image should realistically represent the topic and feel like a professional tech publication cover. Include relevant real-world elements (modern workspace, devices, tools, architecture, or conceptual still-life). Ultra high quality, clean composition, no clutter. Absolutely NO text, NO watermarks, NO logos, NO UI overlays. Topic context: ' + art.title;
+
+                        var imgRes = await fetch(
+                            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' + apiKey,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: imgPrompt }] }],
+                                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                                })
+                            }
                         );
 
-                        let imageBase64 = null, mimeType = 'image/png';
-                        if (imgData.candidates?.[0]?.content?.parts) {
-                            for (const part of imgData.candidates[0].content.parts) {
-                                if (part.inlineData) {
-                                    imageBase64 = part.inlineData.data;
-                                    mimeType = part.inlineData.mimeType || 'image/png';
+                        if (!imgRes.ok) {
+                            var errBody = await imgRes.json().catch(function() { return {}; });
+                            throw new Error('API ' + imgRes.status + ': ' + (errBody.error?.message || 'Error desconocido'));
+                        }
+
+                        var imgData = await imgRes.json();
+                        var imageBase64 = null;
+                        var mimeType = 'image/png';
+
+                        if (imgData.candidates && imgData.candidates[0] && imgData.candidates[0].content && imgData.candidates[0].content.parts) {
+                            var parts = imgData.candidates[0].content.parts;
+                            for (var j = 0; j < parts.length; j++) {
+                                if (parts[j].inlineData) {
+                                    imageBase64 = parts[j].inlineData.data;
+                                    mimeType = parts[j].inlineData.mimeType || 'image/png';
                                     break;
                                 }
                             }
                         }
 
                         if (!imageBase64) {
-                            addLog('⚠️ ' + num + ' Sin imagen generada: ' + art.title, true);
+                            addLog('⚠️ ' + num + ' Gemini no devolvió imagen (solo texto). Reintentando...', true);
+                            // Retry with different model
+                            var retryRes = await fetch(
+                                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=' + apiKey,
+                                {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        contents: [{ parts: [{ text: imgPrompt }] }],
+                                        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                                    })
+                                }
+                            );
+                            if (retryRes.ok) {
+                                var retryData = await retryRes.json();
+                                if (retryData.candidates && retryData.candidates[0] && retryData.candidates[0].content) {
+                                    var retryParts = retryData.candidates[0].content.parts;
+                                    for (var k = 0; k < retryParts.length; k++) {
+                                        if (retryParts[k].inlineData) {
+                                            imageBase64 = retryParts[k].inlineData.data;
+                                            mimeType = retryParts[k].inlineData.mimeType || 'image/png';
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!imageBase64) {
+                            addLog('❌ ' + num + ' Sin imagen generada para: ' + shortTitle, true);
                             failed++;
+                            await new Promise(function(r) { setTimeout(r, 1000); });
                             continue;
                         }
 
                         // Upload to Supabase storage
                         statusText.textContent = '📤 ' + num + ' — Subiendo imagen...';
-                        const newUrl = await uploadBase64Image(imageBase64, mimeType);
+                        addLog('📤 ' + num + ' Subiendo imagen a Supabase...');
+                        var newUrl = await uploadBase64Image(imageBase64, mimeType);
 
-                        // Update article in database
-                        const { error: updateErr } = await _supabase
+                        // Update article record
+                        var updateResult = await _supabase
                             .from('articles')
                             .update({ image: newUrl })
                             .eq('id', art.id);
 
-                        if (updateErr) throw updateErr;
+                        if (updateResult.error) {
+                            throw new Error('DB update error: ' + updateResult.error.message);
+                        }
 
                         addLog('✅ ' + num + ' ' + art.title);
                         success++;
 
-                        // Small delay to avoid rate limiting
-                        await new Promise(r => setTimeout(r, 2000));
+                        // Delay to avoid rate limiting
+                        await new Promise(function(r) { setTimeout(r, 3000); });
 
                     } catch (artErr) {
-                        addLog('❌ ' + num + ' Error en "' + art.title + '": ' + artErr.message, true);
+                        addLog('❌ ' + num + ' Error: ' + artErr.message, true);
                         failed++;
-                        // Continue with next article
-                        await new Promise(r => setTimeout(r, 1000));
+                        await new Promise(function(r) { setTimeout(r, 2000); });
                     }
                 }
 
@@ -1435,9 +1519,7 @@
                 addLog('Error fatal: ' + err.message, true);
             }
 
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.textContent = '🔄 Regenerar Todas las Imágenes';
+            resetBtn();
         }
 
         // --- Upload image from base64 ---
