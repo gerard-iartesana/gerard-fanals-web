@@ -510,6 +510,51 @@
                     </div>
                 </div>
 
+                <!-- GEO / AEO Optimization Fields -->
+                <div style="padding:24px;border-radius:20px;border:2px solid #af52de;background:var(--bg-card);margin-bottom:20px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+                        <span style="font-size:1.3rem">🎯</span>
+                        <h3 style="margin:0;font-size:1rem">Optimización GEO &amp; AEO</h3>
+                        <span style="font-size:0.65rem;color:#af52de;background:rgba(175,82,222,0.1);padding:3px 10px;border-radius:8px;font-weight:600">Mejora tu posicionamiento IA</span>
+                    </div>
+
+                    <div class="editor-grid">
+                        <!-- Stats/Data -->
+                        <div class="editor-field editor-full">
+                            <label>📊 Datos y estadísticas citables</label>
+                            <textarea class="editor-input" id="edit-stats" rows="2" placeholder="Ej: El 78% de empresas que adoptan IA ven un ROI positivo en 6 meses (McKinsey, 2026). Escribe datos concretos que las IAs puedan citar." style="font-size:0.85rem"></textarea>
+                            <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los motores de IA priorizan contenido con datos específicos y citables. Incluye fuentes.</p>
+                        </div>
+
+                        <!-- Case Study -->
+                        <div class="editor-field editor-full">
+                            <label>💼 Caso de estudio / Ejemplo práctico</label>
+                            <textarea class="editor-input" id="edit-case-study" rows="2" placeholder="Ej: Un restaurante en Barcelona implementó automatización de pedidos con n8n, reduciendo errores un 40% y ahorrando 15h/semana." style="font-size:0.85rem"></textarea>
+                            <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los casos reales aumentan la autoridad E-E-A-T y la citabilidad en IAs generativas.</p>
+                        </div>
+
+                        <!-- Article FAQs -->
+                        <div class="editor-field editor-full">
+                            <label>❓ Preguntas frecuentes del artículo</label>
+                            <div id="edit-faqs-list" style="margin-bottom:8px"></div>
+                            <div style="display:flex;gap:8px;margin-bottom:6px">
+                                <input type="text" class="editor-input" id="edit-faq-q" placeholder="Pregunta..." style="flex:1;font-size:0.85rem">
+                                <input type="text" class="editor-input" id="edit-faq-a" placeholder="Respuesta corta (≤50 palabras)" style="flex:1;font-size:0.85rem">
+                                <button type="button" class="login-btn" onclick="addArticleFaqField()" style="max-width:80px;margin:0;padding:8px;font-size:0.75rem">+ FAQ</button>
+                            </div>
+                            <button type="button" class="login-btn" onclick="generateArticleFaqsInForm()" style="max-width:200px;margin:0;padding:8px 16px;font-size:0.75rem;background:linear-gradient(135deg,#af52de,#5856d6)" id="btn-gen-faqs-form">🤖 Generar FAQs con IA</button>
+                            <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Las FAQs generan schema FAQPage y aparecen en "People Also Ask" de Google y respuestas de IAs.</p>
+                        </div>
+
+                        <!-- Question Headings -->
+                        <div class="editor-field editor-full">
+                            <label>🔍 Headings en formato pregunta (AEO)</label>
+                            <textarea class="editor-input" id="edit-question-headings" rows="2" placeholder="Ej: ¿Qué es la automatización inteligente?|¿Cómo puede la IA transformar mi negocio?|¿Cuánto cuesta implementar n8n?" style="font-size:0.85rem"></textarea>
+                            <p style="font-size:0.68rem;color:var(--text-grey);margin-top:4px">💡 Los h2 en formato pregunta son captados por motores de respuesta (Siri, Alexa, Google). Sepáralos con |</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Schedule / Publish Controls -->
                 <div style="padding:20px 24px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:20px">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
@@ -1254,7 +1299,7 @@
 
             try {
                 // Step 1: Generate text content
-                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial. Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo del artículo en HTML. Usa <h2>, <h3>, <p>, <ul>, <li>, <strong>. Mínimo 800 palabras. Tono profesional pero cercano. Incluye datos, ejemplos prácticos y conclusión.",\n  "image_prompt": "Abstract tech concept in English. MUST have: deep black background, glowing neon blue/cyan/teal circuit lines, neural network nodes, holographic elements. Sci-fi futuristic. NO people, NO text, NO realistic objects."\n}';
+                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial, optimizado para GEO (Generative Engine Optimization) y AEO (Answer Engine Optimization). Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nIMPORTANTE - Optimizaciones GEO/AEO obligatorias:\n1. Usa al menos 2 headings (h2) en formato PREGUNTA (ej: ¿Qué es...? ¿Cómo funciona...?)\n2. Incluye datos/estadísticas citables con fuente (ej: Según McKinsey 2026...)\n3. Incluye un caso de estudio o ejemplo práctico real\n4. Usa listas estructuradas (ul/li) para pasos o beneficios\n5. Respuestas directas y concisas en los primeros párrafos (snippet-ready)\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo en HTML con h2 en formato pregunta, datos citables, caso práctico, listas. Mínimo 800 palabras.",\n  "faqs": [{"q":"pregunta frecuente","a":"respuesta ≤50 palabras"},{"q":"...","a":"..."},{"q":"...","a":"..."}],\n  "image_prompt": "Abstract tech concept in English. MUST have: deep black background, glowing neon blue/cyan/teal circuit lines, neural network nodes, holographic elements. Sci-fi futuristic. NO people, NO text, NO realistic objects."\n}';
 
                 const textData = await callGemini(textPrompt);
                 let textContent = textData.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -1270,6 +1315,12 @@
                 document.getElementById('edit-excerpt').value = article.excerpt || '';
                 document.getElementById('edit-read').value = article.read_time || '5 min lectura';
                 document.getElementById('edit-body').value = article.body || '';
+
+                // Populate GEO/AEO FAQs if generated
+                if (article.faqs && article.faqs.length > 0) {
+                    articleFaqs = article.faqs;
+                    renderArticleFaqFields();
+                }
 
                 status.textContent = '🎨 Paso 2/3 — Generando imagen con IA...';
 
@@ -1353,7 +1404,7 @@
                 const articleData = {
                     title, slug, tag,
                     excerpt: excerpt || title,
-                    body, 
+                    body: enrichBodyWithGeoData(body), 
                     read_time: readTime || '5 min lectura',
                     image: imageUrl,
                     published: !isScheduled,
@@ -1364,6 +1415,22 @@
                 const { error } = await _supabase.from('articles').insert([articleData]);
 
                 if (error) throw error;
+
+                // Save article FAQs if any
+                if (typeof articleFaqs !== 'undefined' && articleFaqs.length > 0) {
+                    // Get the inserted article ID
+                    const { data: newArt } = await _supabase.from('articles').select('id').eq('slug', slug).single();
+                    if (newArt) {
+                        for (let i = 0; i < articleFaqs.length; i++) {
+                            await _supabase.from('faqs').insert([{
+                                question: articleFaqs[i].q, answer: articleFaqs[i].a,
+                                type: 'article', article_id: newArt.id, sort_order: i
+                            }]);
+                        }
+                    }
+                    articleFaqs = [];
+                    renderArticleFaqFields();
+                }
 
                 statusEl.style.color = '#34c759';
                 statusEl.textContent = isScheduled
@@ -1384,6 +1451,11 @@
                 document.getElementById('article-keywords-chips').innerHTML = '';
                 _articleKeywords = [];
                 uploadedImageUrl = '';
+                if (document.getElementById('edit-stats')) document.getElementById('edit-stats').value = '';
+                if (document.getElementById('edit-case-study')) document.getElementById('edit-case-study').value = '';
+                if (document.getElementById('edit-question-headings')) document.getElementById('edit-question-headings').value = '';
+                articleFaqs = [];
+                renderArticleFaqFields();
 
                 loadStats();
                 loadCategories();
@@ -2471,16 +2543,24 @@ Responde SOLO con un JSON array de 4 strings con los temas. Ejemplo: ["tema1", "
 
                 try {
                     // Generate article content
-                    const artPrompt = `Crea un art\u00edculo de blog profesional sobre: "${topics[i]}". Autor: Gerard Fanals, experto en IA y automatizaci\u00f3n.
+                    const artPrompt = `Crea un art\u00edculo de blog profesional optimizado para GEO y AEO sobre: "${topics[i]}". Autor: Gerard Fanals, experto en IA y automatizaci\u00f3n.
+
+REQUISITOS GEO/AEO:
+- Al menos 2 headings h2 en formato PREGUNTA (\u00bfQu\u00e9 es...? \u00bfC\u00f3mo funciona...?)
+- Incluye datos/estad\u00edsticas citables con fuente
+- Incluye un caso de estudio pr\u00e1ctico
+- Usa listas estructuradas (ul/li)
+- Respuestas directas en los primeros p\u00e1rrafos
 
 Responde en JSON con esta estructura exacta:
 {
   "title": "t\u00edtulo SEO optimizado",
   "tag": "categor\u00eda (AI, Automatizaci\u00f3n, Negocios, etc.)",
   "excerpt": "descripci\u00f3n SEO de 150 chars",
-  "body": "contenido HTML completo con h2, p, ul. M\u00ednimo 800 palabras.",
+  "body": "contenido HTML con h2 pregunta, datos, caso pr\u00e1ctico, listas. M\u00ednimo 800 palabras.",
   "read_time": "X min lectura",
-  "keywords": ["kw1", "kw2", "kw3", "kw4", "kw5"]
+  "keywords": ["kw1", "kw2", "kw3", "kw4", "kw5"],
+  "faqs": [{"q":"pregunta","a":"respuesta \u226450 palabras"},{"q":"...","a":"..."},{"q":"...","a":"..."}]
 }
 
 Solo JSON, sin explicaciones ni markdown.`;
@@ -2530,6 +2610,19 @@ Solo JSON, sin explicaciones ni markdown.`;
                         published: false,
                         scheduled_at: wednesdays[i].toISOString()
                     }]);
+
+                    // Save autopilot FAQs
+                    if (article.faqs && article.faqs.length > 0) {
+                        const { data: newArt } = await _supabase.from('articles').select('id').eq('slug', slug).single();
+                        if (newArt) {
+                            for (let fi = 0; fi < article.faqs.length; fi++) {
+                                await _supabase.from('faqs').insert([{
+                                    question: article.faqs[fi].q, answer: article.faqs[fi].a,
+                                    type: 'article', article_id: newArt.id, sort_order: fi
+                                }]);
+                            }
+                        }
+                    }
 
                     document.getElementById('autopilot-icon-' + i).textContent = '\u2705';
                     document.getElementById('autopilot-state-' + i).textContent = 'Programado';
@@ -2907,6 +3000,103 @@ Solo JSON, sin explicaciones ni markdown.`;
                 alert('✅ ' + faqs.length + ' FAQs generadas para "' + articleTitle + '"');
                 loadArticleFaqsList();
             } catch(e) { alert('Error: ' + e.message); }
+        }
+    </script>
+    <script>
+        // =============================================
+        // GEO/AEO FORM FIELDS
+        // =============================================
+        let articleFaqs = [];
+
+        function addArticleFaqField() {
+            const q = document.getElementById('edit-faq-q').value.trim();
+            const a = document.getElementById('edit-faq-a').value.trim();
+            if (!q || !a) return alert('Escribe la pregunta y la respuesta');
+            articleFaqs.push({ q, a });
+            document.getElementById('edit-faq-q').value = '';
+            document.getElementById('edit-faq-a').value = '';
+            renderArticleFaqFields();
+        }
+
+        function removeArticleFaqField(idx) {
+            articleFaqs.splice(idx, 1);
+            renderArticleFaqFields();
+        }
+
+        function renderArticleFaqFields() {
+            const container = document.getElementById('edit-faqs-list');
+            if (articleFaqs.length === 0) { container.innerHTML = ''; return; }
+            container.innerHTML = articleFaqs.map(function(f, i) {
+                return '<div style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:10px;background:var(--bg-secondary);margin-bottom:6px">'
+                    + '<div style="flex:1;min-width:0"><div style="font-size:0.78rem;font-weight:600">' + f.q + '</div>'
+                    + '<div style="font-size:0.72rem;color:var(--text-grey)">' + f.a + '</div></div>'
+                    + '<button onclick="removeArticleFaqField(' + i + ')" style="padding:4px 8px;border-radius:6px;border:1px solid #ff3b30;background:transparent;cursor:pointer;font-size:0.6rem;color:#ff3b30;font-family:Inter,sans-serif">✕</button></div>';
+            }).join('');
+        }
+
+        async function generateArticleFaqsInForm() {
+            if (!checkGeminiKey()) return;
+            const title = document.getElementById('edit-title').value;
+            const body = document.getElementById('edit-body').value;
+            if (!title && !body) return alert('Escribe primero el título o contenido del artículo');
+            
+            const btn = document.getElementById('btn-gen-faqs-form');
+            btn.disabled = true;
+            btn.textContent = '⏳ Generando...';
+            try {
+                const bodyText = body.replace(/<[^>]*>/g, '').substring(0, 1500);
+                const prompt = 'Genera 3-4 FAQs para este artículo. Responde SOLO JSON array.\nTítulo: ' + title + '\nContenido: ' + bodyText + '\nJSON: [{"q":"pregunta clara","a":"respuesta ≤50 palabras"}]\nSolo JSON, sin markdown.';
+                const data = await callGemini(prompt);
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+                text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                const faqs = JSON.parse(text);
+                articleFaqs = faqs;
+                renderArticleFaqFields();
+            } catch(e) { alert('Error: ' + e.message); }
+            finally { btn.disabled = false; btn.textContent = '🤖 Generar FAQs con IA'; }
+        }
+    </script>
+    <script>
+        // --- Enrich article body with GEO/AEO data ---
+        function enrichBodyWithGeoData(body) {
+            const stats = document.getElementById('edit-stats')?.value?.trim();
+            const caseStudy = document.getElementById('edit-case-study')?.value?.trim();
+            const qHeadings = document.getElementById('edit-question-headings')?.value?.trim();
+
+            let enriched = body;
+
+            // Insert question headings as h2 sections
+            if (qHeadings) {
+                const questions = qHeadings.split('|').map(function(q) { return q.trim(); }).filter(Boolean);
+                let qHtml = '';
+                questions.forEach(function(q) {
+                    qHtml += '<h2>' + q + '</h2>\n<p>[Contenido para esta sección]</p>\n';
+                });
+                // Append to body if not already in content
+                questions.forEach(function(q) {
+                    if (!enriched.includes(q)) {
+                        enriched += '\n<h2>' + q + '</h2>';
+                    }
+                });
+            }
+
+            // Add stats section
+            if (stats) {
+                const statsHtml = '<div class="article-stats-highlight" style="padding:20px 24px;border-left:4px solid #0071e3;background:rgba(0,113,227,0.04);border-radius:0 12px 12px 0;margin:24px 0">'
+                    + '<h3 style="font-size:1rem;margin:0 0 8px">\ud83d\udcca Datos clave</h3>'
+                    + '<p style="font-size:0.9rem;line-height:1.6;margin:0">' + stats + '</p></div>';
+                enriched += '\n' + statsHtml;
+            }
+
+            // Add case study
+            if (caseStudy) {
+                const caseHtml = '<div class="article-case-study" style="padding:20px 24px;border-left:4px solid #34c759;background:rgba(52,199,89,0.04);border-radius:0 12px 12px 0;margin:24px 0">'
+                    + '<h3 style="font-size:1rem;margin:0 0 8px">\ud83d\udcbc Caso práctico</h3>'
+                    + '<p style="font-size:0.9rem;line-height:1.6;margin:0">' + caseStudy + '</p></div>';
+                enriched += '\n' + caseHtml;
+            }
+
+            return enriched;
         }
     </script>
 </body>
