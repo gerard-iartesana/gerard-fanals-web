@@ -3741,6 +3741,9 @@ Solo JSON, sin explicaciones ni markdown.`;
         async function loadMeetings() {
             const ready = await ensureMeetingsTable();
             if (!ready) return;
+            
+            // Restore GCal session if saved
+            tryRestoreGCalSession();
 
             const now = new Date().toISOString();
             const listEl = document.getElementById('meetings-list');
@@ -4229,47 +4232,42 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
 
-        // Restore Google Calendar connection on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            var savedId = getGCalClientId();
-            if (savedId) {
-                var btn = document.getElementById('btn-gcal-connect');
-                if (btn) btn.title = 'Client ID configurado.';
-            }
+        // Restore saved Google Calendar session
+        var _gcalRestoreAttempted = false;
+        function tryRestoreGCalSession() {
+            if (_gcalConnected || _gcalRestoreAttempted) return;
+            _gcalRestoreAttempted = true;
             
-            // Try to restore saved token
             var savedToken = localStorage.getItem('gf_gcal_token');
             var savedExpiry = localStorage.getItem('gf_gcal_token_expiry');
             
-            if (savedToken && savedExpiry && Date.now() < parseInt(savedExpiry)) {
-                // Token exists and hasn't expired - validate it
-                fetch('https://www.googleapis.com/calendar/v3/calendars/primary', {
-                    headers: { 'Authorization': 'Bearer ' + savedToken }
-                }).then(function(res) {
-                    if (res.ok) {
-                        _gcalToken = savedToken;
-                        _gcalConnected = true;
-                        updateGCalButton(true);
-                        showGCalStatus('✅ Google Calendar conectado · Sesión restaurada', '#34c759');
-                        setTimeout(function() {
-                            var el = document.getElementById('gcal-status');
-                            if (el) el.style.display = 'none';
-                        }, 3000);
-                    } else {
-                        // Token expired or invalid
-                        localStorage.removeItem('gf_gcal_token');
-                        localStorage.removeItem('gf_gcal_token_expiry');
-                    }
-                }).catch(function() {
-                    localStorage.removeItem('gf_gcal_token');
-                    localStorage.removeItem('gf_gcal_token_expiry');
-                });
-            } else if (savedToken) {
+            if (!savedToken || !savedExpiry) return;
+            
+            if (Date.now() >= parseInt(savedExpiry)) {
                 // Token expired - clean up
                 localStorage.removeItem('gf_gcal_token');
                 localStorage.removeItem('gf_gcal_token_expiry');
+                return;
             }
-        });
+            
+            // Validate token with a quick API call
+            fetch('https://www.googleapis.com/calendar/v3/calendars/primary', {
+                headers: { 'Authorization': 'Bearer ' + savedToken }
+            }).then(function(res) {
+                if (res.ok) {
+                    _gcalToken = savedToken;
+                    _gcalConnected = true;
+                    updateGCalButton(true);
+                    showMtgNotif('✅ Google Calendar reconectado automáticamente', 'success');
+                } else {
+                    localStorage.removeItem('gf_gcal_token');
+                    localStorage.removeItem('gf_gcal_token_expiry');
+                }
+            }).catch(function() {
+                localStorage.removeItem('gf_gcal_token');
+                localStorage.removeItem('gf_gcal_token_expiry');
+            });
+        }
     </script>
 </body>
 </html>
