@@ -3807,7 +3807,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 '<option value="support"' + (m.meeting_type === 'support' ? ' selected' : '') + '>🛠️ Soporte</option>' +
             '</select>';
 
-            var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" style="padding:3px 8px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.7rem;cursor:pointer;margin-left:auto" title="Eliminar">🗑️</button>';
+            var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer;margin-left:auto" title="Eliminar">🗑️</button>';
 
             return '<div style="padding:14px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);' + (isPast ? 'opacity:0.7' : '') + '">' +
                 '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
@@ -3906,10 +3906,32 @@ Solo JSON, sin explicaciones ni markdown.`;
             await updateMeetingField(id, 'status', status);
         }
 
-        async function deleteMeeting(id) {
-            if (!confirm('¿Eliminar esta reunión?')) return;
+        async function deleteMeeting(id, btnEl) {
+            // Find button by ID if not passed
+            var btn = btnEl || document.getElementById('del-' + id);
+            
+            // Two-click pattern: first click shows confirm, second click deletes
+            if (btn && !btn.dataset.confirmed) {
+                btn.dataset.confirmed = 'true';
+                btn.innerHTML = '¿Seguro?';
+                btn.style.color = '#ff3b30';
+                btn.style.borderColor = '#ff3b30';
+                btn.style.fontWeight = '700';
+                // Reset after 3 seconds
+                setTimeout(function() {
+                    if (btn && btn.parentNode) {
+                        delete btn.dataset.confirmed;
+                        btn.innerHTML = '🗑️';
+                        btn.style.color = 'var(--text-grey)';
+                        btn.style.borderColor = 'var(--border-color)';
+                        btn.style.fontWeight = 'normal';
+                    }
+                }, 3000);
+                return;
+            }
+
             try {
-                // Try to sync with Google Calendar (non-blocking)
+                // Try GCal sync (non-blocking)
                 try {
                     if (_gcalConnected) {
                         var { data: mtg } = await _supabase.from('meetings').select('gcal_event_id').eq('id', id).single();
@@ -3929,7 +3951,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 if (error) throw error;
                 loadMeetings();
             } catch (err) {
-                alert('Error: ' + err.message);
+                alert('Error eliminando: ' + err.message);
             }
         }
     </script>
