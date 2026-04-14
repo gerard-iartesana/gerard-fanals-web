@@ -3807,7 +3807,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 '<option value="support"' + (m.meeting_type === 'support' ? ' selected' : '') + '>🛠️ Soporte</option>' +
             '</select>';
 
-            var hasSynced = m.gcal_event_id && m.gcal_event_id.length > 0;
+            var hasSynced = !!(m.gcal_event_id);
             var syncBtn = '';
             if (!isPast && hasSynced) {
                 syncBtn = '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>';
