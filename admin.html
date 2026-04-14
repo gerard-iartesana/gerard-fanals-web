@@ -4029,10 +4029,10 @@ Solo JSON, sin explicaciones ni markdown.`;
                 // Already connected - disconnect
                 _gcalToken = null;
                 _gcalConnected = false;
-                localStorage.removeItem('gf_gcal_token');
-                localStorage.removeItem('gf_gcal_token_expiry');
+                localStorage.removeItem('gf_gcal_authorized');
                 updateGCalButton(false);
                 document.getElementById('gcal-status').style.display = 'none';
+                showMtgNotif('Google Calendar desconectado', 'info');
                 return;
             }
 
@@ -4049,13 +4049,11 @@ Solo JSON, sin explicaciones ni markdown.`;
                         _gcalToken = tokenResponse.access_token;
                         _gcalConnected = true;
                         
-                        // Save token + expiry (tokens last ~3600s = 1 hour)
-                        var expiresIn = tokenResponse.expires_in || 3600;
-                        localStorage.setItem('gf_gcal_token', _gcalToken);
-                        localStorage.setItem('gf_gcal_token_expiry', Date.now() + (expiresIn * 1000));
+                        // Save flag that user has authorized (NOT the token)
+                        localStorage.setItem('gf_gcal_authorized', 'true');
                         
                         updateGCalButton(true);
-                        showGCalStatus('✅ Google Calendar conectado · La conexión se mantendrá activa', '#34c759');
+                        showGCalStatus('✅ Google Calendar conectado', '#34c759');
                         loadGCalEvents();
                     }
                 });
@@ -4232,53 +4230,48 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
 
-        // Restore saved Google Calendar session
+        // Restore saved Google Calendar session (silently request fresh token)
         var _gcalRestoreAttempted = false;
         function tryRestoreGCalSession() {
-            console.log('[GCal Restore] Starting...', { connected: _gcalConnected, attempted: _gcalRestoreAttempted });
             if (_gcalConnected || _gcalRestoreAttempted) return;
             _gcalRestoreAttempted = true;
             
-            var savedToken = localStorage.getItem('gf_gcal_token');
-            var savedExpiry = localStorage.getItem('gf_gcal_token_expiry');
+            var wasAuthorized = localStorage.getItem('gf_gcal_authorized');
+            var clientId = getGCalClientId();
             
-            console.log('[GCal Restore] Token:', savedToken ? 'EXISTS (' + savedToken.substring(0,20) + '...)' : 'NULL');
-            console.log('[GCal Restore] Expiry:', savedExpiry, savedExpiry ? '(expires in ' + Math.round((parseInt(savedExpiry) - Date.now())/1000) + 's)' : '');
+            if (!wasAuthorized || !clientId) return;
             
-            if (!savedToken || !savedExpiry) {
-                console.log('[GCal Restore] No saved session found');
+            // Check if Google Identity Services is loaded
+            if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+                console.log('[GCal] Google library not loaded yet, retrying in 2s...');
+                _gcalRestoreAttempted = false;
+                setTimeout(tryRestoreGCalSession, 2000);
                 return;
             }
             
-            if (Date.now() >= parseInt(savedExpiry)) {
-                console.log('[GCal Restore] Token EXPIRED, cleaning up');
-                localStorage.removeItem('gf_gcal_token');
-                localStorage.removeItem('gf_gcal_token_expiry');
-                return;
+            console.log('[GCal] Requesting fresh token silently...');
+            try {
+                var tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: clientId,
+                    scope: GCAL_SCOPES,
+                    prompt: '',  // Empty = silent, no consent screen
+                    callback: function(tokenResponse) {
+                        if (tokenResponse.error) {
+                            console.log('[GCal] Silent auth failed:', tokenResponse.error);
+                            // Don't remove authorized flag - might work next time
+                            return;
+                        }
+                        _gcalToken = tokenResponse.access_token;
+                        _gcalConnected = true;
+                        updateGCalButton(true);
+                        showMtgNotif('✅ Google Calendar reconectado', 'success');
+                        console.log('[GCal] Silent reconnect SUCCESS');
+                    }
+                });
+                tokenClient.requestAccessToken({ prompt: '' });
+            } catch(e) {
+                console.log('[GCal] Silent auth error:', e.message);
             }
-            
-            console.log('[GCal Restore] Token valid, validating with API...');
-            // Validate token with a quick API call
-            fetch('https://www.googleapis.com/calendar/v3/calendars/primary', {
-                headers: { 'Authorization': 'Bearer ' + savedToken }
-            }).then(function(res) {
-                console.log('[GCal Restore] API response:', res.status, res.statusText);
-                if (res.ok) {
-                    _gcalToken = savedToken;
-                    _gcalConnected = true;
-                    updateGCalButton(true);
-                    showMtgNotif('✅ Google Calendar reconectado automáticamente', 'success');
-                    console.log('[GCal Restore] SUCCESS - reconnected!');
-                } else {
-                    console.log('[GCal Restore] Token invalid, cleaning up');
-                    localStorage.removeItem('gf_gcal_token');
-                    localStorage.removeItem('gf_gcal_token_expiry');
-                }
-            }).catch(function(err) {
-                console.log('[GCal Restore] Fetch error:', err);
-                localStorage.removeItem('gf_gcal_token');
-                localStorage.removeItem('gf_gcal_token_expiry');
-            });
         }
     </script>
 </body>
