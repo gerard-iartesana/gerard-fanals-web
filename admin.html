@@ -1015,7 +1015,7 @@
                                     <input type="tel" id="mtg-phone" class="editor-input" placeholder="+34 600 000 000">
                                 </div>
                             </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
                                 <div>
                                     <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Fecha y hora</label>
                                     <input type="datetime-local" id="mtg-date" class="editor-input">
@@ -1027,6 +1027,15 @@
                                         <option value="followup">🔄 Follow-up</option>
                                         <option value="closing">🤝 Cierre</option>
                                         <option value="support">🛠️ Soporte</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Estado</label>
+                                    <select id="mtg-status" class="editor-input" style="padding:10px 14px">
+                                        <option value="pending">⏳ Pendiente</option>
+                                        <option value="confirmed">✅ Confirmada</option>
+                                        <option value="done">✔️ Realizada</option>
+                                        <option value="cancelled">❌ Cancelada</option>
                                     </select>
                                 </div>
                             </div>
@@ -3757,42 +3766,39 @@ Solo JSON, sin explicaciones ni markdown.`;
             var dateStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
             var timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-            var typeLabels = { discovery: '🔍 Discovery', followup: '🔄 Follow-up', closing: '🤝 Cierre', support: '🛠️ Soporte' };
-            var statusColors = { pending: '#ff9500', confirmed: '#34c759', done: '#007AFF', cancelled: '#ff3b30' };
-            var statusLabels = { pending: 'Pendiente', confirmed: 'Confirmada', done: 'Realizada', cancelled: 'Cancelada' };
-
-            var statusColor = statusColors[m.status] || '#ff9500';
-            var statusLabel = statusLabels[m.status] || m.status;
-            var typeLabel = typeLabels[m.meeting_type] || m.meeting_type;
-
             var contactInfo = '';
             if (m.contact_email) contactInfo += '<a href="mailto:' + m.contact_email + '" style="font-size:0.75rem;color:var(--accent-blue);text-decoration:none">' + m.contact_email + '</a> ';
             if (m.contact_phone) contactInfo += '<a href="tel:' + m.contact_phone + '" style="font-size:0.75rem;color:var(--text-grey);text-decoration:none">' + m.contact_phone + '</a>';
 
-            var actions = '';
-            if (!isPast) {
-                actions = '<div style="display:flex;gap:6px;margin-top:8px">';
-                if (m.status === 'pending') actions += '<button onclick="updateMeetingStatus(\'' + m.id + '\',\'confirmed\')" style="padding:4px 10px;border-radius:8px;border:1px solid #34c759;background:transparent;color:#34c759;font-size:0.7rem;cursor:pointer;font-weight:600">✓ Confirmar</button>';
-                if (m.status !== 'done') actions += '<button onclick="updateMeetingStatus(\'' + m.id + '\',\'done\')" style="padding:4px 10px;border-radius:8px;border:1px solid #007AFF;background:transparent;color:#007AFF;font-size:0.7rem;cursor:pointer;font-weight:600">✓ Realizada</button>';
-                if (m.status !== 'cancelled') actions += '<button onclick="updateMeetingStatus(\'' + m.id + '\',\'cancelled\')" style="padding:4px 10px;border-radius:8px;border:1px solid #ff3b30;background:transparent;color:#ff3b30;font-size:0.7rem;cursor:pointer;font-weight:600">✕ Cancelar</button>';
-                actions += '<button onclick="deleteMeeting(\'' + m.id + '\')" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.7rem;cursor:pointer">🗑️</button>';
-                actions += '</div>';
-            }
+            // Inline editable selects
+            var statusSelect = '<select onchange="updateMeetingField(\'' + m.id + '\',\'status\',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
+                '<option value="pending"' + (m.status === 'pending' ? ' selected' : '') + '>⏳ Pendiente</option>' +
+                '<option value="confirmed"' + (m.status === 'confirmed' ? ' selected' : '') + '>✅ Confirmada</option>' +
+                '<option value="done"' + (m.status === 'done' ? ' selected' : '') + '>✔️ Realizada</option>' +
+                '<option value="cancelled"' + (m.status === 'cancelled' ? ' selected' : '') + '>❌ Cancelada</option>' +
+            '</select>';
+
+            var typeSelect = '<select onchange="updateMeetingField(\'' + m.id + '\',\'meeting_type\',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
+                '<option value="discovery"' + (m.meeting_type === 'discovery' ? ' selected' : '') + '>🔍 Discovery</option>' +
+                '<option value="followup"' + (m.meeting_type === 'followup' ? ' selected' : '') + '>🔄 Follow-up</option>' +
+                '<option value="closing"' + (m.meeting_type === 'closing' ? ' selected' : '') + '>🤝 Cierre</option>' +
+                '<option value="support"' + (m.meeting_type === 'support' ? ' selected' : '') + '>🛠️ Soporte</option>' +
+            '</select>';
+
+            var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" style="padding:3px 8px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.7rem;cursor:pointer;margin-left:auto" title="Eliminar">🗑️</button>';
 
             return '<div style="padding:14px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);' + (isPast ? 'opacity:0.7' : '') + '">' +
                 '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
-                    '<div>' +
+                    '<div style="flex:1">' +
                         '<div style="font-weight:700;font-size:0.95rem">' + (m.contact_name || 'Sin nombre') + '</div>' +
                         '<div style="font-size:0.8rem;color:var(--text-grey);margin-top:2px">📅 ' + dateStr + ' · ' + timeStr + '</div>' +
                         (contactInfo ? '<div style="margin-top:4px">' + contactInfo + '</div>' : '') +
                     '</div>' +
                     '<div style="display:flex;gap:6px;align-items:center">' +
-                        '<span style="font-size:0.7rem;padding:4px 10px;border-radius:8px;background:rgba(88,86,214,0.1);color:#5856d6;font-weight:600">' + typeLabel + '</span>' +
-                        '<span style="font-size:0.7rem;padding:4px 10px;border-radius:8px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600">' + statusLabel + '</span>' +
+                        typeSelect + statusSelect + deleteBtn +
                     '</div>' +
                 '</div>' +
                 (m.notes ? '<p style="font-size:0.8rem;color:var(--text-grey);margin:8px 0 0;line-height:1.5">💬 ' + m.notes + '</p>' : '') +
-                actions +
             '</div>';
         }
 
@@ -3802,6 +3808,7 @@ Solo JSON, sin explicaciones ni markdown.`;
             var phone = document.getElementById('mtg-phone').value.trim();
             var date = document.getElementById('mtg-date').value;
             var type = document.getElementById('mtg-type').value;
+            var status = document.getElementById('mtg-status').value;
             var notes = document.getElementById('mtg-notes').value.trim();
 
             if (!name || !date) {
@@ -3816,7 +3823,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                     contact_phone: phone || null,
                     meeting_date: new Date(date).toISOString(),
                     meeting_type: type,
-                    status: 'pending',
+                    status: status,
                     notes: notes || null
                 });
 
@@ -3829,6 +3836,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 document.getElementById('mtg-date').value = '';
                 document.getElementById('mtg-notes').value = '';
                 document.getElementById('mtg-type').value = 'discovery';
+                document.getElementById('mtg-status').value = 'pending';
 
                 loadMeetings();
             } catch (err) {
@@ -3836,14 +3844,21 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
 
-        async function updateMeetingStatus(id, status) {
+        async function updateMeetingField(id, field, value) {
             try {
-                var { error } = await _supabase.from('meetings').update({ status: status }).eq('id', id);
+                var update = {};
+                update[field] = value;
+                var { error } = await _supabase.from('meetings').update(update).eq('id', id);
                 if (error) throw error;
-                loadMeetings();
+                // Don't reload - the select already shows the new value
             } catch (err) {
-                alert('Error: ' + err.message);
+                alert('Error actualizando: ' + err.message);
+                loadMeetings(); // Reload to reset state on error
             }
+        }
+
+        async function updateMeetingStatus(id, status) {
+            await updateMeetingField(id, 'status', status);
         }
 
         async function deleteMeeting(id) {
