@@ -928,6 +928,25 @@ footer h2 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; letter-spaci
     font-weight: 600;
 }
 
+/* Limit bold visual weight in articles — prevent wall-of-bold */
+.article-body p strong {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* GEO Data & Case Study boxes — dark mode support */
+[data-theme="dark"] .article-body div[style*="border-left"] {
+    background: rgba(255,255,255,0.03) !important;
+}
+[data-theme="dark"] .article-body div[style*="border-left"] li {
+    border-bottom-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Ensure consistent spacing between article sections */
+.article-body h2 + p { margin-top: 0; }
+.article-body p + h2 { margin-top: 48px; }
+.article-body ul + h2 { margin-top: 48px; }
+
 /* Responsive Blog */
 @media (max-width: 900px) {
     .blog-grid, .news-preview { grid-template-columns: repeat(2, 1fr); }

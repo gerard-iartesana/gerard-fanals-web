@@ -1352,7 +1352,7 @@
 
             try {
                 // Step 1: Generate text content
-                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial, optimizado para GEO (Generative Engine Optimization) y AEO (Answer Engine Optimization). Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nIMPORTANTE - Optimizaciones GEO/AEO obligatorias:\n1. Usa al menos 2 headings (h2) en formato PREGUNTA (ej: ¿Qué es...? ¿Cómo funciona...?)\n2. Incluye datos/estadísticas citables con fuente (ej: Según McKinsey 2026...)\n3. Incluye un caso de estudio o ejemplo práctico real\n4. Usa listas estructuradas (ul/li) para pasos o beneficios\n5. Respuestas directas y concisas en los primeros párrafos (snippet-ready)\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo en HTML con h2 en formato pregunta, datos citables, caso práctico, listas. Mínimo 800 palabras.",\n  "faqs": [{"q":"pregunta frecuente","a":"respuesta ≤50 palabras"},{"q":"...","a":"..."},{"q":"...","a":"..."}],\n  "image_prompt": "Abstract tech concept in English. MUST have: deep black background, glowing neon blue/cyan/teal circuit lines, neural network nodes, holographic elements. Sci-fi futuristic. NO people, NO text, NO realistic objects."\n}';
+                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial, optimizado para GEO (Generative Engine Optimization) y AEO (Answer Engine Optimization). Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nIMPORTANTE - Optimizaciones GEO/AEO obligatorias:\n1. Usa al menos 2 headings (h2) en formato PREGUNTA (ej: ¿Qué es...? ¿Cómo funciona...?)\n2. Incluye datos/estadísticas citables con fuente (ej: Según McKinsey 2026...)\n3. Incluye un caso de estudio o ejemplo práctico real\n4. Usa listas estructuradas (ul/li) para pasos o beneficios\n5. Respuestas directas y concisas en los primeros párrafos (snippet-ready)\n\nREGLAS DE FORMATO (MUY IMPORTANTE, cumple todas):\n- NUNCA envuelvas un párrafo entero en <strong>. Usa <strong> solo para frases clave de máximo 5-6 palabras.\n- Cada <h2> DEBE tener al menos 1 párrafo <p> debajo. NUNCA pongas un <h2> seguido de otro <h2> sin contenido intermedio.\n- La primera frase del artículo NO debe ser bold/strong.\n- Los datos o estadísticas NO van en el body principal. Solo en el JSON "faqs" y en los campos separados.\n- Usa párrafos cortos (3-4 frases máximo por <p>). Separa ideas en distintos párrafos.\n- Al final del body incluye una frase CTA invitando a contactar a Gerard Fanals con un enlace <a href="https://wa.me/34629494167">Contacta a Gerard Fanals</a>.\n- NO pongas headings H2 extra al final del body que no tengan contenido debajo.\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo en HTML con h2 en formato pregunta, datos citables, caso práctico, listas. Mínimo 800 palabras. Cumple TODAS las reglas de formato.",\n  "faqs": [{"q":"pregunta frecuente","a":"respuesta ≤50 palabras"},{"q":"...","a":"..."},{"q":"...","a":"..."}],\n  "image_prompt": "Abstract tech concept in English. MUST have: deep black background, glowing neon blue/cyan/teal circuit lines, neural network nodes, holographic elements. Sci-fi futuristic. NO people, NO text, NO realistic objects."\n}';
 
                 const textData = await callGemini(textPrompt);
                 let textContent = textData.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -3129,41 +3129,112 @@ Solo JSON, sin explicaciones ni markdown.`;
     </script>
     <script>
         // --- Enrich article body with GEO/AEO data ---
+        /**
+         * Sanitize AI-generated article body:
+         * - Remove orphan H2s (H2 not followed by content)
+         * - Limit excessive bold/strong (entire paragraphs wrapped in strong)
+         * - Normalize spacing between paragraphs
+         */
+        function sanitizeArticleBody(html) {
+            let clean = html;
+
+            // 1. Remove bold wrapping entire paragraphs: <p><strong>entire paragraph text</strong></p>
+            //    Keep strong only for short key phrases
+            clean = clean.replace(/<p>\s*<strong>([^<]{80,})<\/strong>\s*<\/p>/gi, function(match, content) {
+                return '<p>' + content + '</p>';
+            });
+
+            // 2. Remove orphan H2s: an <h2> followed directly by another <h2> (no content between)
+            clean = clean.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>\s*(?=<h2)/gi, function(match, attrs, content) {
+                // Check if there's meaningful content between this h2 close and the next h2
+                return ''; // Remove the orphan h2
+            });
+
+            // 3. Remove trailing orphan H2s at the end of the body (H2 with nothing after)
+            clean = clean.replace(/(<h2[^>]*>[\s\S]*?<\/h2>\s*)+$/gi, function(match) {
+                // Check if any of these trailing H2s have content between them
+                const parts = match.split(/<\/h2>/i).filter(Boolean);
+                let result = '';
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i];
+                    const next = parts[i + 1] || '';
+                    // If next part starts with <h2 or is empty, this is orphan
+                    const hasContent = next && !next.trim().match(/^\s*<h2/i) && next.trim().length > 10;
+                    if (hasContent) {
+                        result += part + '</h2>';
+                    }
+                    // else: skip this orphan h2
+                }
+                return result;
+            });
+
+            // 4. Ensure first paragraph is never entirely bold
+            clean = clean.replace(/^(\s*<p>\s*)<strong>((?:(?!<\/strong>).)*)<\/strong>(\s*<\/p>)/, function(m, pre, content, post) {
+                if (content.length > 60) return pre + content + post;
+                return m; // short bold is fine
+            });
+
+            // 5. Remove excessive empty paragraphs
+            clean = clean.replace(/(<p>\s*<\/p>\s*){2,}/gi, '');
+
+            return clean;
+        }
+
         function enrichBodyWithGeoData(body) {
             const stats = document.getElementById('edit-stats')?.value?.trim();
             const caseStudy = document.getElementById('edit-case-study')?.value?.trim();
             const qHeadings = document.getElementById('edit-question-headings')?.value?.trim();
 
-            let enriched = body;
+            // Sanitize the body first — fix formatting issues from AI generation
+            let enriched = sanitizeArticleBody(body);
 
-            // Insert question headings as h2 sections
-            if (qHeadings) {
-                const questions = qHeadings.split('|').map(function(q) { return q.trim(); }).filter(Boolean);
-                let qHtml = '';
-                questions.forEach(function(q) {
-                    qHtml += '<h2>' + q + '</h2>\n<p>[Contenido para esta sección]</p>\n';
-                });
-                // Append to body if not already in content
-                questions.forEach(function(q) {
-                    if (!enriched.includes(q)) {
-                        enriched += '\n<h2>' + q + '</h2>';
-                    }
-                });
-            }
+            // NOTE: Question headings are NOT appended as empty H2s.
+            // They should already be part of the body from the AI-generated content.
+            // If entered manually, they serve as SEO guidance only.
 
-            // Add stats section
+            // Add stats section - split into separate items for readability
             if (stats) {
-                const statsHtml = '<div class="article-stats-highlight" style="padding:20px 24px;border-left:4px solid #0071e3;background:rgba(0,113,227,0.04);border-radius:0 12px 12px 0;margin:24px 0">'
-                    + '<h3 style="font-size:1rem;margin:0 0 8px">\ud83d\udcca Datos clave</h3>'
-                    + '<p style="font-size:0.9rem;line-height:1.6;margin:0">' + stats + '</p></div>';
+                // Split stats by "Dato" markers or sentences
+                let statItems = stats.split(/(?=Dato\s*\d)/i).filter(Boolean);
+                if (statItems.length <= 1) {
+                    // Try splitting by period-space for multiple sentences
+                    statItems = stats.split(/\.\s+/).filter(s => s.trim().length > 20);
+                    if (statItems.length <= 1) statItems = [stats];
+                }
+                let listHtml = '';
+                if (statItems.length > 1) {
+                    listHtml = '<ul style="margin:12px 0 0;padding-left:0;list-style:none">';
+                    statItems.forEach(function(s) {
+                        const clean = s.replace(/^Dato\s*\d+\s*:\s*/i, '').trim();
+                        if (clean) listHtml += '<li style="padding:10px 0;font-size:0.9rem;line-height:1.7;border-bottom:1px solid rgba(0,0,0,0.06)">📌 ' + clean + (clean.endsWith('.') ? '' : '.') + '</li>';
+                    });
+                    listHtml += '</ul>';
+                } else {
+                    listHtml = '<p style="font-size:0.9rem;line-height:1.7;margin:10px 0 0;color:inherit">' + stats + '</p>';
+                }
+                const statsHtml = '<div style="padding:24px 28px;border-left:4px solid #0071e3;background:rgba(0,113,227,0.04);border-radius:0 16px 16px 0;margin:40px 0">'
+                    + '<h3 style="font-size:1rem;font-weight:700;margin:0 0 6px;color:#0071e3">📊 Datos clave</h3>'
+                    + listHtml + '</div>';
                 enriched += '\n' + statsHtml;
             }
 
-            // Add case study
+            // Add case study - with proper paragraph breaks
             if (caseStudy) {
-                const caseHtml = '<div class="article-case-study" style="padding:20px 24px;border-left:4px solid #34c759;background:rgba(52,199,89,0.04);border-radius:0 12px 12px 0;margin:24px 0">'
-                    + '<h3 style="font-size:1rem;margin:0 0 8px">\ud83d\udcbc Caso práctico</h3>'
-                    + '<p style="font-size:0.9rem;line-height:1.6;margin:0">' + caseStudy + '</p></div>';
+                // Split case study into sentences for better readability
+                const sentences = caseStudy.split(/(?<=[.!?])\s+/).filter(Boolean);
+                let caseContent = '';
+                if (sentences.length > 2) {
+                    // Group into 2-sentence paragraphs
+                    for (let i = 0; i < sentences.length; i += 2) {
+                        const chunk = sentences.slice(i, i + 2).join(' ');
+                        caseContent += '<p style="font-size:0.9rem;line-height:1.7;margin:0 0 10px">' + chunk + '</p>';
+                    }
+                } else {
+                    caseContent = '<p style="font-size:0.9rem;line-height:1.7;margin:0">' + caseStudy + '</p>';
+                }
+                const caseHtml = '<div style="padding:24px 28px;border-left:4px solid #34c759;background:rgba(52,199,89,0.04);border-radius:0 16px 16px 0;margin:40px 0">'
+                    + '<h3 style="font-size:1rem;font-weight:700;margin:0 0 12px;color:#34c759">💼 Caso práctico</h3>'
+                    + caseContent + '</div>';
                 enriched += '\n' + caseHtml;
             }
 
