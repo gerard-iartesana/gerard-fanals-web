@@ -3807,7 +3807,13 @@ Solo JSON, sin explicaciones ni markdown.`;
                 '<option value="support"' + (m.meeting_type === 'support' ? ' selected' : '') + '>🛠️ Soporte</option>' +
             '</select>';
 
-            var syncBtn = (!isPast && !m.gcal_event_id) ? '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" id="sync-' + m.id + '" style="padding:3px 8px;border-radius:8px;border:1px solid #4285F4;background:transparent;color:#4285F4;font-size:0.72rem;cursor:pointer;font-weight:600" title="Sincronizar con Google Calendar">📅</button>' : (m.gcal_event_id ? '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>' : '');
+            var hasSynced = m.gcal_event_id && m.gcal_event_id.length > 0;
+            var syncBtn = '';
+            if (!isPast && hasSynced) {
+                syncBtn = '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>';
+            } else if (!isPast) {
+                syncBtn = '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" id="sync-' + m.id + '" style="padding:3px 8px;border-radius:8px;border:1px solid #4285F4;background:transparent;color:#4285F4;font-size:0.72rem;cursor:pointer;font-weight:600" title="Sincronizar con Google Calendar">📅</button>';
+            }
 
             var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer" title="Eliminar">🗑️</button>';
 
