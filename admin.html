@@ -1362,25 +1362,62 @@
                     <h1>Newsletter</h1>
                     <span style="padding:6px 14px;border-radius:10px;background:rgba(88,86,214,0.1);color:#5856d6;font-size:0.75rem;font-weight:700">🚧 Próximamente</span>
                 </div>
-                <div style="text-align:center;padding:60px 20px">
-                    <div style="font-size:4rem;margin-bottom:16px">📧</div>
-                    <h2 style="font-size:1.4rem;margin:0 0 12px">Lanzar Newsletter</h2>
-                    <p style="color:var(--text-grey);font-size:0.95rem;max-width:500px;margin:0 auto 30px;line-height:1.6">Envía newsletters a tus suscriptores directamente desde el dashboard. Diseña, programa y analiza el rendimiento de cada envío.</p>
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:600px;margin:0 auto">
-                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
-                            <div style="font-size:1.5rem;margin-bottom:8px">✍️</div>
-                            <div style="font-size:0.78rem;font-weight:700">Editor visual</div>
-                            <div style="font-size:0.7rem;color:var(--text-grey);margin-top:4px">Diseña con drag & drop</div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
+                    <!-- Subscribers Card -->
+                    <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                            <h2 style="font-size:1rem;margin:0;display:flex;align-items:center;gap:8px">
+                                <span style="font-size:1.2rem">👥</span> Suscriptores
+                                <span id="subscriber-count" style="padding:3px 10px;border-radius:8px;background:rgba(0,122,255,0.1);color:#007AFF;font-size:0.7rem;font-weight:700">0</span>
+                            </h2>
                         </div>
-                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
-                            <div style="font-size:1.5rem;margin-bottom:8px">📊</div>
-                            <div style="font-size:0.78rem;font-weight:700">Métricas</div>
-                            <div style="font-size:0.7rem;color:var(--text-grey);margin-top:4px">Aperturas y clicks</div>
+                        <!-- Add subscriber -->
+                        <div style="display:flex;gap:8px;margin-bottom:16px">
+                            <input type="text" id="new-sub-name" placeholder="Nombre" style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:Inter,sans-serif">
+                            <input type="email" id="new-sub-email" placeholder="email@ejemplo.com" style="flex:1.5;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:Inter,sans-serif">
+                            <button onclick="addSubscriber()" style="padding:8px 14px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.75rem;cursor:pointer;white-space:nowrap">+ Añadir</button>
                         </div>
-                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
-                            <div style="font-size:1.5rem;margin-bottom:8px">⏰</div>
-                            <div style="font-size:0.78rem;font-weight:700">Programar</div>
-                            <div style="font-size:0.7rem;color:var(--text-grey);margin-top:4px">Envíos automáticos</div>
+                        <!-- Subscribers list -->
+                        <div id="subscribers-list" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+                            <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Cargando...</p>
+                        </div>
+                    </div>
+
+                    <!-- Coming Soon Features -->
+                    <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                        <h2 style="font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px">
+                            <span style="font-size:1.2rem">🚀</span> Funcionalidades
+                        </h2>
+                        <div style="display:flex;flex-direction:column;gap:12px">
+                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
+                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#007AFF,#5856d6);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">✍️</div>
+                                <div>
+                                    <div style="font-size:0.82rem;font-weight:700">Editor visual</div>
+                                    <div style="font-size:0.7rem;color:var(--text-grey)">Diseña newsletters con plantillas profesionales</div>
+                                </div>
+                            </div>
+                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
+                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#34c759,#30d158);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📊</div>
+                                <div>
+                                    <div style="font-size:0.82rem;font-weight:700">Métricas de envío</div>
+                                    <div style="font-size:0.7rem;color:var(--text-grey)">Aperturas, clicks y conversiones en tiempo real</div>
+                                </div>
+                            </div>
+                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
+                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff9500,#ff6b00);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">⏰</div>
+                                <div>
+                                    <div style="font-size:0.82rem;font-weight:700">Programar envíos</div>
+                                    <div style="font-size:0.7rem;color:var(--text-grey)">Automatiza newsletters semanales o mensuales</div>
+                                </div>
+                            </div>
+                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
+                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff3b30,#ff6b6b);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🤖</div>
+                                <div>
+                                    <div style="font-size:0.82rem;font-weight:700">Generación con IA</div>
+                                    <div style="font-size:0.7rem;color:var(--text-grey)">Crea contenido automáticamente con Gemini</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1509,8 +1546,80 @@
                 if (btn.dataset.section === 'articles') { loadArticleStats(); }
                 if (btn.dataset.section === 'meetings') { loadMeetings(); }
                 if (btn.dataset.section === 'soporte') { loadSupportTickets(); }
+                if (btn.dataset.section === 'newsletter') { loadSubscribers(); }
             });
         });
+
+        // --- Newsletter Subscribers ---
+        async function loadSubscribers() {
+            var list = document.getElementById('subscribers-list');
+            var countEl = document.getElementById('subscriber-count');
+            if (!list) return;
+
+            try {
+                var { data: subs, error } = await _supabase
+                    .from('newsletter_subscribers')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (countEl) countEl.textContent = (subs || []).length;
+
+                if (!subs || subs.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;padding:24px 0"><div style="font-size:1.5rem;margin-bottom:6px">📭</div><p style="color:var(--text-grey);font-size:0.8rem">No hay suscriptores todavía</p></div>';
+                    return;
+                }
+
+                list.innerHTML = subs.map(function(s) {
+                    var d = new Date(s.created_at);
+                    var dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+                    return '<div style="padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+                        '<div style="flex:1;min-width:0">' +
+                        '<div style="font-size:0.82rem;font-weight:600">' + (s.name || 'Sin nombre') + '</div>' +
+                        '<div style="font-size:0.72rem;color:var(--text-grey)">' + s.email + ' · ' + dateStr + '</div>' +
+                        '</div>' +
+                        '<button onclick="deleteSubscriber(\'' + s.id + '\')" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.5;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🗑️</button>' +
+                        '</div>';
+                }).join('');
+
+            } catch(err) {
+                list.innerHTML = '<p style="color:#ff3b30;font-size:0.82rem">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function addSubscriber() {
+            var nameInput = document.getElementById('new-sub-name');
+            var emailInput = document.getElementById('new-sub-email');
+            var name = nameInput.value.trim();
+            var email = emailInput.value.trim();
+
+            if (!email) return;
+
+            try {
+                var { error } = await _supabase.from('newsletter_subscribers').insert({
+                    name: name || null,
+                    email: email,
+                    created_at: new Date().toISOString()
+                });
+                if (error) throw error;
+                nameInput.value = '';
+                emailInput.value = '';
+                loadSubscribers();
+            } catch(e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        async function deleteSubscriber(id) {
+            if (!confirm('¿Eliminar este suscriptor?')) return;
+            try {
+                await _supabase.from('newsletter_subscribers').delete().eq('id', id);
+                loadSubscribers();
+            } catch(e) {
+                console.log('Error:', e);
+            }
+        }
 
         // --- Support Tickets ---
         var DEVELOPER_EMAIL = CLIENT_CONFIG.developerEmail;
