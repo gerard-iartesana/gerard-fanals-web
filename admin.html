@@ -1456,6 +1456,11 @@
                             <input type="email" id="new-sub-email" placeholder="email@ejemplo.com" style="flex:1.5;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:Inter,sans-serif">
                             <button onclick="addSubscriber()" style="padding:8px 14px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.75rem;cursor:pointer;white-space:nowrap">+ Añadir</button>
                         </div>
+                        <!-- Subscriber selection controls -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:6px 0;border-bottom:1px solid var(--border-color)">
+                            <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-grey);cursor:pointer"><input type="checkbox" id="nl-select-all-subs" checked onchange="toggleSelectAllSubs(this.checked)" style="accent-color:#007AFF;width:15px;height:15px;cursor:pointer"> Seleccionar todos</label>
+                            <span id="nl-selected-subs-count" style="font-size:0.7rem;color:#007AFF;font-weight:600">0 seleccionados</span>
+                        </div>
                         <!-- Subscribers list -->
                         <div id="subscribers-list" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
                             <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Cargando...</p>
@@ -1785,7 +1790,8 @@
                 list.innerHTML = subs.map(function(s) {
                     var d = new Date(s.created_at);
                     var dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-                    return '<div style="padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+                    return '<div style="padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:10px">' +
+                        '<input type="checkbox" class="nl-sub-check" value="' + s.id + '" data-email="' + s.email + '" data-name="' + (s.name || '') + '" checked onchange="updateSubSelectedCount()" style="accent-color:#007AFF;width:16px;height:16px;cursor:pointer;flex-shrink:0">' +
                         '<div style="flex:1;min-width:0">' +
                         '<div style="font-size:0.82rem;font-weight:600">' + (s.name || 'Sin nombre') + '</div>' +
                         '<div style="font-size:0.72rem;color:var(--text-grey)">' + s.email + ' · ' + dateStr + '</div>' +
@@ -1793,6 +1799,7 @@
                         '<button onclick="deleteSubscriber(\'' + s.id + '\')" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.5;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🗑️</button>' +
                         '</div>';
                 }).join('');
+                updateSubSelectedCount();
 
             } catch(err) {
                 list.innerHTML = '<p style="color:#ff3b30;font-size:0.82rem">Error: ' + err.message + '</p>';
@@ -1830,6 +1837,29 @@
             } catch(e) {
                 console.log('Error:', e);
             }
+        }
+
+        // --- Subscriber Selection Helpers ---
+        function toggleSelectAllSubs(checked) {
+            document.querySelectorAll('.nl-sub-check').forEach(function(cb) { cb.checked = checked; });
+            updateSubSelectedCount();
+        }
+
+        function updateSubSelectedCount() {
+            var all = document.querySelectorAll('.nl-sub-check');
+            var checked = document.querySelectorAll('.nl-sub-check:checked');
+            var countEl = document.getElementById('nl-selected-subs-count');
+            var selectAll = document.getElementById('nl-select-all-subs');
+            if (countEl) countEl.textContent = checked.length + ' de ' + all.length + ' seleccionados';
+            if (selectAll) selectAll.checked = (checked.length === all.length && all.length > 0);
+        }
+
+        function getSelectedSubscribers() {
+            var subs = [];
+            document.querySelectorAll('.nl-sub-check:checked').forEach(function(cb) {
+                subs.push({ id: cb.value, email: cb.dataset.email, name: cb.dataset.name || null });
+            });
+            return subs;
         }
 
         // --- Newsletter Config & Send ---
@@ -2007,7 +2037,13 @@
             }
 
             var btn = document.getElementById('nl-send-now-btn');
-            if (!confirm('¿Enviar la newsletter con ' + selectedIds.length + ' artículo(s) seleccionado(s)?')) return;
+            var selectedSubs = getSelectedSubscribers();
+            if (selectedSubs.length === 0) {
+                alert('⚠️ Selecciona al menos un suscriptor para enviar');
+                return;
+            }
+
+            if (!confirm('¿Enviar la newsletter con ' + selectedIds.length + ' artículo(s) a ' + selectedSubs.length + ' suscriptor(es)?')) return;
 
             btn.disabled = true;
             btn.innerHTML = '⏳ Enviando...';
@@ -2016,7 +2052,7 @@
                 var response = await fetch('/api/send-newsletter', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ article_ids: selectedIds })
+                    body: JSON.stringify({ article_ids: selectedIds, subscriber_ids: selectedSubs.map(function(s) { return s.id; }) })
                 });
                 var result = await response.json();
 

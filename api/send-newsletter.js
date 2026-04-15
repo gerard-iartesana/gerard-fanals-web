@@ -61,14 +61,17 @@ module.exports = async function handler(req, res) {
             return res.status(200).json({ success: false, error: 'No hay artículos pendientes de envío' });
         }
 
-        // 3. Get all subscribers
-        const { data: subscribers, error: subError } = await supabase
-            .from('newsletter_subscribers')
-            .select('email, name');
+        // 3. Get subscribers (filtered by IDs if provided, otherwise all)
+        const { subscriber_ids } = req.body || {};
+        let subQuery = supabase.from('newsletter_subscribers').select('email, name');
+        if (subscriber_ids && subscriber_ids.length > 0) {
+            subQuery = subQuery.in('id', subscriber_ids);
+        }
+        const { data: subscribers, error: subError } = await subQuery;
         if (subError) throw subError;
 
         if (!subscribers || subscribers.length === 0) {
-            return res.status(200).json({ success: false, error: 'No hay suscriptores' });
+            return res.status(200).json({ success: false, error: 'No hay suscriptores seleccionados' });
         }
 
         // 4. Build email HTML
