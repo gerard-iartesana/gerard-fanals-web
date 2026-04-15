@@ -1260,9 +1260,15 @@
                     </h2>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
                         <div>
+                            <label style="font-size:0.75rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;display:block;margin-bottom:6px">Tu nombre</label>
+                            <input type="text" id="ticket-sender" placeholder="Ej: Gerard Fanals" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;box-sizing:border-box">
+                        </div>
+                        <div>
                             <label style="font-size:0.75rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;display:block;margin-bottom:6px">Asunto</label>
                             <input type="text" id="ticket-subject" placeholder="Ej: Cambiar color del botón" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;box-sizing:border-box">
                         </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
                         <div>
                             <label style="font-size:0.75rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;display:block;margin-bottom:6px">Tipo</label>
                             <select id="ticket-type" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;box-sizing:border-box">
@@ -1270,13 +1276,33 @@
                                 <option value="cambio">🔧 Cambio en el proyecto</option>
                                 <option value="error">🐛 Reportar error</option>
                                 <option value="mejora">💡 Sugerencia de mejora</option>
+                                <option value="urgente">🚨 Urgente</option>
                                 <option value="otro">📝 Otro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;display:block;margin-bottom:6px">Prioridad</label>
+                            <select id="ticket-priority" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;box-sizing:border-box">
+                                <option value="normal">🟡 Normal</option>
+                                <option value="baja">🟢 Baja</option>
+                                <option value="alta">🟠 Alta</option>
+                                <option value="urgente">🔴 Urgente</option>
                             </select>
                         </div>
                     </div>
                     <div style="margin-bottom:14px">
                         <label style="font-size:0.75rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;display:block;margin-bottom:6px">Descripción</label>
                         <textarea id="ticket-description" rows="5" placeholder="Describe tu petición con el máximo detalle posible..." style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;resize:vertical;box-sizing:border-box"></textarea>
+                    </div>
+                    <div style="margin-bottom:14px">
+                        <label style="font-size:0.75rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;display:block;margin-bottom:6px">📎 Adjuntar archivo (foto o PDF)</label>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <label for="ticket-file" style="padding:10px 20px;border-radius:12px;border:1px dashed var(--border-color);background:var(--bg-primary);font-size:0.82rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:6px;color:var(--text-grey)">
+                                📁 Seleccionar archivo
+                            </label>
+                            <input type="file" id="ticket-file" accept="image/*,.pdf" style="display:none" onchange="document.getElementById('ticket-file-name').textContent=this.files[0]?this.files[0].name:''">
+                            <span id="ticket-file-name" style="font-size:0.78rem;color:var(--text-grey);font-style:italic"></span>
+                        </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:12px">
                         <button onclick="sendSupportTicket()" id="btn-send-ticket" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.3s">📨 Enviar petición</button>
@@ -1394,14 +1420,17 @@
         }
 
         async function sendSupportTicket() {
+            var sender = document.getElementById('ticket-sender').value.trim();
             var subject = document.getElementById('ticket-subject').value.trim();
             var type = document.getElementById('ticket-type').value;
+            var priority = document.getElementById('ticket-priority').value;
             var description = document.getElementById('ticket-description').value.trim();
+            var fileInput = document.getElementById('ticket-file');
             var statusEl = document.getElementById('ticket-status');
             var btn = document.getElementById('btn-send-ticket');
 
-            if (!subject || !description) {
-                statusEl.textContent = '⚠️ Asunto y descripción son obligatorios';
+            if (!sender || !subject || !description) {
+                statusEl.textContent = '⚠️ Nombre, asunto y descripción son obligatorios';
                 statusEl.style.color = '#ff9500';
                 return;
             }
@@ -1412,21 +1441,55 @@
             statusEl.textContent = '';
 
             try {
+                var attachmentUrl = null;
+
+                // Upload file if selected
+                if (fileInput.files && fileInput.files[0]) {
+                    var file = fileInput.files[0];
+                    var ext = file.name.split('.').pop();
+                    var fileName = 'ticket_' + Date.now() + '.' + ext;
+
+                    statusEl.textContent = '📤 Subiendo archivo...';
+                    statusEl.style.color = '#007AFF';
+
+                    var { data: uploadData, error: uploadErr } = await _supabase.storage
+                        .from('support-files')
+                        .upload(fileName, file, { contentType: file.type });
+
+                    if (uploadErr) {
+                        console.log('Storage error:', uploadErr);
+                        // Continue without attachment
+                    } else {
+                        var { data: urlData } = _supabase.storage
+                            .from('support-files')
+                            .getPublicUrl(fileName);
+                        attachmentUrl = urlData ? urlData.publicUrl : null;
+                    }
+                }
+
                 // Save to Supabase (email sent automatically via DB trigger)
-                var { error } = await _supabase.from('support_tickets').insert({
+                var insertData = {
+                    sender_name: sender,
                     subject: subject,
                     type: type,
+                    priority: priority,
                     description: description,
+                    attachment_url: attachmentUrl,
                     status: 'pending',
                     created_at: new Date().toISOString()
-                });
+                };
 
+                var { error } = await _supabase.from('support_tickets').insert(insertData);
                 if (error) throw error;
 
                 // Reset form
+                document.getElementById('ticket-sender').value = '';
                 document.getElementById('ticket-subject').value = '';
                 document.getElementById('ticket-description').value = '';
                 document.getElementById('ticket-type').selectedIndex = 0;
+                document.getElementById('ticket-priority').selectedIndex = 0;
+                fileInput.value = '';
+                document.getElementById('ticket-file-name').textContent = '';
 
                 statusEl.textContent = '✅ Petición enviada correctamente · Notificación enviada al desarrollador';
                 statusEl.style.color = '#34c759';
@@ -1441,6 +1504,15 @@
             btn.disabled = false;
             btn.style.opacity = '1';
             btn.innerHTML = '📨 Enviar petición';
+        }
+
+        async function updateTicketStatus(ticketId, newStatus) {
+            try {
+                await _supabase.from('support_tickets').update({ status: newStatus }).eq('id', ticketId);
+                loadSupportTickets();
+            } catch(e) {
+                console.log('Error updating status:', e);
+            }
         }
 
         async function loadSupportTickets() {
@@ -1461,27 +1533,44 @@
                     return;
                 }
 
-                var typeIcons = { duda: '❓', cambio: '🔧', error: '🐛', mejora: '💡', otro: '📝' };
-                var statusColors = { pending: '#ff9500', in_progress: '#007AFF', resolved: '#34c759', closed: 'var(--text-grey)' };
-                var statusLabels = { pending: 'Pendiente', in_progress: 'En proceso', resolved: 'Resuelto', closed: 'Cerrado' };
+                var typeIcons = { duda: '❓', cambio: '🔧', error: '🐛', mejora: '💡', urgente: '🚨', otro: '📝' };
+                var statusColors = { pending: '#ff9500', in_progress: '#007AFF', waiting: '#5856d6', paused: '#8e8e93', resolved: '#34c759', closed: '#636366' };
+                var statusLabels = { pending: 'Pendiente', in_progress: 'En curso', waiting: 'En espera', paused: 'Parado', resolved: 'Resuelto', closed: 'Cerrado' };
+                var statusEmojis = { pending: '🟡', in_progress: '🔵', waiting: '🟣', paused: '⏸️', resolved: '✅', closed: '⚫' };
+                var priorityColors = { baja: '#34c759', normal: '#ff9500', alta: '#ff6b00', urgente: '#ff3b30' };
+                var priorityLabels = { baja: 'Baja', normal: 'Normal', alta: 'Alta', urgente: 'Urgente' };
 
                 list.innerHTML = tickets.map(function(t) {
                     var d = new Date(t.created_at);
-                    var dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                    var dateStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
                     var timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                     var icon = typeIcons[t.type] || '📝';
                     var statusColor = statusColors[t.status] || '#ff9500';
                     var statusLabel = statusLabels[t.status] || t.status;
+                    var prioColor = priorityColors[t.priority] || '#ff9500';
+                    var prioLabel = priorityLabels[t.priority] || '';
 
-                    return '<div style="padding:14px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary)">' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">' +
+                    // Build status dropdown options
+                    var statusOptions = Object.keys(statusLabels).map(function(key) {
+                        var sel = (key === t.status) ? ' selected' : '';
+                        return '<option value="' + key + '"' + sel + '>' + (statusEmojis[key]||'') + ' ' + statusLabels[key] + '</option>';
+                    }).join('');
+
+                    var senderHtml = t.sender_name ? '<span style="font-weight:600;color:var(--text-grey)">' + t.sender_name + '</span> · ' : '';
+                    var attachHtml = t.attachment_url ? ' · <a href="' + t.attachment_url + '" target="_blank" style="color:#007AFF;text-decoration:none;font-size:0.72rem">📎 Adjunto</a>' : '';
+
+                    return '<div style="padding:16px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary)">' +
+                        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">' +
                         '<div style="flex:1;min-width:0">' +
                         '<div style="font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:6px">' + icon + ' ' + t.subject + '</div>' +
-                        '<div style="font-size:0.75rem;color:var(--text-grey);margin-top:4px">📅 ' + dateStr + ' · ' + timeStr + '</div>' +
+                        '<div style="font-size:0.72rem;color:var(--text-grey);margin-top:5px">' + senderHtml + '📅 ' + dateStr + ' · ' + timeStr + attachHtml + '</div>' +
                         '</div>' +
-                        '<span style="font-size:0.72rem;padding:4px 10px;border-radius:8px;background:' + statusColor + '15;color:' + statusColor + ';font-weight:600;white-space:nowrap">' + statusLabel + '</span>' +
+                        '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">' +
+                        '<select onchange="updateTicketStatus(\'' + t.id + '\',this.value)" style="font-size:0.72rem;padding:4px 8px;border-radius:8px;border:1px solid ' + statusColor + '30;background:' + statusColor + '10;color:' + statusColor + ';font-weight:600;cursor:pointer;font-family:Inter,sans-serif">' + statusOptions + '</select>' +
+                        (prioLabel ? '<span style="font-size:0.65rem;padding:2px 8px;border-radius:6px;background:' + prioColor + '15;color:' + prioColor + ';font-weight:600">' + prioLabel + '</span>' : '') +
                         '</div>' +
-                        (t.description ? '<div style="font-size:0.8rem;color:var(--text-grey);margin-top:8px;line-height:1.4">' + t.description.substring(0, 150) + (t.description.length > 150 ? '...' : '') + '</div>' : '') +
+                        '</div>' +
+                        (t.description ? '<div style="font-size:0.8rem;color:var(--text-grey);margin-top:10px;line-height:1.4;padding-top:10px;border-top:1px solid var(--border-color)">' + t.description.substring(0, 200) + (t.description.length > 200 ? '...' : '') + '</div>' : '') +
                         '</div>';
                 }).join('');
 
