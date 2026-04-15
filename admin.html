@@ -1332,6 +1332,15 @@
     <script src="supabase-client.js"></script>
     <script src="script.js"></script>
     <script>
+        // === CLIENT CONFIG (change these for each project) ===
+        var CLIENT_CONFIG = {
+            name: 'Gerard Fanals',
+            domain: 'gerardfanals.online',
+            specialty: 'IA y automatización',
+            whatsapp: '34629494167',
+            developerEmail: 'gerard@iartesana.es'
+        };
+
         // --- Toggle Password Visibility ---
         function togglePassword() {
             const input = document.getElementById('login-password');
@@ -1408,7 +1417,7 @@
         });
 
         // --- Support Tickets ---
-        var DEVELOPER_EMAIL = 'gerard@iartesana.es';
+        var DEVELOPER_EMAIL = CLIENT_CONFIG.developerEmail;
 
         async function ensureSupportTable() {
             try {
@@ -1666,7 +1675,7 @@
                 // Gather context
                 var context = await gatherDashboardContext();
 
-                var systemPrompt = 'Eres el asistente IA del dashboard de Gerard Fanals (gerardfanals.online). ' +
+                var systemPrompt = 'Eres el asistente IA del dashboard de ' + CLIENT_CONFIG.name + ' (' + CLIENT_CONFIG.domain + '). ' +
                     'Responde en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
                     'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
                     'Aquí tienes el contexto actual del dashboard:\n\n' +
@@ -2372,7 +2381,7 @@
 
             try {
                 // Step 1: Generate text content
-                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial, optimizado para GEO (Generative Engine Optimization) y AEO (Answer Engine Optimization). Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de Gerard Fanals, un experto en IA y automatización.\n\nTema: ' + topic + '\n\nIMPORTANTE - Optimizaciones GEO/AEO obligatorias:\n1. Usa al menos 2 headings (h2) en formato PREGUNTA (ej: ¿Qué es...? ¿Cómo funciona...?)\n2. Incluye datos/estadísticas citables con fuente (ej: Según McKinsey 2026...)\n3. Incluye un caso de estudio o ejemplo práctico real\n4. Usa listas estructuradas (ul/li) para pasos o beneficios\n5. Respuestas directas y concisas en los primeros párrafos (snippet-ready)\n\nREGLAS DE FORMATO (MUY IMPORTANTE, cumple todas):\n- NUNCA envuelvas un párrafo entero en <strong>. Usa <strong> solo para frases clave de máximo 5-6 palabras.\n- Cada <h2> DEBE tener al menos 1 párrafo <p> debajo. NUNCA pongas un <h2> seguido de otro <h2> sin contenido intermedio.\n- La primera frase del artículo NO debe ser bold/strong.\n- Los datos o estadísticas NO van en el body principal. Solo en el JSON "faqs" y en los campos separados.\n- Usa párrafos cortos (3-4 frases máximo por <p>). Separa ideas en distintos párrafos.\n- Al final del body incluye una frase CTA invitando a contactar a Gerard Fanals con un enlace <a href="https://wa.me/34629494167">Contacta a Gerard Fanals</a>.\n- NO pongas headings H2 extra al final del body que no tengan contenido debajo.\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo en HTML con h2 en formato pregunta, datos citables, caso práctico, listas. Mínimo 800 palabras. Cumple TODAS las reglas de formato.",\n  "faqs": [{"q":"pregunta frecuente","a":"respuesta ≤50 palabras"},{"q":"...","a":"..."},{"q":"...","a":"..."}],\n  "image_prompt": "Describe a photorealistic editorial scene in English that represents the article topic. Think premium tech magazine cover photo. Include relevant realistic elements (devices, workspaces, tools, architecture). Use cinematic lighting with soft warm tones. NO text, NO watermarks, NO stock photo feel. Ultra high quality, 16:9 aspect ratio."\n}';
+                const textPrompt = 'Eres un redactor experto en tecnología e inteligencia artificial, optimizado para GEO (Generative Engine Optimization) y AEO (Answer Engine Optimization). Genera un artículo de blog completo sobre el siguiente tema. El artículo es para la web de ' + CLIENT_CONFIG.name + ', un experto en ' + CLIENT_CONFIG.specialty + '.\n\nTema: ' + topic + '\n\nIMPORTANTE - Optimizaciones GEO/AEO obligatorias:\n1. Usa al menos 2 headings (h2) en formato PREGUNTA (ej: ¿Qué es...? ¿Cómo funciona...?)\n2. Incluye datos/estadísticas citables con fuente (ej: Según McKinsey 2026...)\n3. Incluye un caso de estudio o ejemplo práctico real\n4. Usa listas estructuradas (ul/li) para pasos o beneficios\n5. Respuestas directas y concisas en los primeros párrafos (snippet-ready)\n\nREGLAS DE FORMATO (MUY IMPORTANTE, cumple todas):\n- NUNCA envuelvas un párrafo entero en <strong>. Usa <strong> solo para frases clave de máximo 5-6 palabras.\n- Cada <h2> DEBE tener al menos 1 párrafo <p> debajo. NUNCA pongas un <h2> seguido de otro <h2> sin contenido intermedio.\n- La primera frase del artículo NO debe ser bold/strong.\n- Los datos o estadísticas NO van en el body principal. Solo en el JSON "faqs" y en los campos separados.\n- Usa párrafos cortos (3-4 frases máximo por <p>). Separa ideas en distintos párrafos.\n- Al final del body incluye una frase CTA invitando a contactar a ' + CLIENT_CONFIG.name + ' con un enlace <a href="https://wa.me/' + CLIENT_CONFIG.whatsapp + '">Contacta a ' + CLIENT_CONFIG.name + '</a>.\n- NO pongas headings H2 extra al final del body que no tengan contenido debajo.\n\nResponde SOLO con un JSON válido (sin markdown, sin ```json, solo el JSON puro) con esta estructura exacta:\n{\n  "title": "Título atractivo y SEO-friendly (máx 70 chars)",\n  "tag": "Categoría corta (ej: Agentes IA, Marketing, Automatización, Voz IA, etc.)",\n  "excerpt": "Descripción SEO de 150-160 caracteres",\n  "read_time": "X min lectura",\n  "body": "Contenido completo en HTML con h2 en formato pregunta, datos citables, caso práctico, listas. Mínimo 800 palabras. Cumple TODAS las reglas de formato.",\n  "faqs": [{"q":"pregunta frecuente","a":"respuesta ≤50 palabras"},{"q":"...","a":"..."},{"q":"...","a":"..."}],\n  "image_prompt": "Describe a photorealistic editorial scene in English that represents the article topic. Think premium tech magazine cover photo. Include relevant realistic elements (devices, workspaces, tools, architecture). Use cinematic lighting with soft warm tones. NO text, NO watermarks, NO logos, NO UI overlays. Ultra high quality, 16:9 aspect ratio."\n}';
 
                 const textData = await callGemini(textPrompt);
                 let textContent = textData.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -3299,7 +3308,7 @@
             btn.disabled = true;
 
             try {
-                const prompt = `Eres un experto SEO. Dado el siguiente art\u00edculo, sugiere 6-8 palabras clave relevantes para posicionamiento en Google. El sitio es de Gerard Fanals, especialista en IA y automatizaci\u00f3n.\n\nT\u00edtulo: ${title}\nCategor\u00eda: ${tag}\nContenido: ${body.substring(0, 500)}\n\nResponde SOLO con un JSON array de strings. Ejemplo: ["keyword1", "keyword2"]. Sin explicaciones, solo el array.`;
+                const prompt = `Eres un experto SEO. Dado el siguiente art\u00edculo, sugiere 6-8 palabras clave relevantes para posicionamiento en Google. El sitio es de ${CLIENT_CONFIG.name}, especialista en ${CLIENT_CONFIG.specialty}.\n\nT\u00edtulo: ${title}\nCategor\u00eda: ${tag}\nContenido: ${body.substring(0, 500)}\n\nResponde SOLO con un JSON array de strings. Ejemplo: ["keyword1", "keyword2"]. Sin explicaciones, solo el array.`;
                 const data = await callGemini(prompt);
                 let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
                 text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
@@ -3566,7 +3575,7 @@
             try {
                 const { data: kwData } = await _supabase.from('seo_keywords').select('keyword').eq('type', 'global');
                 const keywords = (kwData || []).map(k => k.keyword).join(', ');
-                const topicPrompt = `Eres un content strategist experto en IA y automatizaci\u00f3n. Genera 4 temas de art\u00edculos de blog \u00fanicos, frescos y con alto potencial SEO para el sitio de Gerard Fanals (especialista en IA para negocios, automatizaci\u00f3n, agentes IA, n8n, LLMs).
+                const topicPrompt = `Eres un content strategist experto en ${CLIENT_CONFIG.specialty}. Genera 4 temas de art\u00edculos de blog \u00fanicos, frescos y con alto potencial SEO para el sitio de ${CLIENT_CONFIG.name} (especialista en ${CLIENT_CONFIG.specialty}, agentes IA, n8n, LLMs).
 
 Keywords del sitio: ${keywords}
 
@@ -3616,7 +3625,7 @@ Responde SOLO con un JSON array de 4 strings con los temas. Ejemplo: ["tema1", "
 
                 try {
                     // Generate article content
-                    const artPrompt = `Crea un art\u00edculo de blog profesional optimizado para GEO y AEO sobre: "${topics[i]}". Autor: Gerard Fanals, experto en IA y automatizaci\u00f3n.
+                    const artPrompt = `Crea un art\u00edculo de blog profesional optimizado para GEO y AEO sobre: "${topics[i]}". Autor: ${CLIENT_CONFIG.name}, experto en ${CLIENT_CONFIG.specialty}.
 
 REQUISITOS GEO/AEO:
 - Al menos 2 headings h2 en formato PREGUNTA (\u00bfQu\u00e9 es...? \u00bfC\u00f3mo funciona...?)
