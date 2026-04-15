@@ -1193,13 +1193,19 @@
                 document.getElementById('stat-articles').textContent = count || 0;
             } catch (e) {}
 
-            // GEO & AEO count
+            // GEO & AEO count (articles with FAQs generated)
             try {
-                const { count } = await _supabase
-                    .from('geo_aeo_articles')
-                    .select('*', { count: 'exact', head: true });
+                const { data: faqs } = await _supabase
+                    .from('faqs')
+                    .select('article_id')
+                    .eq('type', 'article');
+                // Count unique articles that have FAQs
+                var articleIds = new Set();
+                (faqs || []).forEach(function(f) { if (f.article_id) articleIds.add(f.article_id); });
+                var geoCount = articleIds.size;
+                
                 var el = document.getElementById('stat-geo');
-                if (el) el.textContent = count || 0;
+                if (el) el.textContent = geoCount;
             } catch (e) {
                 var el = document.getElementById('stat-geo');
                 if (el) el.textContent = '0';
