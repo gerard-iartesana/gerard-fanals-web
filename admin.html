@@ -1439,7 +1439,6 @@
             <div class="dash-section" id="sec-newsletter">
                 <div class="dash-header">
                     <h1>Newsletter</h1>
-                    <span style="padding:6px 14px;border-radius:10px;background:rgba(88,86,214,0.1);color:#5856d6;font-size:0.75rem;font-weight:700">🚧 Próximamente</span>
                 </div>
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
@@ -1463,41 +1462,70 @@
                         </div>
                     </div>
 
-                    <!-- Coming Soon Features -->
+                    <!-- Schedule Config -->
                     <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
                         <h2 style="font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px">
-                            <span style="font-size:1.2rem">🚀</span> Funcionalidades
+                            <span style="font-size:1.2rem">⏰</span> Programación de envío
                         </h2>
-                        <div style="display:flex;flex-direction:column;gap:12px">
-                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
-                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#007AFF,#5856d6);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">✍️</div>
-                                <div>
-                                    <div style="font-size:0.82rem;font-weight:700">Editor visual</div>
-                                    <div style="font-size:0.7rem;color:var(--text-grey)">Diseña newsletters con plantillas profesionales</div>
-                                </div>
+
+                        <div style="display:flex;gap:12px;margin-bottom:16px">
+                            <div style="flex:1">
+                                <label style="font-size:0.7rem;font-weight:600;color:var(--text-grey);display:block;margin-bottom:6px">DÍA DE ENVÍO</label>
+                                <select id="nl-send-day" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;color:var(--text-main)">
+                                    <option value="1">Lunes</option>
+                                    <option value="2">Martes</option>
+                                    <option value="3">Miércoles</option>
+                                    <option value="4">Jueves</option>
+                                    <option value="5">Viernes</option>
+                                    <option value="6">Sábado</option>
+                                    <option value="0">Domingo</option>
+                                </select>
                             </div>
-                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
-                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#34c759,#30d158);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📊</div>
-                                <div>
-                                    <div style="font-size:0.82rem;font-weight:700">Métricas de envío</div>
-                                    <div style="font-size:0.7rem;color:var(--text-grey)">Aperturas, clicks y conversiones en tiempo real</div>
-                                </div>
-                            </div>
-                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
-                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff9500,#ff6b00);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">⏰</div>
-                                <div>
-                                    <div style="font-size:0.82rem;font-weight:700">Programar envíos</div>
-                                    <div style="font-size:0.7rem;color:var(--text-grey)">Automatiza newsletters semanales o mensuales</div>
-                                </div>
-                            </div>
-                            <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">
-                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff3b30,#ff6b6b);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🤖</div>
-                                <div>
-                                    <div style="font-size:0.82rem;font-weight:700">Generación con IA</div>
-                                    <div style="font-size:0.7rem;color:var(--text-grey)">Crea contenido automáticamente con Gemini</div>
-                                </div>
+                            <div style="flex:1">
+                                <label style="font-size:0.7rem;font-weight:600;color:var(--text-grey);display:block;margin-bottom:6px">HORA DE ENVÍO</label>
+                                <input type="time" id="nl-send-time" value="10:00" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;color:var(--text-main);box-sizing:border-box">
                             </div>
                         </div>
+
+                        <button onclick="saveNewsletterConfig()" style="width:100%;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-weight:700;font-size:0.82rem;cursor:pointer;margin-bottom:16px">💾 Guardar programación</button>
+
+                        <!-- Next send info -->
+                        <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px">
+                            <div style="font-size:0.7rem;font-weight:600;color:var(--text-grey);margin-bottom:4px">PRÓXIMO ENVÍO</div>
+                            <div id="nl-next-send" style="font-size:0.9rem;font-weight:700">—</div>
+                        </div>
+
+                        <!-- Last sent info -->
+                        <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary)">
+                            <div style="font-size:0.7rem;font-weight:600;color:var(--text-grey);margin-bottom:4px">ÚLTIMO ENVÍO</div>
+                            <div id="nl-last-sent" style="font-size:0.9rem;font-weight:700;color:var(--text-grey)">Nunca</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending articles + send -->
+                <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);margin-bottom:24px">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                        <h2 style="font-size:1rem;margin:0;display:flex;align-items:center;gap:8px">
+                            <span style="font-size:1.2rem">📰</span> Artículos pendientes de envío
+                            <span id="nl-pending-count" style="padding:3px 10px;border-radius:8px;background:rgba(52,199,89,0.1);color:#34c759;font-size:0.7rem;font-weight:700">0</span>
+                        </h2>
+                        <button onclick="sendNewsletterNow()" id="nl-send-now-btn" style="padding:10px 20px;border-radius:10px;border:none;background:#34c759;color:white;font-weight:700;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;gap:6px">
+                            🚀 Enviar ahora
+                        </button>
+                    </div>
+                    <div id="nl-pending-articles" style="display:flex;flex-direction:column;gap:8px">
+                        <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Cargando...</p>
+                    </div>
+                </div>
+
+                <!-- Send History -->
+                <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                    <h2 style="font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px">
+                        <span style="font-size:1.2rem">📋</span> Historial de envíos
+                    </h2>
+                    <div id="nl-send-history" style="display:flex;flex-direction:column;gap:8px">
+                        <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Sin envíos todavía</p>
                     </div>
                 </div>
             </div>
@@ -1726,7 +1754,7 @@
                 if (btn.dataset.section === 'articles') { loadArticleStats(); }
                 if (btn.dataset.section === 'meetings') { loadMeetings(); }
                 if (btn.dataset.section === 'soporte') { loadSupportTickets(); }
-                if (btn.dataset.section === 'newsletter') { loadSubscribers(); }
+                if (btn.dataset.section === 'newsletter') { loadSubscribers(); loadNewsletterConfig(); }
             });
         });
 
@@ -1799,6 +1827,175 @@
             } catch(e) {
                 console.log('Error:', e);
             }
+        }
+
+        // --- Newsletter Config & Send ---
+        var NL_DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+        async function loadNewsletterConfig() {
+            try {
+                var { data } = await _supabase.from('newsletter_config').select('*').limit(1).single();
+                if (data) {
+                    document.getElementById('nl-send-day').value = data.send_day || '1';
+                    document.getElementById('nl-send-time').value = data.send_time || '10:00';
+                    if (data.last_sent_at) {
+                        var d = new Date(data.last_sent_at);
+                        document.getElementById('nl-last-sent').textContent = d.toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'}) + ' · ' + d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'});
+                        document.getElementById('nl-last-sent').style.color = '#34c759';
+                    }
+                    updateNextSend(parseInt(data.send_day || '1'), data.send_time || '10:00');
+                }
+            } catch(e) {
+                // Config doesn't exist yet, use defaults
+                updateNextSend(1, '10:00');
+            }
+            loadPendingArticles();
+            loadSendHistory();
+        }
+
+        function updateNextSend(dayOfWeek, timeStr) {
+            var now = new Date();
+            var next = new Date(now);
+            var diff = dayOfWeek - now.getDay();
+            if (diff < 0) diff += 7;
+            if (diff === 0) {
+                var parts = timeStr.split(':');
+                var sendToday = new Date(now);
+                sendToday.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+                if (now >= sendToday) diff = 7;
+            }
+            next.setDate(now.getDate() + diff);
+            var parts = timeStr.split(':');
+            next.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+
+            var el = document.getElementById('nl-next-send');
+            if (el) {
+                el.textContent = NL_DAY_NAMES[next.getDay()] + ' ' + next.toLocaleDateString('es-ES', {day:'numeric',month:'long'}) + ' a las ' + timeStr;
+            }
+        }
+
+        async function saveNewsletterConfig() {
+            var day = document.getElementById('nl-send-day').value;
+            var time = document.getElementById('nl-send-time').value;
+
+            try {
+                // Upsert config (single row)
+                var { data: existing } = await _supabase.from('newsletter_config').select('id').limit(1);
+                if (existing && existing.length > 0) {
+                    await _supabase.from('newsletter_config').update({ send_day: parseInt(day), send_time: time }).eq('id', existing[0].id);
+                } else {
+                    await _supabase.from('newsletter_config').insert({ send_day: parseInt(day), send_time: time });
+                }
+                updateNextSend(parseInt(day), time);
+                alert('✅ Programación guardada');
+            } catch(e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        async function loadPendingArticles() {
+            var container = document.getElementById('nl-pending-articles');
+            var countEl = document.getElementById('nl-pending-count');
+            if (!container) return;
+
+            try {
+                // Get last sent time
+                var lastSent = null;
+                try {
+                    var { data: config } = await _supabase.from('newsletter_config').select('last_sent_at').limit(1).single();
+                    if (config && config.last_sent_at) lastSent = config.last_sent_at;
+                } catch(e) {}
+
+                // Get articles published since last sent
+                var query = _supabase.from('articles').select('id, title, tag, created_at, image').eq('published', true).order('created_at', { ascending: false });
+                if (lastSent) {
+                    query = query.gt('created_at', lastSent);
+                }
+                var { data: articles, error } = await query;
+                if (error) throw error;
+
+                if (countEl) countEl.textContent = (articles || []).length;
+
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;padding:20px 0"><div style="font-size:1.5rem;margin-bottom:6px">✅</div><p style="color:var(--text-grey);font-size:0.82rem">No hay artículos pendientes de envío</p></div>';
+                    return;
+                }
+
+                container.innerHTML = articles.map(function(a) {
+                    var d = new Date(a.created_at);
+                    return '<div style="padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">' +
+                        '<div style="width:40px;height:40px;border-radius:8px;overflow:hidden;flex-shrink:0"><img src="' + (a.image || '') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div>' +
+                        '<div style="flex:1;min-width:0">' +
+                        '<div style="font-size:0.82rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + a.title + '</div>' +
+                        '<div style="font-size:0.7rem;color:var(--text-grey)">' + (a.tag || '') + ' · ' + d.toLocaleDateString('es-ES', {day:'numeric',month:'short'}) + '</div>' +
+                        '</div>' +
+                        '<span style="padding:3px 10px;border-radius:8px;background:rgba(52,199,89,0.1);color:#34c759;font-size:0.65rem;font-weight:700;white-space:nowrap">Pendiente</span>' +
+                        '</div>';
+                }).join('');
+
+            } catch(err) {
+                container.innerHTML = '<p style="color:#ff3b30;font-size:0.82rem">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function loadSendHistory() {
+            var container = document.getElementById('nl-send-history');
+            if (!container) return;
+
+            try {
+                var { data: history, error } = await _supabase.from('newsletter_sends').select('*').order('sent_at', { ascending: false }).limit(10);
+                if (error) throw error;
+
+                if (!history || history.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Sin envíos todavía</p>';
+                    return;
+                }
+
+                container.innerHTML = history.map(function(h) {
+                    var d = new Date(h.sent_at);
+                    return '<div style="padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;justify-content:space-between">' +
+                        '<div>' +
+                        '<div style="font-size:0.82rem;font-weight:600">📧 Newsletter enviada</div>' +
+                        '<div style="font-size:0.7rem;color:var(--text-grey)">' + d.toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'}) + ' · ' + d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}) + '</div>' +
+                        '</div>' +
+                        '<div style="text-align:right">' +
+                        '<div style="font-size:0.82rem;font-weight:700">' + (h.articles_count || 0) + ' arts.</div>' +
+                        '<div style="font-size:0.7rem;color:var(--text-grey)">' + (h.subscribers_count || 0) + ' subs.</div>' +
+                        '</div>' +
+                        '</div>';
+                }).join('');
+
+            } catch(err) {
+                container.innerHTML = '<p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Sin envíos todavía</p>';
+            }
+        }
+
+        async function sendNewsletterNow() {
+            var btn = document.getElementById('nl-send-now-btn');
+            if (!confirm('¿Enviar la newsletter ahora con todos los artículos pendientes?')) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Enviando...';
+
+            try {
+                var response = await fetch('/api/send-newsletter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                var result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Newsletter enviada a ' + result.subscribersCount + ' suscriptores con ' + result.articlesCount + ' artículos');
+                    loadNewsletterConfig();
+                } else {
+                    alert('⚠️ ' + (result.error || 'Error al enviar'));
+                }
+            } catch(e) {
+                alert('❌ Error: ' + e.message);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '🚀 Enviar ahora';
         }
 
         // --- Support Tickets ---
