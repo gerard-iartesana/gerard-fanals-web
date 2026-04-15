@@ -459,6 +459,37 @@
                         <span style="font-size:2.5rem;font-weight:700;color:#007AFF" id="stat-meetings">—</span>
                     </div>
                 </div>
+
+                <!-- AI Assistant Chat -->
+                <div id="ai-chat-box" style="margin-top:28px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-secondary);overflow:hidden;transition:all 0.3s">
+                    <div onclick="toggleAiChat()" style="padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(88,86,214,0.08),rgba(0,122,255,0.08));border-bottom:1px solid var(--border-color)">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#5856d6,#007AFF);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🤖</div>
+                            <div>
+                                <div style="font-weight:700;font-size:0.95rem">Asistente IA</div>
+                                <div style="font-size:0.72rem;color:var(--text-grey)">Pregúntame sobre tu web, artículos, SEO o reuniones</div>
+                            </div>
+                        </div>
+                        <span id="ai-chat-toggle" style="font-size:1.2rem;transition:transform 0.3s;color:var(--text-grey)">▼</span>
+                    </div>
+                    <div id="ai-chat-body" style="display:none">
+                        <div id="ai-chat-messages" style="height:320px;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+                            <div style="align-self:flex-start;max-width:85%;padding:12px 16px;border-radius:16px 16px 16px 4px;background:linear-gradient(135deg,rgba(88,86,214,0.1),rgba(0,122,255,0.08));font-size:0.85rem;line-height:1.5">
+                                👋 ¡Hola! Soy tu asistente IA. Puedo ayudarte con:<br>
+                                <span style="color:var(--text-grey);font-size:0.78rem">
+                                • Estado de tus artículos y SEO<br>
+                                • Información de reuniones<br>
+                                • Sugerencias para mejorar tu web<br>
+                                • Cualquier duda sobre tu dashboard
+                                </span>
+                            </div>
+                        </div>
+                        <div style="padding:12px 16px;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:center">
+                            <input type="text" id="ai-chat-input" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter')sendAiChat()" style="flex:1;padding:10px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.85rem;font-family:Inter,sans-serif;outline:none;transition:border-color 0.3s">
+                            <button onclick="sendAiChat()" id="ai-chat-send" style="width:40px;height:40px;border-radius:14px;border:none;background:linear-gradient(135deg,#5856d6,#007AFF);color:white;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.3s;flex-shrink:0">➤</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Articles List -->
@@ -1186,6 +1217,160 @@
                 if (btn.dataset.section === 'meetings') { loadMeetings(); }
             });
         });
+
+        // --- AI Chat Assistant ---
+        function toggleAiChat() {
+            var body = document.getElementById('ai-chat-body');
+            var toggle = document.getElementById('ai-chat-toggle');
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                toggle.style.transform = 'rotate(180deg)';
+            } else {
+                body.style.display = 'none';
+                toggle.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        async function gatherDashboardContext() {
+            var ctx = {};
+            try {
+                // Articles
+                var { data: articles } = await _supabase.from('articles').select('id, title, slug, tag, published, created_at').order('created_at', { ascending: false });
+                ctx.articles = (articles || []).map(function(a) {
+                    return { title: a.title, tag: a.tag, published: a.published, date: a.created_at ? a.created_at.substring(0,10) : '' };
+                });
+                ctx.totalArticles = ctx.articles.length;
+                ctx.publishedArticles = ctx.articles.filter(function(a) { return a.published; }).length;
+
+                // FAQs
+                var { data: faqs } = await _supabase.from('faqs').select('article_id, type');
+                var faqArticleIds = new Set();
+                (faqs || []).forEach(function(f) { if (f.article_id && f.type === 'article') faqArticleIds.add(f.article_id); });
+                ctx.articlesWithFaqs = faqArticleIds.size;
+                ctx.articlesWithoutFaqs = ctx.publishedArticles - ctx.articlesWithFaqs;
+                ctx.globalFaqs = (faqs || []).filter(function(f) { return f.type === 'global'; }).length;
+
+                // Meetings
+                var now = new Date().toISOString();
+                var { data: upcoming } = await _supabase.from('meetings').select('contact_name, meeting_date, meeting_type, status, notes').gte('meeting_date', now).order('meeting_date', { ascending: true });
+                ctx.upcomingMeetings = (upcoming || []).map(function(m) {
+                    var d = new Date(m.meeting_date);
+                    return {
+                        name: m.contact_name,
+                        date: d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+                        time: d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                        type: m.meeting_type,
+                        status: m.status,
+                        notes: m.notes
+                    };
+                });
+                ctx.totalUpcomingMeetings = ctx.upcomingMeetings.length;
+
+                // SEO score
+                var scoreEl = document.getElementById('resumen-seo-score');
+                ctx.seoScore = scoreEl ? scoreEl.textContent.trim() : 'N/A';
+
+                ctx.domain = 'gerardfanals.online';
+                ctx.siteStatus = 'Online';
+            } catch(e) {
+                ctx.error = e.message;
+            }
+            return ctx;
+        }
+
+        var _aiChatHistory = [];
+
+        async function sendAiChat() {
+            var input = document.getElementById('ai-chat-input');
+            var msg = input.value.trim();
+            if (!msg) return;
+
+            var apiKey = getGeminiKey();
+            if (!apiKey) {
+                addAiMessage('⚠️ Configura tu API Key de Gemini en la sección "Nuevo Artículo" primero.', 'bot');
+                return;
+            }
+
+            // Add user message
+            addAiMessage(msg, 'user');
+            input.value = '';
+            input.disabled = true;
+            document.getElementById('ai-chat-send').disabled = true;
+
+            // Show typing
+            var typingId = 'typing-' + Date.now();
+            addAiMessage('<div id="' + typingId + '" style="display:flex;gap:4px;padding:4px 0"><span style="width:8px;height:8px;border-radius:50%;background:var(--text-grey);animation:aiBounce 1.4s infinite ease-in-out both"></span><span style="width:8px;height:8px;border-radius:50%;background:var(--text-grey);animation:aiBounce 1.4s infinite ease-in-out both;animation-delay:0.16s"></span><span style="width:8px;height:8px;border-radius:50%;background:var(--text-grey);animation:aiBounce 1.4s infinite ease-in-out both;animation-delay:0.32s"></span></div>', 'bot', true);
+
+            try {
+                // Gather context
+                var context = await gatherDashboardContext();
+
+                var systemPrompt = 'Eres el asistente IA del dashboard de Gerard Fanals (gerardfanals.online). ' +
+                    'Responde en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
+                    'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
+                    'Aquí tienes el contexto actual del dashboard:\n\n' +
+                    JSON.stringify(context, null, 2) + '\n\n' +
+                    'Historial de conversación:\n' +
+                    _aiChatHistory.map(function(h) { return h.role + ': ' + h.text; }).join('\n') + '\n\n' +
+                    'Pregunta del usuario: ' + msg;
+
+                _aiChatHistory.push({ role: 'user', text: msg });
+
+                var res = await callGemini(systemPrompt, 'gemini-2.5-flash');
+                var reply = res.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude generar una respuesta.';
+
+                // Clean up markdown
+                reply = reply.replace(/\*\*/g, '').replace(/^#+\s*/gm, '').trim();
+
+                _aiChatHistory.push({ role: 'assistant', text: reply });
+                if (_aiChatHistory.length > 20) _aiChatHistory = _aiChatHistory.slice(-20);
+
+                // Remove typing, add response
+                removeTyping(typingId);
+                addAiMessage(reply, 'bot');
+
+            } catch(err) {
+                removeTyping(typingId);
+                addAiMessage('❌ Error: ' + err.message, 'bot');
+            }
+
+            input.disabled = false;
+            document.getElementById('ai-chat-send').disabled = false;
+            input.focus();
+        }
+
+        function addAiMessage(text, role, isHtml) {
+            var container = document.getElementById('ai-chat-messages');
+            var div = document.createElement('div');
+
+            if (role === 'user') {
+                div.style.cssText = 'align-self:flex-end;max-width:80%;padding:10px 16px;border-radius:16px 16px 4px 16px;background:linear-gradient(135deg,#5856d6,#007AFF);color:white;font-size:0.85rem;line-height:1.5;word-break:break-word';
+            } else {
+                div.style.cssText = 'align-self:flex-start;max-width:85%;padding:12px 16px;border-radius:16px 16px 16px 4px;background:linear-gradient(135deg,rgba(88,86,214,0.1),rgba(0,122,255,0.08));font-size:0.85rem;line-height:1.5;word-break:break-word';
+            }
+
+            if (isHtml) {
+                div.innerHTML = text;
+            } else {
+                div.innerHTML = text.replace(/\n/g, '<br>');
+            }
+
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTyping(id) {
+            var el = document.getElementById(id);
+            if (el && el.parentElement) el.parentElement.remove();
+        }
+
+        // Bounce animation for typing dots
+        if (!document.getElementById('ai-bounce-style')) {
+            var style = document.createElement('style');
+            style.id = 'ai-bounce-style';
+            style.textContent = '@keyframes aiBounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}';
+            document.head.appendChild(style);
+        }
 
         // --- Load Stats ---
         async function loadStats() {
