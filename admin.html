@@ -1252,19 +1252,6 @@
                 </div>
                 <p style="color:var(--text-grey);font-size:0.95rem;margin-bottom:24px">¿Tienes dudas o quieres solicitar cambios en tu proyecto? Envía tu petición y te responderemos lo antes posible.</p>
 
-                <!-- Resend Config -->
-                <div style="margin-bottom:20px;padding:14px 20px;border-radius:14px;background:rgba(0,122,255,0.06);border:1px solid rgba(0,122,255,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-                    <span style="font-size:0.82rem;font-weight:600;color:#007AFF">📧 Resend API</span>
-                    <input type="password" id="resend-api-key" placeholder="Resend API Key (re_...)" value="" style="flex:1;min-width:200px;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:monospace">
-                    <button onclick="localStorage.setItem('gf_resend_key',document.getElementById('resend-api-key').value);document.getElementById('resend-save-ok').style.display='inline'" style="padding:8px 16px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.78rem;cursor:pointer">Guardar</button>
-                    <span id="resend-save-ok" style="display:none;font-size:0.78rem;color:#34c759;font-weight:600">✅ Guardada</span>
-                </div>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        var k = localStorage.getItem('gf_resend_key');
-                        if (k) document.getElementById('resend-api-key').value = k;
-                    });
-                </script>
 
                 <!-- New Ticket Form -->
                 <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);margin-bottom:24px">
@@ -1397,10 +1384,6 @@
         // --- Support Tickets ---
         var DEVELOPER_EMAIL = 'gerard@iartesana.es';
 
-        function getResendKey() {
-            return localStorage.getItem('gf_resend_key') || '';
-        }
-
         async function ensureSupportTable() {
             try {
                 await _supabase.from('support_tickets').select('id').limit(1);
@@ -1429,7 +1412,7 @@
             statusEl.textContent = '';
 
             try {
-                // Save to Supabase
+                // Save to Supabase (email sent automatically via DB trigger)
                 var { error } = await _supabase.from('support_tickets').insert({
                     subject: subject,
                     type: type,
@@ -1440,61 +1423,13 @@
 
                 if (error) throw error;
 
-                // Send email via Resend API
-                var resendKey = getResendKey();
-                var typeLabels = { duda: 'Duda', cambio: 'Cambio', error: 'Error', mejora: 'Mejora', otro: 'Otro' };
-                var typeEmojis = { duda: '❓', cambio: '🔧', error: '🐛', mejora: '💡', otro: '📝' };
-
-                if (resendKey) {
-                    var emailHtml = '<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">' +
-                        '<div style="background:linear-gradient(135deg,#007AFF,#5856d6);padding:24px;border-radius:16px 16px 0 0;color:white">' +
-                        '<h1 style="margin:0;font-size:1.3rem">' + (typeEmojis[type] || '📝') + ' Nuevo ticket de soporte</h1>' +
-                        '</div>' +
-                        '<div style="padding:24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 16px 16px">' +
-                        '<table style="width:100%;border-collapse:collapse;font-size:0.9rem">' +
-                        '<tr><td style="padding:8px 0;color:#888;width:100px">Asunto:</td><td style="padding:8px 0;font-weight:600">' + subject + '</td></tr>' +
-                        '<tr><td style="padding:8px 0;color:#888">Tipo:</td><td style="padding:8px 0">' + (typeEmojis[type] || '') + ' ' + (typeLabels[type] || type) + '</td></tr>' +
-                        '<tr><td style="padding:8px 0;color:#888">Fecha:</td><td style="padding:8px 0">' + new Date().toLocaleString('es-ES') + '</td></tr>' +
-                        '</table>' +
-                        '<hr style="border:none;border-top:1px solid #e5e5e5;margin:16px 0">' +
-                        '<h3 style="font-size:0.85rem;color:#888;margin:0 0 8px">Descripción:</h3>' +
-                        '<p style="margin:0;line-height:1.6;white-space:pre-wrap">' + description.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>' +
-                        '<hr style="border:none;border-top:1px solid #e5e5e5;margin:16px 0">' +
-                        '<p style="font-size:0.75rem;color:#aaa;margin:0">Enviado desde el Dashboard de gerardfanals.online</p>' +
-                        '</div></div>';
-
-                    var res = await fetch('https://api.resend.com/emails', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + resendKey
-                        },
-                        body: JSON.stringify({
-                            from: 'Dashboard Soporte <soporte@gerardfanals.online>',
-                            to: [DEVELOPER_EMAIL],
-                            subject: '[Soporte] ' + (typeLabels[type] || type) + ': ' + subject,
-                            html: emailHtml
-                        })
-                    });
-
-                    if (!res.ok) {
-                        var errData = await res.json();
-                        console.log('Resend error:', errData);
-                        statusEl.textContent = '✅ Guardado · ⚠️ Email no enviado (verifica API key)';
-                        statusEl.style.color = '#ff9500';
-                    } else {
-                        statusEl.textContent = '✅ Petición enviada y email notificado';
-                        statusEl.style.color = '#34c759';
-                    }
-                } else {
-                    statusEl.textContent = '✅ Guardado · Configura Resend API Key para notificación email';
-                    statusEl.style.color = '#ff9500';
-                }
-
                 // Reset form
                 document.getElementById('ticket-subject').value = '';
                 document.getElementById('ticket-description').value = '';
                 document.getElementById('ticket-type').selectedIndex = 0;
+
+                statusEl.textContent = '✅ Petición enviada correctamente · Notificación enviada al desarrollador';
+                statusEl.style.color = '#34c759';
 
                 loadSupportTickets();
 
