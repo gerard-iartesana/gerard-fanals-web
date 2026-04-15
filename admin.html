@@ -1580,11 +1580,31 @@
                         '</div>' +
                         '</div>' +
                         (t.description ? '<div style="font-size:0.8rem;color:var(--text-grey);margin-top:10px;line-height:1.4;padding-top:10px;border-top:1px solid var(--border-color)">' + t.description.substring(0, 200) + (t.description.length > 200 ? '...' : '') + '</div>' : '') +
+                        // Developer notes section
+                        '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color)">' +
+                        (t.dev_notes ? '<div style="padding:10px 14px;border-radius:10px;background:rgba(0,122,255,0.06);border-left:3px solid #007AFF;margin-bottom:8px"><div style="font-size:0.68rem;font-weight:700;color:#007AFF;margin-bottom:4px">💬 Nota del desarrollador</div><div style="font-size:0.78rem;color:var(--text-primary);line-height:1.4;white-space:pre-wrap">' + t.dev_notes + '</div></div>' : '') +
+                        '<div style="display:flex;gap:8px;align-items:flex-start">' +
+                        '<textarea id="devnote-' + t.id + '" rows="2" placeholder="Escribe una nota o respuesta..." style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.78rem;font-family:Inter,sans-serif;resize:vertical;box-sizing:border-box">' + (t.dev_notes || '') + '</textarea>' +
+                        '<button onclick="saveDevNote(\'' + t.id + '\')" style="padding:8px 14px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.72rem;cursor:pointer;white-space:nowrap">💾 Guardar</button>' +
+                        '</div>' +
+                        '</div>' +
                         '</div>';
                 }).join('');
 
             } catch(err) {
                 list.innerHTML = '<p style="color:#ff3b30;font-size:0.85rem">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function saveDevNote(ticketId) {
+            var textarea = document.getElementById('devnote-' + ticketId);
+            if (!textarea) return;
+            var note = textarea.value.trim();
+            try {
+                await _supabase.from('support_tickets').update({ dev_notes: note }).eq('id', ticketId);
+                loadSupportTickets();
+            } catch(e) {
+                console.log('Error saving note:', e);
             }
         }
 
