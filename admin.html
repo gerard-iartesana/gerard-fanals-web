@@ -448,7 +448,11 @@
                     </div>
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('geo')">
                         <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos GEO & AEO</span>
-                        <span style="font-size:2.5rem;font-weight:700;color:#5856d6" id="stat-geo">—</span>
+                        <div id="stat-geo" style="display:flex;align-items:baseline;gap:8px">
+                            <span style="font-size:2.2rem;font-weight:700;color:#34c759">—</span>
+                            <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600">/</span>
+                            <span style="font-size:1.4rem;font-weight:700;color:#ff3b30">—</span>
+                        </div>
                     </div>
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('meetings')">
                         <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Reuniones Agendadas</span>
@@ -1195,6 +1199,12 @@
 
             // GEO & AEO count (articles with FAQs generated)
             try {
+                // Get total published articles
+                const { count: totalArticles } = await _supabase
+                    .from('articles')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('published', true);
+                
                 const { data: faqs } = await _supabase
                     .from('faqs')
                     .select('article_id')
@@ -1202,13 +1212,19 @@
                 // Count unique articles that have FAQs
                 var articleIds = new Set();
                 (faqs || []).forEach(function(f) { if (f.article_id) articleIds.add(f.article_id); });
-                var geoCount = articleIds.size;
+                var withFaqs = articleIds.size;
+                var withoutFaqs = Math.max(0, (totalArticles || 0) - withFaqs);
                 
                 var el = document.getElementById('stat-geo');
-                if (el) el.textContent = geoCount;
+                if (el) {
+                    el.innerHTML = '<span style="font-size:2.2rem;font-weight:700;color:#34c759">' + withFaqs + '</span>' +
+                        '<span style="font-size:0.8rem;color:var(--text-grey);font-weight:600"> ✓ / </span>' +
+                        '<span style="font-size:1.4rem;font-weight:700;color:' + (withoutFaqs > 0 ? '#ff3b30' : '#34c759') + '">' + withoutFaqs + '</span>' +
+                        '<span style="font-size:0.8rem;color:var(--text-grey);font-weight:600"> ✗</span>';
+                }
             } catch (e) {
                 var el = document.getElementById('stat-geo');
-                if (el) el.textContent = '0';
+                if (el) el.innerHTML = '<span style="font-size:2.2rem;font-weight:700;color:var(--text-grey)">0</span>';
             }
 
             // Upcoming meetings count
