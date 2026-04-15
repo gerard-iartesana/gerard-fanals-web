@@ -429,7 +429,7 @@
                     </button>
                 </div>
                 <p style="color:var(--text-grey);font-size:1.1rem;margin-bottom:30px">Bienvenido al panel de administración. Desde aquí puedes gestionar los artículos del blog.</p>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
                     <div class="article-row" style="flex-direction:column;align-items:flex-start">
                         <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos Publicados</span>
                         <span style="font-size:2.5rem;font-weight:700" id="stat-articles">6</span>
@@ -445,6 +445,14 @@
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('seo')">
                         <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Score SEO</span>
                         <div id="resumen-seo-score"><span style="font-size:2.5rem;font-weight:700;color:var(--text-grey)">—</span></div>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('geo')">
+                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos GEO & AEO</span>
+                        <span style="font-size:2.5rem;font-weight:700;color:#5856d6" id="stat-geo">—</span>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('meetings')">
+                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Reuniones Agendadas</span>
+                        <span style="font-size:2.5rem;font-weight:700;color:#007AFF" id="stat-meetings">—</span>
                     </div>
                 </div>
             </div>
@@ -1184,6 +1192,32 @@
                     .eq('published', true);
                 document.getElementById('stat-articles').textContent = count || 0;
             } catch (e) {}
+
+            // GEO & AEO count
+            try {
+                const { count } = await _supabase
+                    .from('geo_aeo_articles')
+                    .select('*', { count: 'exact', head: true });
+                var el = document.getElementById('stat-geo');
+                if (el) el.textContent = count || 0;
+            } catch (e) {
+                var el = document.getElementById('stat-geo');
+                if (el) el.textContent = '0';
+            }
+
+            // Upcoming meetings count
+            try {
+                var now = new Date().toISOString();
+                const { count } = await _supabase
+                    .from('meetings')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('meeting_date', now);
+                var el = document.getElementById('stat-meetings');
+                if (el) el.textContent = count || 0;
+            } catch (e) {
+                var el = document.getElementById('stat-meetings');
+                if (el) el.textContent = '0';
+            }
         }
 
         // --- Load Articles List from Supabase ---
