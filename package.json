@@ -1,0 +1,8 @@
+{
+  "name": "gerard-fanals-web",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
