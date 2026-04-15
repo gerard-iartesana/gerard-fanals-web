@@ -366,11 +366,31 @@
                 <p>Artículos sobre IA, automatización y tecnología aplicada a negocios.</p>
             </div>
             <div class="news-preview" id="news-preview"></div>
-            <div class="text-center" style="margin-top:40px">
+            <div class="text-center" style="margin-top:40px;display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
                 <a href="blog.html" class="link-apple-more">Ver todas las noticias <span>&rarr;</span></a>
+                <button onclick="openNewsletterPopup()" class="btn-newsletter-signup">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Suscríbete a la Newsletter
+                </button>
             </div>
         </div>
     </section>
+
+    <!-- Newsletter Popup -->
+    <div id="newsletter-popup" class="newsletter-overlay" style="display:none">
+        <div class="newsletter-popup-card">
+            <button class="newsletter-close" onclick="closeNewsletterPopup()">&times;</button>
+            <div class="newsletter-popup-icon">📧</div>
+            <h3 class="newsletter-popup-title">Suscríbete a la Newsletter</h3>
+            <p class="newsletter-popup-desc">Recibe artículos sobre IA, automatización y tecnología directamente en tu correo. Sin spam, solo contenido de valor.</p>
+            <form id="newsletter-form" onsubmit="return submitNewsletter(event)">
+                <input type="text" id="nl-name" placeholder="Tu nombre" required class="newsletter-input">
+                <input type="email" id="nl-email" placeholder="tu@email.com" required class="newsletter-input">
+                <button type="submit" id="nl-submit" class="newsletter-submit-btn">Suscribirme ✉️</button>
+            </form>
+            <div id="nl-feedback" style="display:none;margin-top:16px;text-align:center;font-size:0.85rem;font-weight:600"></div>
+        </div>
+    </div>
 
     <!-- Sección FAQs (Dynamic from Supabase) -->
     <section id="faqs" class="section bg-secondary">
@@ -434,6 +454,75 @@
             }
         } catch(e) {}
     })();
+
+    // --- Newsletter Popup ---
+    function openNewsletterPopup() {
+        document.getElementById('newsletter-popup').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        setTimeout(function() {
+            document.querySelector('.newsletter-popup-card').style.transform = 'scale(1)';
+            document.querySelector('.newsletter-popup-card').style.opacity = '1';
+        }, 10);
+    }
+    function closeNewsletterPopup() {
+        var card = document.querySelector('.newsletter-popup-card');
+        card.style.transform = 'scale(0.95)';
+        card.style.opacity = '0';
+        setTimeout(function() {
+            document.getElementById('newsletter-popup').style.display = 'none';
+            document.body.style.overflow = '';
+            // Reset form
+            document.getElementById('newsletter-form').style.display = 'block';
+            document.getElementById('nl-feedback').style.display = 'none';
+        }, 250);
+    }
+    // Close on overlay click
+    document.getElementById('newsletter-popup').addEventListener('click', function(e) {
+        if (e.target === this) closeNewsletterPopup();
+    });
+
+    async function submitNewsletter(e) {
+        e.preventDefault();
+        var name = document.getElementById('nl-name').value.trim();
+        var email = document.getElementById('nl-email').value.trim();
+        var btn = document.getElementById('nl-submit');
+        var feedback = document.getElementById('nl-feedback');
+
+        if (!email) return false;
+
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+
+        try {
+            var { error } = await _supabase.from('newsletter_subscribers').insert({
+                name: name || null,
+                email: email,
+                created_at: new Date().toISOString()
+            });
+
+            if (error) {
+                if (error.message.includes('unique') || error.message.includes('duplicate')) {
+                    feedback.style.color = '#ff9500';
+                    feedback.textContent = '⚠️ Este email ya está registrado';
+                } else {
+                    throw error;
+                }
+            } else {
+                feedback.style.color = '#34c759';
+                feedback.textContent = '✅ ¡Suscripción exitosa! Bienvenido/a';
+                document.getElementById('newsletter-form').style.display = 'none';
+            }
+            feedback.style.display = 'block';
+        } catch(err) {
+            feedback.style.color = '#ff3b30';
+            feedback.textContent = '❌ Error: ' + err.message;
+            feedback.style.display = 'block';
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Suscribirme ✉️';
+        return false;
+    }
     </script>
 </body>
 </html>
