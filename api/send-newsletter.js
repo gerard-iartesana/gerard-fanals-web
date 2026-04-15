@@ -30,18 +30,32 @@ module.exports = async function handler(req, res) {
             }
         } catch (e) {}
 
-        // 2. Get pending articles (published since last send)
-        let query = supabase.from('articles')
-            .select('id, title, tag, excerpt, image, slug, created_at')
-            .eq('published', true)
-            .order('created_at', { ascending: false });
+        // 2. Get articles - either specific IDs or all pending
+        const { article_ids } = req.body || {};
+        let articles;
 
-        if (lastSent) {
-            query = query.gt('created_at', lastSent);
+        if (article_ids && article_ids.length > 0) {
+            // Manual send: specific articles selected by user
+            const { data, error: artError } = await supabase.from('articles')
+                .select('id, title, tag, excerpt, image, slug, created_at')
+                .in('id', article_ids)
+                .eq('published', true)
+                .order('created_at', { ascending: false });
+            if (artError) throw artError;
+            articles = data;
+        } else {
+            // Cron send: all pending since last send
+            let query = supabase.from('articles')
+                .select('id, title, tag, excerpt, image, slug, created_at')
+                .eq('published', true)
+                .order('created_at', { ascending: false });
+            if (lastSent) {
+                query = query.gt('created_at', lastSent);
+            }
+            const { data, error: artError } = await query;
+            if (artError) throw artError;
+            articles = data;
         }
-
-        const { data: articles, error: artError } = await query;
-        if (artError) throw artError;
 
         if (!articles || articles.length === 0) {
             return res.status(200).json({ success: false, error: 'No hay artículos pendientes de envío' });
