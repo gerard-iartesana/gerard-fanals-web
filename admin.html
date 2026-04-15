@@ -424,6 +424,14 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 Soporte
             </button>
+            <button class="dash-nav-item" data-section="newsletter">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                Newsletter
+            </button>
+            <button class="dash-nav-item" data-section="social">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                Redes Sociales
+            </button>
             <div style="flex:1"></div>
             <a href="index.html" class="dash-nav-item" style="opacity:0.6;text-decoration:none">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
@@ -445,34 +453,61 @@
                     </button>
                 </div>
                 <p style="color:var(--text-grey);font-size:1.1rem;margin-bottom:30px">Bienvenido al panel de administración. Desde aquí puedes gestionar los artículos del blog.</p>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start">
-                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos Publicados</span>
-                        <span style="font-size:2.5rem;font-weight:700" id="stat-articles">6</span>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos</span>
+                        <span style="font-size:1.6rem;font-weight:700" id="stat-articles">—</span>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start">
-                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Estado del Sitio</span>
-                        <span style="font-size:2.5rem;font-weight:700;color:#34c759">Online</span>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Estado</span>
+                        <span style="font-size:1.2rem;font-weight:700;color:#34c759">🟢 Online</span>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start">
-                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Dominio</span>
-                        <span style="font-size:1.2rem;font-weight:600">gerardfanals.online</span>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Dominio</span>
+                        <span style="font-size:0.9rem;font-weight:600" id="resumen-domain">—</span>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('seo')">
-                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Score SEO</span>
-                        <div id="resumen-seo-score"><span style="font-size:2.5rem;font-weight:700;color:var(--text-grey)">—</span></div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('seo')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Score SEO</span>
+                        <div id="resumen-seo-score"><span style="font-size:1.6rem;font-weight:700;color:var(--text-grey)">—</span></div>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('geo')">
-                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos GEO & AEO</span>
-                        <div id="stat-geo" style="display:flex;align-items:baseline;gap:8px">
-                            <span style="font-size:2.2rem;font-weight:700;color:#34c759">—</span>
-                            <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600">/</span>
-                            <span style="font-size:1.4rem;font-weight:700;color:#ff3b30">—</span>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('geo')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">GEO & AEO</span>
+                        <div id="stat-geo" style="display:flex;align-items:baseline;gap:4px">
+                            <span style="font-size:1.4rem;font-weight:700;color:#34c759">—</span>
+                            <span style="font-size:0.7rem;color:var(--text-grey)">/</span>
+                            <span style="font-size:1rem;font-weight:700;color:#ff3b30">—</span>
                         </div>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;cursor:pointer" onclick="showSection('meetings')">
-                        <span style="font-size:0.8rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Reuniones Agendadas</span>
-                        <span style="font-size:2.5rem;font-weight:700;color:#007AFF" id="stat-meetings">—</span>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('meetings')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Reuniones</span>
+                        <span style="font-size:1.6rem;font-weight:700;color:#007AFF" id="stat-meetings">—</span>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('soporte')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Peticiones</span>
+                        <div id="stat-tickets" style="display:flex;align-items:baseline;gap:4px">
+                            <span style="font-size:1.4rem;font-weight:700;color:#34c759">—</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)">✓</span>
+                            <span style="font-size:0.7rem;color:var(--text-grey)">/</span>
+                            <span style="font-size:1rem;font-weight:700;color:#ff9500">—</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)">⏳</span>
+                        </div>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('cobros')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Cobros</span>
+                        <div id="stat-cobros">
+                            <span style="font-size:1.3rem;font-weight:700">0</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)"> ops · </span>
+                            <span style="font-size:0.9rem;font-weight:700;color:#34c759">0€</span>
+                        </div>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('ads')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">ADS</span>
+                        <div id="stat-ads">
+                            <span style="font-size:1.3rem;font-weight:700">0</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)"> anuncios · </span>
+                            <span style="font-size:0.9rem;font-weight:700;color:#007AFF">0</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)"> leads</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1321,6 +1356,67 @@
                 </div>
             </div>
 
+            <!-- Newsletter Section -->
+            <div class="dash-section" id="sec-newsletter">
+                <div class="dash-header">
+                    <h1>Newsletter</h1>
+                    <span style="padding:6px 14px;border-radius:10px;background:rgba(88,86,214,0.1);color:#5856d6;font-size:0.75rem;font-weight:700">🚧 Próximamente</span>
+                </div>
+                <div style="text-align:center;padding:60px 20px">
+                    <div style="font-size:4rem;margin-bottom:16px">📧</div>
+                    <h2 style="font-size:1.4rem;margin:0 0 12px">Lanzar Newsletter</h2>
+                    <p style="color:var(--text-grey);font-size:0.95rem;max-width:500px;margin:0 auto 30px;line-height:1.6">Envía newsletters a tus suscriptores directamente desde el dashboard. Diseña, programa y analiza el rendimiento de cada envío.</p>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:600px;margin:0 auto">
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">✍️</div>
+                            <div style="font-size:0.78rem;font-weight:700">Editor visual</div>
+                            <div style="font-size:0.7rem;color:var(--text-grey);margin-top:4px">Diseña con drag & drop</div>
+                        </div>
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">📊</div>
+                            <div style="font-size:0.78rem;font-weight:700">Métricas</div>
+                            <div style="font-size:0.7rem;color:var(--text-grey);margin-top:4px">Aperturas y clicks</div>
+                        </div>
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">⏰</div>
+                            <div style="font-size:0.78rem;font-weight:700">Programar</div>
+                            <div style="font-size:0.7rem;color:var(--text-grey);margin-top:4px">Envíos automáticos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media Section -->
+            <div class="dash-section" id="sec-social">
+                <div class="dash-header">
+                    <h1>Redes Sociales</h1>
+                    <span style="padding:6px 14px;border-radius:10px;background:rgba(88,86,214,0.1);color:#5856d6;font-size:0.75rem;font-weight:700">🚧 Próximamente</span>
+                </div>
+                <div style="text-align:center;padding:60px 20px">
+                    <div style="font-size:4rem;margin-bottom:16px">📱</div>
+                    <h2 style="font-size:1.4rem;margin:0 0 12px">Publicaciones en Redes</h2>
+                    <p style="color:var(--text-grey);font-size:0.95rem;max-width:500px;margin:0 auto 30px;line-height:1.6">Gestiona y programa publicaciones en Instagram, LinkedIn, X y Facebook desde un solo lugar. Analiza el rendimiento de cada post.</p>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:600px;margin:0 auto">
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">📸</div>
+                            <div style="font-size:0.75rem;font-weight:700">Instagram</div>
+                        </div>
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">💼</div>
+                            <div style="font-size:0.75rem;font-weight:700">LinkedIn</div>
+                        </div>
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">🐦</div>
+                            <div style="font-size:0.75rem;font-weight:700">X</div>
+                        </div>
+                        <div style="padding:20px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-card)">
+                            <div style="font-size:1.5rem;margin-bottom:8px">👥</div>
+                            <div style="font-size:0.75rem;font-weight:700">Facebook</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
         </main>
     </div>
@@ -1764,6 +1860,10 @@
 
         // --- Load Stats ---
         async function loadStats() {
+            // Set domain from config
+            var domainEl = document.getElementById('resumen-domain');
+            if (domainEl) domainEl.textContent = CLIENT_CONFIG.domain;
+
             try {
                 const { count } = await _supabase
                     .from('articles')
@@ -1774,7 +1874,6 @@
 
             // GEO & AEO count (articles with FAQs generated)
             try {
-                // Get total published articles
                 const { count: totalArticles } = await _supabase
                     .from('articles')
                     .select('id', { count: 'exact', head: true })
@@ -1784,7 +1883,6 @@
                     .from('faqs')
                     .select('article_id')
                     .eq('type', 'article');
-                // Count unique articles that have FAQs
                 var articleIds = new Set();
                 (faqs || []).forEach(function(f) { if (f.article_id) articleIds.add(f.article_id); });
                 var withFaqs = articleIds.size;
@@ -1792,14 +1890,14 @@
                 
                 var el = document.getElementById('stat-geo');
                 if (el) {
-                    el.innerHTML = '<span style="font-size:2.2rem;font-weight:700;color:#34c759">' + withFaqs + '</span>' +
-                        '<span style="font-size:0.8rem;color:var(--text-grey);font-weight:600"> ✓ / </span>' +
-                        '<span style="font-size:1.4rem;font-weight:700;color:' + (withoutFaqs > 0 ? '#ff3b30' : '#34c759') + '">' + withoutFaqs + '</span>' +
-                        '<span style="font-size:0.8rem;color:var(--text-grey);font-weight:600"> ✗</span>';
+                    el.innerHTML = '<span style="font-size:1.4rem;font-weight:700;color:#34c759">' + withFaqs + '</span>' +
+                        '<span style="font-size:0.65rem;color:var(--text-grey)"> ✓ / </span>' +
+                        '<span style="font-size:1rem;font-weight:700;color:' + (withoutFaqs > 0 ? '#ff3b30' : '#34c759') + '">' + withoutFaqs + '</span>' +
+                        '<span style="font-size:0.65rem;color:var(--text-grey)"> ✗</span>';
                 }
             } catch (e) {
                 var el = document.getElementById('stat-geo');
-                if (el) el.innerHTML = '<span style="font-size:2.2rem;font-weight:700;color:var(--text-grey)">0</span>';
+                if (el) el.innerHTML = '<span style="font-size:1.4rem;font-weight:700;color:var(--text-grey)">0</span>';
             }
 
             // Upcoming meetings count
@@ -1815,6 +1913,25 @@
                 var el = document.getElementById('stat-meetings');
                 if (el) el.textContent = '0';
             }
+
+            // Support tickets stats
+            try {
+                var { data: tickets } = await _supabase
+                    .from('support_tickets')
+                    .select('status');
+                var resolved = 0, pending = 0;
+                (tickets || []).forEach(function(t) {
+                    if (t.status === 'resolved' || t.status === 'closed') resolved++;
+                    else pending++;
+                });
+                var el = document.getElementById('stat-tickets');
+                if (el) {
+                    el.innerHTML = '<span style="font-size:1.4rem;font-weight:700;color:#34c759">' + resolved + '</span>' +
+                        '<span style="font-size:0.65rem;color:var(--text-grey)"> ✓ / </span>' +
+                        '<span style="font-size:1rem;font-weight:700;color:#ff9500">' + pending + '</span>' +
+                        '<span style="font-size:0.65rem;color:var(--text-grey)"> ⏳</span>';
+                }
+            } catch (e) {}
         }
 
         // --- Load Articles List from Supabase ---
