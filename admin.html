@@ -6709,14 +6709,18 @@ Solo JSON, sin explicaciones ni markdown.`;
                 return;
             }
 
-            if (btn) { btn.textContent = '⏳'; btn.classList.add('loading'); }
+            // Show context panel — returns user instructions or null if cancelled
+            var userCtx = await _biShowContextPanel(btn, block, field);
+            if (userCtx === null) return; // cancelled
+
+            if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
             _biStatus(block, '✦ Generando con IA...', 'info');
             try {
-                var result = await callGemini(
-                    'Eres un experto en branding y comunicacion corporativa. Responde SOLO con el texto solicitado, sin explicaciones adicionales, sin comillas, sin formato markdown.\n\n' + prompt,
-                    'gemini-2.5-flash'
-                );
-                // callGemini returns full JSON — extract the text
+                var fullPrompt = 'Eres un experto en branding y comunicacion corporativa. Responde SOLO con el texto solicitado, sin explicaciones adicionales, sin comillas, sin formato markdown.\n\n'
+                    + prompt
+                    + (userCtx ? '\n\nInstrucciones adicionales del usuario: ' + userCtx : '');
+
+                var result = await callGemini(fullPrompt, 'gemini-2.5-flash');
                 var text = result && result.candidates && result.candidates[0]
                     ? result.candidates[0].content.parts[0].text
                     : (typeof result === 'string' ? result : null);
@@ -6730,9 +6734,67 @@ Solo JSON, sin explicaciones ni markdown.`;
             } catch(e) {
                 _biStatus(block, '❌ Error IA: ' + e.message, 'err');
             } finally {
-                if (btn) { btn.textContent = '✦'; btn.classList.remove('loading'); }
+                if (btn) { btn.textContent = '✦'; btn.disabled = false; }
             }
         }
+
+        function _biShowContextPanel(refBtn, block, field) {
+            return new Promise(function(resolve) {
+                // Remove any existing panel
+                var old = document.getElementById('bi-ctx-panel');
+                if (old) old.remove();
+
+                var wrap = refBtn ? refBtn.closest('.bi-input-wrap') : null;
+                if (!wrap) { resolve(''); return; }
+
+                var panel = document.createElement('div');
+                panel.id = 'bi-ctx-panel';
+                panel.style.cssText = 'margin-top:8px;padding:10px;border-radius:12px;border:1px solid rgba(88,86,214,0.25);background:rgba(88,86,214,0.05);display:flex;flex-direction:column;gap:8px;animation:fadeIn 0.2s ease';
+
+                var ta = document.createElement('textarea');
+                ta.placeholder = 'Instrucciones adicionales (opcional):\nEj: hazlo más informal, enfocado en B2B, menciona la IA...';
+                ta.style.cssText = 'width:100%;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-main);padding:8px 10px;font-size:0.78rem;font-family:Inter,sans-serif;resize:none;outline:none;min-height:60px;box-sizing:border-box';
+
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;gap:8px;justify-content:flex-end';
+
+                var cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Cancelar';
+                cancelBtn.style.cssText = 'padding:6px 14px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.75rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif';
+
+                var genBtn = document.createElement('button');
+                genBtn.textContent = '✦ Generar';
+                genBtn.style.cssText = 'padding:6px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,#5856d6,#007AFF);color:white;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:Inter,sans-serif';
+
+                cancelBtn.onclick = function() { panel.remove(); resolve(null); };
+                genBtn.onclick = function() { var v = ta.value.trim(); panel.remove(); resolve(v); };
+
+                row.appendChild(cancelBtn);
+                row.appendChild(genBtn);
+                panel.appendChild(ta);
+                panel.appendChild(row);
+
+                // Insert after the wrap
+                wrap.parentNode.insertBefore(panel, wrap.nextSibling);
+                ta.focus();
+            });
+        }
+
+        // ── Auto-save on field blur ──────────────────────────────
+        document.addEventListener('focusout', function(e) {
+            var el = e.target;
+            if (!el.id || !el.id.startsWith('bi-')) return;
+            var value = (el.value || '').trim();
+            if (!value || typeof _supabase === 'undefined') return;
+            var key = el.id.replace('bi-', '').replace(/-/g, '_');
+            // Only save brand fields (not search inputs etc.)
+            if (key.split('_').length < 2) return;
+            _supabase.from('brand_identity')
+                .upsert([{ key: key, value: value, updated_at: new Date().toISOString() }], { onConflict: 'key' })
+                .then(function(res) {
+                    if (!res.error) console.log('Auto-saved:', key);
+                }).catch(function() {});
+        });
 
 
         // ===== PUBLISH INDIVIDUAL ASSET TO WEB =====
