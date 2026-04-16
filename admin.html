@@ -6748,10 +6748,10 @@ Solo JSON, sin explicaciones ni markdown.`;
                 .upsert([{key: key, value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
             if (!error) {
                 _cpStatus('pda', '✅ Acciones de "' + (document.getElementById('pda-title-' + eid) ? document.getElementById('pda-title-' + eid).textContent : eid) + '" guardadas', 'ok');
-                renderChronoLinked();
             } else {
                 _cpStatus('pda', '❌ Error: ' + error.message, 'err');
             }
+            renderChronoLinked();
         }
 
         function addProximoItem() {
@@ -6779,10 +6779,10 @@ Solo JSON, sin explicaciones ni markdown.`;
                 .upsert([{key:'proximos_actions', value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
             if (!error) {
                 _cpStatus('concl', '✅ Próximos pasos guardados', 'ok');
-                renderChronoLinked();
             } else {
                 _cpStatus('concl', '❌ Error: ' + error.message, 'err');
             }
+            renderChronoLinked();
         }
 
         function renderChronoLinked() {
