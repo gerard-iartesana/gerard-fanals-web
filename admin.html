@@ -588,6 +588,14 @@
                             <span style="font-size:0.65rem;color:var(--text-grey)"> leads</span>
                         </div>
                     </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Suscriptores</span>
+                        <span style="font-size:1.6rem;font-weight:700;color:#007AFF" id="stat-subscribers">—</span>
+                    </div>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Newsletters enviadas</span>
+                        <span style="font-size:1.6rem;font-weight:700;color:#34c759" id="stat-nl-sends">—</span>
+                    </div>
                 </div>
 
                 <!-- AI Assistant Chat -->
@@ -2624,6 +2632,23 @@
                         '<span style="font-size:1rem;font-weight:700;color:#ff9500">' + pending + '</span>' +
                         '<span style="font-size:0.65rem;color:var(--text-grey)"> ⏳</span>';
                 }
+            } catch (e) {}
+
+            // Newsletter stats
+            try {
+                const { count: subCount } = await _supabase
+                    .from('newsletter_subscribers')
+                    .select('*', { count: 'exact', head: true });
+                var elSubs = document.getElementById('stat-subscribers');
+                if (elSubs) elSubs.textContent = subCount || 0;
+            } catch (e) {}
+
+            try {
+                const { count: sendsCount } = await _supabase
+                    .from('newsletter_sends')
+                    .select('*', { count: 'exact', head: true });
+                var elSends = document.getElementById('stat-nl-sends');
+                if (elSends) elSends.textContent = sendsCount || 0;
             } catch (e) {}
         }
 
