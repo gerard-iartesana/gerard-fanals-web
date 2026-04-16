@@ -563,13 +563,23 @@
                             <span style="font-size:1rem;font-weight:700;color:#ff3b30">—</span>
                         </div>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('meetings')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Reuniones</span>
-                        <div id="stat-meetings" style="display:flex;align-items:baseline;gap:4px">
-                            <span style="font-size:1.4rem;font-weight:700;color:#007AFF" id="stat-meetings-web">—</span>
-                            <span style="font-size:0.65rem;color:var(--text-grey)"> web /</span>
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:12px 16px;gap:8px">
+                        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+                            <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;cursor:pointer" onclick="showSection('meetings')">Reuniones</span>
+                            <select id="meetings-period" onchange="loadMeetingStats()" style="font-size:0.65rem;padding:2px 6px;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-grey);cursor:pointer">
+                                <option value="7">7 días</option>
+                                <option value="30" selected>30 días</option>
+                                <option value="mes">Este mes</option>
+                                <option value="90">90 días</option>
+                            </select>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:3px;flex-wrap:wrap">
+                            <span style="font-size:1.3rem;font-weight:700;color:#007AFF" id="stat-meetings-web">—</span>
+                            <span style="font-size:0.6rem;color:var(--text-grey)">web /</span>
                             <span style="font-size:1rem;font-weight:700;color:#5856d6" id="stat-meetings-manual">—</span>
-                            <span style="font-size:0.65rem;color:var(--text-grey)"> otras</span>
+                            <span style="font-size:0.6rem;color:var(--text-grey)">manual /</span>
+                            <span style="font-size:0.85rem;font-weight:700;color:#ff9500" id="stat-meetings-gcal">—</span>
+                            <span style="font-size:0.6rem;color:var(--text-grey)">cal</span>
                         </div>
                     </div>
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('soporte')">
@@ -2615,27 +2625,7 @@
             }
 
             // Meetings by source
-            try {
-                var now = new Date().toISOString();
-                var { data: allMeetings } = await _supabase
-                    .from('meetings')
-                    .select('source')
-                    .gte('meeting_date', now);
-                var webCount = 0, manualCount = 0;
-                (allMeetings || []).forEach(function(m) {
-                    if (m.source === 'web') webCount++;
-                    else manualCount++;
-                });
-                var elWeb = document.getElementById('stat-meetings-web');
-                var elManual = document.getElementById('stat-meetings-manual');
-                if (elWeb) elWeb.textContent = webCount;
-                if (elManual) elManual.textContent = manualCount;
-            } catch (e) {
-                var elWeb = document.getElementById('stat-meetings-web');
-                var elManual = document.getElementById('stat-meetings-manual');
-                if (elWeb) elWeb.textContent = '0';
-                if (elManual) elManual.textContent = '0';
-            }
+            loadMeetingStats();
 
             // Support tickets stats
             try {
@@ -2672,6 +2662,44 @@
                 var elSends = document.getElementById('stat-nl-sends');
                 if (elSends) elSends.textContent = sendsCount || 0;
             } catch (e) {}
+        }
+
+        async function loadMeetingStats() {
+            var periodEl = document.getElementById('meetings-period');
+            var period = periodEl ? periodEl.value : '30';
+
+            var now = new Date();
+            var endDate;
+            if (period === 'mes') {
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+            } else {
+                endDate = new Date(now.getTime() + parseInt(period) * 24 * 60 * 60 * 1000);
+            }
+
+            try {
+                var { data: allMeetings } = await _supabase
+                    .from('meetings')
+                    .select('source')
+                    .gte('meeting_date', now.toISOString())
+                    .lte('meeting_date', endDate.toISOString());
+
+                var webCount = 0, manualCount = 0;
+                (allMeetings || []).forEach(function(m) {
+                    if (m.source === 'web') webCount++;
+                    else manualCount++;
+                });
+
+                var elWeb = document.getElementById('stat-meetings-web');
+                var elManual = document.getElementById('stat-meetings-manual');
+                if (elWeb) elWeb.textContent = webCount;
+                if (elManual) elManual.textContent = manualCount;
+            } catch(e) {
+                var elWeb = document.getElementById('stat-meetings-web');
+                var elManual = document.getElementById('stat-meetings-manual');
+                if (elWeb) elWeb.textContent = '0';
+                if (elManual) elManual.textContent = '0';
+            }
+            // GCal external count: pending persistent token — shows '—' until implemented
         }
 
         // --- Load Articles List from Supabase ---
