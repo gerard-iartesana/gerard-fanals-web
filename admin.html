@@ -2077,24 +2077,30 @@
         }
 
         function showNlNotification(message, type) {
-            var el = document.getElementById('nl-notification');
-            if (!el) return;
+            // Remove existing toast if any
+            var existing = document.getElementById('nl-toast');
+            if (existing) existing.remove();
+
             var colors = {
-                success: { bg: 'rgba(52,199,89,0.12)', border: '#34c759', color: '#2d8a4e' },
-                error:   { bg: 'rgba(255,59,48,0.12)', border: '#ff3b30', color: '#cc2f27' },
-                warning: { bg: 'rgba(255,149,0,0.12)', border: '#ff9500', color: '#cc7700' },
-                info:    { bg: 'rgba(0,122,255,0.12)', border: '#007AFF', color: '#0062cc' }
+                success: { bg: '#34c759', icon: '✅' },
+                error:   { bg: '#ff3b30', icon: '❌' },
+                warning: { bg: '#ff9500', icon: '⚠️' },
+                info:    { bg: '#007AFF', icon: '⏳' }
             };
             var c = colors[type] || colors.info;
-            el.style.display = 'block';
-            el.style.background = c.bg;
-            el.style.border = '1px solid ' + c.border;
-            el.style.color = c.color;
-            el.textContent = message;
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            var toast = document.createElement('div');
+            toast.id = 'nl-toast';
+            toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:99999;padding:16px 28px;border-radius:14px;background:' + c.bg + ';color:white;font-size:0.9rem;font-weight:700;font-family:Inter,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:10px;max-width:600px;text-align:center;animation:toastIn 0.3s ease';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
             if (type !== 'info') {
-                clearTimeout(el._timeout);
-                el._timeout = setTimeout(function() { el.style.display = 'none'; }, 8000);
+                setTimeout(function() {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.5s';
+                    setTimeout(function() { toast.remove(); }, 500);
+                }, 6000);
             }
         }
 
