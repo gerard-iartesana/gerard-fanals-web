@@ -2699,7 +2699,44 @@
                 if (elWeb) elWeb.textContent = '0';
                 if (elManual) elManual.textContent = '0';
             }
-            // GCal external count: pending persistent token — shows '—' until implemented
+            // GCal external count
+            if (_gcalConnected && _gcalToken) {
+                loadGCalExternalCount(now, endDate);
+            }
+        }
+
+        async function loadGCalExternalCount(fromDate, toDate) {
+            try {
+                // Get Supabase meeting gcal_event_ids in range
+                var { data: supaMtgs } = await _supabase
+                    .from('meetings')
+                    .select('gcal_event_id')
+                    .not('gcal_event_id', 'is', null)
+                    .gte('meeting_date', fromDate.toISOString())
+                    .lte('meeting_date', toDate.toISOString());
+
+                var supaIds = new Set((supaMtgs || []).map(function(m) { return m.gcal_event_id; }));
+
+                // Fetch GCal events in same range
+                var res = await fetch(
+                    'https://www.googleapis.com/calendar/v3/calendars/primary/events' +
+                    '?timeMin=' + encodeURIComponent(fromDate.toISOString()) +
+                    '&timeMax=' + encodeURIComponent(toDate.toISOString()) +
+                    '&singleEvents=true&orderBy=startTime&maxResults=100',
+                    { headers: { 'Authorization': 'Bearer ' + _gcalToken } }
+                );
+
+                if (!res.ok) return;
+                var data = await res.json();
+                var external = (data.items || []).filter(function(ev) {
+                    return !supaIds.has(ev.id);
+                }).length;
+
+                var el = document.getElementById('stat-meetings-gcal');
+                if (el) el.textContent = external;
+            } catch(e) {
+                console.log('GCal count error:', e);
+            }
         }
 
         // --- Load Articles List from Supabase ---
@@ -5535,7 +5572,6 @@ Solo JSON, sin explicaciones ni markdown.`;
             var clientId = getGCalClientId();
             
             if (!clientId) {
-                // Show config panel
                 var config = document.getElementById('gcal-config');
                 config.style.display = config.style.display === 'none' ? 'block' : 'none';
                 var saved = localStorage.getItem('gf_gcal_client_id');
@@ -5544,17 +5580,21 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
 
             if (_gcalConnected) {
-                // Already connected - disconnect
                 _gcalToken = null;
                 _gcalConnected = false;
                 localStorage.removeItem('gf_gcal_authorized');
+                localStorage.removeItem('gf_gcal_token');
+                localStorage.removeItem('gf_gcal_token_expiry');
                 updateGCalButton(false);
                 document.getElementById('gcal-status').style.display = 'none';
                 showMtgNotif('Google Calendar desconectado', 'info');
                 return;
             }
 
-            // Initiate OAuth
+            _initiateGCalAuth(clientId, '');
+        }
+
+        function _initiateGCalAuth(clientId, prompt) {
             try {
                 var tokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: clientId,
@@ -5564,21 +5604,29 @@ Solo JSON, sin explicaciones ni markdown.`;
                             showGCalStatus('❌ Error de autenticación: ' + tokenResponse.error, '#ff3b30');
                             return;
                         }
-                        _gcalToken = tokenResponse.access_token;
-                        _gcalConnected = true;
-                        
-                        // Save flag that user has authorized (NOT the token)
-                        localStorage.setItem('gf_gcal_authorized', 'true');
-                        
-                        updateGCalButton(true);
-                        showGCalStatus('✅ Google Calendar conectado', '#34c759');
-                        loadGCalEvents();
+                        _onGCalAuthSuccess(tokenResponse);
                     }
                 });
-                tokenClient.requestAccessToken();
+                tokenClient.requestAccessToken({ prompt: prompt });
             } catch(e) {
                 showGCalStatus('❌ Error: ' + e.message + '. ¿Se cargó la librería de Google?', '#ff3b30');
             }
+        }
+
+        function _onGCalAuthSuccess(tokenResponse) {
+            _gcalToken = tokenResponse.access_token;
+            _gcalConnected = true;
+
+            // Persist token with expiry (buffer 5 min)
+            var expiry = Date.now() + ((tokenResponse.expires_in || 3600) - 300) * 1000;
+            localStorage.setItem('gf_gcal_token', tokenResponse.access_token);
+            localStorage.setItem('gf_gcal_token_expiry', expiry.toString());
+            localStorage.setItem('gf_gcal_authorized', 'true');
+
+            updateGCalButton(true);
+            showGCalStatus('✅ Google Calendar conectado', '#34c759');
+            loadGCalEvents();
+            loadMeetingStats(); // refresh the external counter
         }
 
         function updateGCalButton(connected) {
@@ -5753,22 +5801,53 @@ Solo JSON, sin explicaciones ni markdown.`;
         function tryRestoreGCalSession() {
             if (_gcalConnected || _gcalRestoreAttempted) return;
             _gcalRestoreAttempted = true;
-            
+
             var wasAuthorized = localStorage.getItem('gf_gcal_authorized');
             var clientId = getGCalClientId();
-            
             if (!wasAuthorized || !clientId) return;
-            
-            // User was previously authorized - show reconnect prompt
+
+            // 1. Try stored token (still valid)
+            var storedToken = localStorage.getItem('gf_gcal_token');
+            var storedExpiry = parseInt(localStorage.getItem('gf_gcal_token_expiry') || '0');
+
+            if (storedToken && storedExpiry > Date.now()) {
+                _gcalToken = storedToken;
+                _gcalConnected = true;
+                updateGCalButton(true);
+                showGCalStatus('✅ Google Calendar reconectado automáticamente', '#34c759');
+                setTimeout(function() {
+                    if (document.getElementById('meetings-list')) loadGCalEvents();
+                    loadMeetingStats();
+                }, 800);
+                return;
+            }
+
+            // 2. Token expired — try silent re-auth (no popup if Google session active)
+            try {
+                var tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: clientId,
+                    scope: GCAL_SCOPES,
+                    callback: function(tokenResponse) {
+                        if (tokenResponse.error) {
+                            _showGCalReconnectBtn();
+                            return;
+                        }
+                        _onGCalAuthSuccess(tokenResponse);
+                    }
+                });
+                tokenClient.requestAccessToken({ prompt: '' }); // silent if possible
+            } catch(e) {
+                _showGCalReconnectBtn();
+            }
+        }
+
+        function _showGCalReconnectBtn() {
             var btn = document.getElementById('btn-gcal-connect');
             if (btn) {
                 btn.style.background = 'linear-gradient(135deg, #ff9500, #ff6b00)';
                 btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg> Reconectar Calendar';
                 btn.style.animation = 'pulse 2s ease-in-out infinite';
             }
-            showMtgNotif('🔄 Sesión anterior detectada — clic en "Reconectar Calendar" para continuar', 'info');
-            
-            // Add pulse animation if not exists
             if (!document.getElementById('gcal-pulse-style')) {
                 var style = document.createElement('style');
                 style.id = 'gcal-pulse-style';
