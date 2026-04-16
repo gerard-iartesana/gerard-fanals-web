@@ -2311,7 +2311,7 @@
                         '<div style="font-size:0.82rem;font-weight:600">' + (s.name || 'Sin nombre') + '</div>' +
                         '<div style="font-size:0.72rem;color:var(--text-grey)">' + s.email + ' · ' + dateStr + '</div>' +
                         '</div>' +
-                        '<button onclick="deleteSubscriber(\'' + s.id + '\')" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.5;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🗑️</button>' +
+                        '<button onclick="deleteSubscriber('' + s.id + '')" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.5;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🗑️</button>' +
                         '</div>';
                 }).join('');
                 updateSubSelectedCount();
@@ -2474,7 +2474,7 @@
                     var d = new Date(a.created_at);
                     return '<div style="padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;gap:12px">' +
                         '<input type="checkbox" class="nl-article-check" value="' + a.id + '" checked onchange="updateNlSelectedCount()" style="accent-color:#34c759;width:16px;height:16px;flex-shrink:0;cursor:pointer">' +
-                        '<div style="width:40px;height:40px;border-radius:8px;overflow:hidden;flex-shrink:0"><img src="' + (a.image || '') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div>' +
+                        '<div style="width:40px;height:40px;border-radius:8px;overflow:hidden;flex-shrink:0"><img src="' + (a.image || '') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"></div>' +
                         '<div style="flex:1;min-width:0">' +
                         '<div style="font-size:0.82rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + a.title + '</div>' +
                         '<div style="font-size:0.7rem;color:var(--text-grey)">' + (a.tag || '') + ' · ' + d.toLocaleDateString('es-ES', {day:'numeric',month:'short'}) + '</div>' +
@@ -2585,7 +2585,7 @@
                 '</div>' +
                 '<p style="color:#aaa;font-size:0.78rem;margin:0 0 12px">' + (articleIds ? articleIds.length : 0) + ' artículo(s) · Elige a quién enviar:</p>' +
                 '<div style="margin-bottom:10px">' +
-                '<label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#aaa;cursor:pointer"><input type="checkbox" id="resend-select-all" checked onchange="document.querySelectorAll(\'\'.resend-sub-check\'\').forEach(function(c){c.checked=this.checked},this)" style="accent-color:#007AFF"> Seleccionar todos</label>' +
+                '<label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#aaa;cursor:pointer"><input type="checkbox" id="resend-select-all" checked onchange="document.querySelectorAll(''.resend-sub-check'').forEach(function(c){c.checked=this.checked},this)" style="accent-color:#007AFF"> Seleccionar todos</label>' +
                 '</div>' +
                 '<div style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;padding-right:4px">' + subsHtml + '</div>' +
                 '<div style="display:flex;gap:10px">' +
@@ -2872,7 +2872,7 @@
                         '<div style="font-size:0.72rem;color:var(--text-grey);margin-top:5px">' + senderHtml + '📅 ' + dateStr + ' · ' + timeStr + attachHtml + '</div>' +
                         '</div>' +
                         '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">' +
-                        '<select onchange="updateTicketStatus(\'' + t.id + '\',this.value)" style="font-size:0.72rem;padding:4px 8px;border-radius:8px;border:1px solid ' + statusColor + '30;background:' + statusColor + '10;color:' + statusColor + ';font-weight:600;cursor:pointer;font-family:Inter,sans-serif">' + statusOptions + '</select>' +
+                        '<select onchange="updateTicketStatus('' + t.id + '',this.value)" style="font-size:0.72rem;padding:4px 8px;border-radius:8px;border:1px solid ' + statusColor + '30;background:' + statusColor + '10;color:' + statusColor + ';font-weight:600;cursor:pointer;font-family:Inter,sans-serif">' + statusOptions + '</select>' +
                         (prioLabel ? '<span style="font-size:0.65rem;padding:2px 8px;border-radius:6px;background:' + prioColor + '15;color:' + prioColor + ';font-weight:600">' + prioLabel + '</span>' : '') +
                         '</div>' +
                         '</div>' +
@@ -2882,7 +2882,7 @@
                         (t.dev_notes ? '<div style="padding:10px 14px;border-radius:10px;background:rgba(0,122,255,0.06);border-left:3px solid #007AFF;margin-bottom:8px"><div style="font-size:0.68rem;font-weight:700;color:#007AFF;margin-bottom:4px">💬 Nota del desarrollador</div><div style="font-size:0.78rem;color:var(--text-primary);line-height:1.4;white-space:pre-wrap">' + t.dev_notes + '</div></div>' : '') +
                         '<div style="display:flex;gap:8px;align-items:flex-start">' +
                         '<textarea id="devnote-' + t.id + '" rows="2" placeholder="Escribe una nota o respuesta..." style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.78rem;font-family:Inter,sans-serif;resize:vertical;box-sizing:border-box">' + (t.dev_notes || '') + '</textarea>' +
-                        '<button onclick="saveDevNote(\'' + t.id + '\')" style="padding:8px 14px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.72rem;cursor:pointer;white-space:nowrap">💾 Guardar</button>' +
+                        '<button onclick="saveDevNote('' + t.id + '')" style="padding:8px 14px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.72rem;cursor:pointer;white-space:nowrap">💾 Guardar</button>' +
                         '</div>' +
                         '</div>' +
                         '</div>';
@@ -3557,7 +3557,7 @@
                     const container = document.getElementById('tag-suggestions');
                     if (container) {
                         container.innerHTML = tags.map(t =>
-                            '<button type="button" style="padding:4px 12px;border:1px solid var(--border-color);border-radius:100px;background:transparent;color:var(--text-main);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif" onclick="document.getElementById(\'edit-tag\').value=\'' + t + '\'">' + t + '</button>'
+                            '<button type="button" style="padding:4px 12px;border:1px solid var(--border-color);border-radius:100px;background:transparent;color:var(--text-main);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif" onclick="document.getElementById('edit-tag').value='' + t + ''">' + t + '</button>'
                         ).join('');
                     }
                 }
@@ -4832,7 +4832,7 @@
                 const container = document.getElementById('article-global-keywords');
                 if (container) {
                     container.innerHTML = keywords.map(kw => `
-                        <button type="button" onclick="toggleArticleKeyword('${kw.replace(/'/g, "\\'")}')" 
+                        <button type="button" onclick="toggleArticleKeyword('${kw.replace(/'/g, "'")}')" 
                             style="padding:4px 12px;border:1px solid var(--border-color);border-radius:100px;background:transparent;color:var(--text-main);font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.2s"
                             onmouseover="this.style.borderColor='var(--accent-blue)';this.style.color='var(--accent-blue)'"
                             onmouseout="if(!this.classList.contains('kw-active')){this.style.borderColor='var(--border-color)';this.style.color='var(--text-main)'}">
@@ -4859,7 +4859,7 @@
             container.innerHTML = _articleKeywords.map(kw => `
                 <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:100px;background:var(--accent-blue);color:white;font-size:0.75rem;font-weight:500">
                     ${kw}
-                    <button onclick="toggleArticleKeyword('${kw.replace(/'/g, "\\\'")}')" style="background:none;border:none;cursor:pointer;color:white;font-size:0.8rem;padding:0;line-height:1">&times;</button>
+                    <button onclick="toggleArticleKeyword('${kw.replace(/'/g, "\'")}')" style="background:none;border:none;cursor:pointer;color:white;font-size:0.8rem;padding:0;line-height:1">&times;</button>
                 </span>
             `).join('');
             // Also highlight active global keyword buttons
@@ -5497,8 +5497,8 @@ Solo JSON, sin explicaciones ni markdown.`;
                         + '<div style="font-size:0.78rem;color:var(--text-grey);line-height:1.5">' + f.answer + '</div>'
                         + '</div>'
                         + '<div style="display:flex;gap:4px;flex-shrink:0">'
-                        + '<button onclick="editFaq(\'' + f.id + '\', \'' + f.question.replace(/'/g, "\\'") + '\', \'' + f.answer.replace(/'/g, "\\'") + '\')" style="padding:5px 8px;border-radius:6px;border:1px solid var(--border-color);background:transparent;cursor:pointer;font-size:0.65rem;color:var(--text-main);font-family:Inter,sans-serif" title="Editar">✏️</button>'
-                        + '<button onclick="deleteFaq(\'' + f.id + '\')" style="padding:5px 8px;border-radius:6px;border:1px solid #ff3b30;background:rgba(255,59,48,0.06);cursor:pointer;font-size:0.65rem;color:#ff3b30;font-family:Inter,sans-serif" title="Eliminar">🗑</button>'
+                        + '<button onclick="editFaq('' + f.id + '', '' + f.question.replace(/'/g, "'") + '', '' + f.answer.replace(/'/g, "'") + '')" style="padding:5px 8px;border-radius:6px;border:1px solid var(--border-color);background:transparent;cursor:pointer;font-size:0.65rem;color:var(--text-main);font-family:Inter,sans-serif" title="Editar">✏️</button>'
+                        + '<button onclick="deleteFaq('' + f.id + '')" style="padding:5px 8px;border-radius:6px;border:1px solid #ff3b30;background:rgba(255,59,48,0.06);cursor:pointer;font-size:0.65rem;color:#ff3b30;font-family:Inter,sans-serif" title="Eliminar">🗑</button>'
                         + '</div></div>';
                 }).join('');
             } catch(e) { container.innerHTML = '<p style="color:#ff3b30;font-size:0.8rem">Error: ' + e.message + '</p>'; }
@@ -5656,7 +5656,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                     return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);margin-bottom:6px">'
                         + '<div style="flex:1;min-width:0"><div style="font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + a.title + '</div>'
                         + '<div style="font-size:0.68rem;color:var(--text-grey);margin-top:2px">' + (a.tag || '') + ' · ' + badge + '</div></div>'
-                        + '<button id="btn-faq-art-' + a.id + '" onclick="generateArticleFaqs(\'' + a.id + '\', \'' + a.title.replace(/'/g, "\\'") + '\')" class="geo-ai-btn-sm" style="padding:6px 14px;border-radius:10px;border:1px solid #af52de;background:linear-gradient(135deg,rgba(175,82,222,0.08),rgba(88,86,214,0.08));cursor:pointer;font-size:0.72rem;color:#af52de;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s">' + (count > 0 ? '🔄 Regenerar' : '🤖 Generar') + '</button>'
+                        + '<button id="btn-faq-art-' + a.id + '" onclick="generateArticleFaqs('' + a.id + '', '' + a.title.replace(/'/g, "'") + '')" class="geo-ai-btn-sm" style="padding:6px 14px;border-radius:10px;border:1px solid #af52de;background:linear-gradient(135deg,rgba(175,82,222,0.08),rgba(88,86,214,0.08));cursor:pointer;font-size:0.72rem;color:#af52de;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.3s">' + (count > 0 ? '🔄 Regenerar' : '🤖 Generar') + '</button>'
                         + '</div>';
                 }).join('');
             } catch(e) { container.innerHTML = '<p style="color:#ff3b30;font-size:0.8rem">Error: ' + e.message + '</p>'; }
@@ -5949,7 +5949,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                 // Table doesn't exist - show message to create it
                 const list = document.getElementById('meetings-list');
                 if (list) {
-                    list.innerHTML = '<div style="text-align:center;padding:30px"><p style="font-size:0.9rem;color:#ff9500;margin-bottom:12px">⚠️ La tabla <strong>meetings</strong> no existe en Supabase.</p><p style="font-size:0.8rem;color:var(--text-grey)">Créala en Supabase con estas columnas:</p><pre style="font-size:0.7rem;text-align:left;background:rgba(0,0,0,0.04);padding:12px;border-radius:10px;margin-top:8px;overflow-x:auto">CREATE TABLE meetings (\n  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,\n  contact_name TEXT NOT NULL,\n  contact_email TEXT,\n  contact_phone TEXT,\n  meeting_date TIMESTAMPTZ NOT NULL,\n  meeting_type TEXT DEFAULT \'discovery\',\n  status TEXT DEFAULT \'pending\',\n  notes TEXT,\n  created_at TIMESTAMPTZ DEFAULT now()\n);\n\n-- Enable RLS\nALTER TABLE meetings ENABLE ROW LEVEL SECURITY;\n\n-- Allow authenticated users full access\nCREATE POLICY "Allow all for authenticated" ON meetings\n  FOR ALL USING (auth.role() = \'authenticated\');\n\n-- Allow anon to read\nCREATE POLICY "Allow anon read" ON meetings\n  FOR SELECT USING (true);</pre></div>';
+                    list.innerHTML = '<div style="text-align:center;padding:30px"><p style="font-size:0.9rem;color:#ff9500;margin-bottom:12px">⚠️ La tabla <strong>meetings</strong> no existe en Supabase.</p><p style="font-size:0.8rem;color:var(--text-grey)">Créala en Supabase con estas columnas:</p><pre style="font-size:0.7rem;text-align:left;background:rgba(0,0,0,0.04);padding:12px;border-radius:10px;margin-top:8px;overflow-x:auto">CREATE TABLE meetings (\n  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,\n  contact_name TEXT NOT NULL,\n  contact_email TEXT,\n  contact_phone TEXT,\n  meeting_date TIMESTAMPTZ NOT NULL,\n  meeting_type TEXT DEFAULT 'discovery',\n  status TEXT DEFAULT 'pending',\n  notes TEXT,\n  created_at TIMESTAMPTZ DEFAULT now()\n);\n\n-- Enable RLS\nALTER TABLE meetings ENABLE ROW LEVEL SECURITY;\n\n-- Allow authenticated users full access\nCREATE POLICY "Allow all for authenticated" ON meetings\n  FOR ALL USING (auth.role() = 'authenticated');\n\n-- Allow anon to read\nCREATE POLICY "Allow anon read" ON meetings\n  FOR SELECT USING (true);</pre></div>';
                 }
                 return false;
             }
@@ -6029,14 +6029,14 @@ Solo JSON, sin explicaciones ni markdown.`;
             if (m.contact_phone) contactInfo += '<a href="tel:' + m.contact_phone + '" style="font-size:0.75rem;color:var(--text-grey);text-decoration:none">' + m.contact_phone + '</a>';
 
             // Inline editable selects
-            var statusSelect = '<select onchange="updateMeetingField(\'' + m.id + '\',\'status\',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
+            var statusSelect = '<select onchange="updateMeetingField('' + m.id + '','status',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
                 '<option value="pending"' + (m.status === 'pending' ? ' selected' : '') + '>⏳ Pendiente</option>' +
                 '<option value="confirmed"' + (m.status === 'confirmed' ? ' selected' : '') + '>✅ Confirmada</option>' +
                 '<option value="done"' + (m.status === 'done' ? ' selected' : '') + '>✔️ Realizada</option>' +
                 '<option value="cancelled"' + (m.status === 'cancelled' ? ' selected' : '') + '>❌ Cancelada</option>' +
             '</select>';
 
-            var typeSelect = '<select onchange="updateMeetingField(\'' + m.id + '\',\'meeting_type\',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
+            var typeSelect = '<select onchange="updateMeetingField('' + m.id + '','meeting_type',this.value)" style="font-size:0.72rem;padding:3px 6px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:inherit;cursor:pointer;font-weight:600">' +
                 '<option value="discovery"' + (m.meeting_type === 'discovery' ? ' selected' : '') + '>📅 Reunión</option>' +
                 '<option value="followup"' + (m.meeting_type === 'followup' ? ' selected' : '') + '>🔄 Follow-up</option>' +
                 '<option value="closing"' + (m.meeting_type === 'closing' ? ' selected' : '') + '>🤝 Cierre</option>' +
@@ -6048,10 +6048,10 @@ Solo JSON, sin explicaciones ni markdown.`;
             if (!isPast && hasSynced) {
                 syncBtn = '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>';
             } else if (!isPast) {
-                syncBtn = '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" id="sync-' + m.id + '" style="padding:3px 8px;border-radius:8px;border:1px solid #4285F4;background:transparent;color:#4285F4;font-size:0.72rem;cursor:pointer;font-weight:600" title="Sincronizar con Google Calendar">📅</button>';
+                syncBtn = '<button onclick="syncMeetingToGCal('' + m.id + '')" id="sync-' + m.id + '" style="padding:3px 8px;border-radius:8px;border:1px solid #4285F4;background:transparent;color:#4285F4;font-size:0.72rem;cursor:pointer;font-weight:600" title="Sincronizar con Google Calendar">📅</button>';
             }
 
-            var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer" title="Eliminar">🗑️</button>';
+            var deleteBtn = '<button onclick="deleteMeeting('' + m.id + '')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer" title="Eliminar">🗑️</button>';
 
             return '<div style="padding:14px 18px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary);' + (isPast ? 'opacity:0.7' : '') + '">' +
                 '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
@@ -6748,10 +6748,10 @@ Solo JSON, sin explicaciones ni markdown.`;
                 .upsert([{key: key, value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
             if (!error) {
                 _cpStatus('pda', '✅ Acciones de "' + (document.getElementById('pda-title-' + eid) ? document.getElementById('pda-title-' + eid).textContent : eid) + '" guardadas', 'ok');
-                renderChronoLinked();
             } else {
-                _cpStatus('pda', '❌ Error: ' + error.message, 'err');
+                _cpStatus('pda', '❌ Error guardando: ' + error.message, 'err');
             }
+            renderChronoLinked();
         }
 
         function addProximoItem() {
@@ -6779,10 +6779,10 @@ Solo JSON, sin explicaciones ni markdown.`;
                 .upsert([{key:'proximos_actions', value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
             if (!error) {
                 _cpStatus('concl', '✅ Próximos pasos guardados', 'ok');
-                renderChronoLinked();
             } else {
                 _cpStatus('concl', '❌ Error: ' + error.message, 'err');
             }
+            renderChronoLinked();
         }
 
         function renderChronoLinked() {
@@ -6888,7 +6888,14 @@ Solo JSON, sin explicaciones ni markdown.`;
         async function saveCommSlot(prefix, n) {
             if (typeof _supabase === 'undefined') return;
             var slotEl = document.getElementById('cp-' + prefix + '-slot-' + n);
-            var btn = slotEl ? slotEl.querySelector('.bi-save-btn') : null;
+            // Find the save button specific to this slot (has onclick with our slot ID)
+            var btn = null;
+            if (slotEl) {
+                slotEl.querySelectorAll('.bi-save-btn').forEach(function(b) {
+                    if (b.onclick && b.onclick.toString().indexOf(n) > -1) btn = b;
+                });
+                if (!btn) btn = slotEl.querySelector('.bi-save-btn');
+            }
             if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
             try {
                 var fields = slotEl ? slotEl.querySelectorAll('[id^="cp-' + prefix + '-' + n + '-"]') : [];
