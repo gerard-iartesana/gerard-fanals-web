@@ -6572,10 +6572,16 @@ Solo JSON, sin explicaciones ni markdown.`;
                     'Eres un experto en branding y comunicacion corporativa. Responde SOLO con el texto solicitado, sin explicaciones adicionales, sin comillas, sin formato markdown.\n\n' + prompt,
                     'gemini-2.5-flash'
                 );
-                if (result) {
-                    el.value = result.trim();
+                // callGemini returns full JSON — extract the text
+                var text = result && result.candidates && result.candidates[0]
+                    ? result.candidates[0].content.parts[0].text
+                    : (typeof result === 'string' ? result : null);
+                if (text) {
+                    el.value = text.trim();
                     el.dispatchEvent(new Event('input'));
                     _biStatus(block, '✅ Generado. Revisa y guarda.', 'ok');
+                } else {
+                    _biStatus(block, '⚠️ Sin respuesta de la IA. Inténtalo de nuevo.', 'err');
                 }
             } catch(e) {
                 _biStatus(block, '❌ Error IA: ' + e.message, 'err');
