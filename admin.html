@@ -1901,6 +1901,150 @@
                     </div>
                 </div>
 
+
+                <!-- ── BLOQUE 4: IDENTIDAD VERBAL ────────────── -->
+                <div class="bi-block" id="bi-verbal">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Identidad Verbal</span>
+                        </div>
+                        <button onclick="saveBrandBlock('verbal')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Tono de voz</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-verbal-tono" class="editor-input" placeholder="Profesional, cercano, directo..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('verbal','tono','Define el tono de voz de la marca de '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Responde con 3-4 adjetivos separados por coma que definan como habla esta marca. Solo los adjetivos.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensajes clave (uno por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-verbal-mensajes" class="editor-input" rows="4" placeholder="La IA no es el futuro, es el presente.&#10;Automatiza hoy, escala mañana." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('verbal','mensajes','Genera 3 mensajes clave de marca (frases de impacto, una por linea) para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Solo las frases, sin numeracion ni explicacion.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Palabras SÍ (usar)</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-verbal-palabras-si" class="editor-input" placeholder="Transformar, automatizar, escalar..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('verbal','palabras-si','Lista 6 palabras clave que DEBE usar en su comunicacion la marca de '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Solo palabras separadas por coma.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Palabras NO (evitar)</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-verbal-palabras-no" class="editor-input" placeholder="Barato, mediocre, complicado..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('verbal','palabras-no','Lista 5 palabras o conceptos que la marca de '+CLIENT_CONFIG.name+' NUNCA debe usar en su comunicacion porque danan la imagen de marca. Solo palabras separadas por coma.')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BLOQUE 5: IDENTIDAD ACTITUDINAL ───────── -->
+                <div class="bi-block" id="bi-actitudinal">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Identidad Actitudinal</span>
+                        </div>
+                        <button onclick="saveBrandBlock('actitudinal')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Cómo se comporta la marca</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-actitudinal-comportamiento" class="editor-input" rows="3" placeholder="¿Cómo actúa tu marca ante sus clientes y el mercado?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('actitudinal','comportamiento','Describe en 2-3 frases como se comporta y actua la marca de '+CLIENT_CONFIG.name+' ante sus clientes y el mercado. Incluye su actitud ante los retos, la innovacion y la relacion con el cliente. Primera persona plural.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>La marca ES / NO ES</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-actitudinal-es-no-es" class="editor-input" rows="3" placeholder="ES: experta, directa, innovadora.&#10;NO ES: arrogante, distante, impersonal." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('actitudinal','es-no-es','Define la marca de '+CLIENT_CONFIG.name+' con el formato: ES: [3 adjetivos]. NO ES: [3 adjetivos que aclaran malentendidos]. Solo ese formato, sin explicaciones.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Si la marca fuera una persona...</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-actitudinal-persona" class="editor-input" rows="2" placeholder="Seria un mentor que habla claro, viste formal pero con un toque creativo..." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('actitudinal','persona','Completa la frase: Si la marca de '+CLIENT_CONFIG.name+' fuera una persona, seria... (describe su personalidad, estilo y actitud en 2 frases evocadoras. Sin comillas)')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BLOQUE 6: IDENTIDAD SENSORIAL ─────────── -->
+                <div class="bi-block" id="bi-sensorial">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Identidad Sensorial</span>
+                        </div>
+                        <button onclick="saveBrandBlock('sensorial')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Sonido / Música de marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-sensorial-sonido" class="editor-input" placeholder="Minimalista, electrónica ambient, sin voces..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('sensorial','sonido','Define el universo sonoro y musical de la marca de '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Describe el tipo de musica, ritmo y ambiente sonoro que representa la marca. 1-2 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Experiencia táctil / digital</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-sensorial-tacto" class="editor-input" placeholder="Interfaces limpias, animaciones suaves, sin fricción..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('sensorial','tacto','Describe la experiencia tactil y digital de interactuar con la marca de '+CLIENT_CONFIG.name+'. Como se siente navegar su web, usar sus productos, recibir sus comunicaciones. 1-2 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Experiencia global de marca</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-sensorial-experiencia" class="editor-input" rows="2" placeholder="¿Qué siente alguien después de interactuar con tu marca?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('sensorial','experiencia','Describe en 2 frases que siente y recuerda alguien despues de interactuar con la marca de '+CLIENT_CONFIG.name+'. La emocion y sensacion que deja. Sin comillas.')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BLOQUE 7: GUÍA DE USO ──────────────────── -->
+                <div class="bi-block" id="bi-guia">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Guía de Uso</span>
+                        </div>
+                        <button onclick="saveBrandBlock('guia')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Reglas de uso del logo</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-guia-logo-reglas" class="editor-input" rows="3" placeholder="Siempre sobre fondo blanco o negro. Nunca deformar. Área de respeto mínimo 1x altura del logo..." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('guia','logo-reglas','Genera 4 reglas basicas de uso correcto del logo para la marca de '+CLIENT_CONFIG.name+'. Formato: una regla por linea, comenzando con verbo imperativo. Sin numeracion.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Usos prohibidos</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-guia-prohibidos" class="editor-input" rows="3" placeholder="No cambiar colores corporativos. No usar sobre fondos muy cargados. No rotar el logotipo..." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('guia','prohibidos','Lista 4 usos prohibidos del logo y la identidad visual de '+CLIENT_CONFIG.name+'. Formato: una prohibicion por linea, comenzando con No. Sin numeracion.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Aplicaciones correctas</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-guia-aplicaciones" class="editor-input" rows="3" placeholder="Web, tarjetas de visita, presentaciones, firmas de email..." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('guia','aplicaciones','Lista los 5 soportes principales donde se aplica correctamente la identidad de marca de '+CLIENT_CONFIG.name+'. Una por linea. Sin numeracion ni explicacion.')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Logo & Icono Upload + AI -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
                     <!-- LOGO -->
