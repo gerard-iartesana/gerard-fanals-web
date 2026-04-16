@@ -1832,7 +1832,7 @@
         }
 
         async function deleteSubscriber(id) {
-            if (!confirm('¿Eliminar este suscriptor?')) return;
+            // Delete without confirm to avoid browser dialog issues
             try {
                 await _supabase.from('newsletter_subscribers').delete().eq('id', id);
                 loadSubscribers();
@@ -2045,8 +2045,37 @@
                 return;
             }
 
-            if (!confirm('¿Enviar la newsletter con ' + selectedIds.length + ' artículo(s) a ' + selectedSubs.length + ' suscriptor(es)?')) return;
+            // Show inline confirmation instead of browser confirm()
+            showNlConfirm(
+                '¿Enviar newsletter con ' + selectedIds.length + ' artículo(s) a ' + selectedSubs.length + ' suscriptor(es)?',
+                function() { doSendNewsletter(selectedIds, selectedSubs); }
+            );
+        }
 
+        function showNlConfirm(message, onConfirm) {
+            var existing = document.getElementById('nl-confirm-modal');
+            if (existing) existing.remove();
+
+            var overlay = document.createElement('div');
+            overlay.id = 'nl-confirm-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif';
+            overlay.innerHTML = '<div style="background:#1c1c1e;border-radius:20px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
+                '<div style="font-size:2rem;margin-bottom:12px">🚀</div>' +
+                '<p style="color:white;font-size:0.95rem;font-weight:600;margin:0 0 24px;line-height:1.5">' + message + '</p>' +
+                '<div style="display:flex;gap:12px;justify-content:center">' +
+                '<button id="nl-confirm-cancel" style="flex:1;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#aaa;font-weight:600;font-size:0.9rem;cursor:pointer">Cancelar</button>' +
+                '<button id="nl-confirm-ok" style="flex:1;padding:12px;border-radius:12px;border:none;background:#34c759;color:white;font-weight:700;font-size:0.9rem;cursor:pointer">✅ Enviar</button>' +
+                '</div></div>';
+            document.body.appendChild(overlay);
+
+            document.getElementById('nl-confirm-cancel').onclick = function() { overlay.remove(); };
+            document.getElementById('nl-confirm-ok').onclick = function() { overlay.remove(); onConfirm(); };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+        }
+
+        async function doSendNewsletter(selectedIds, selectedSubs) {
+
+            var btn = document.getElementById('nl-send-now-btn');
             btn.disabled = true;
             btn.innerHTML = '⏳ Enviando...';
             showNlNotification('⏳ Enviando newsletter...', 'info');
