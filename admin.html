@@ -1525,6 +1525,8 @@
                     <div id="nl-pending-articles" style="display:flex;flex-direction:column;gap:8px">
                         <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Cargando...</p>
                     </div>
+                    <!-- Newsletter status notification -->
+                    <div id="nl-notification" style="display:none;margin-top:16px;padding:14px 20px;border-radius:12px;font-size:0.85rem;font-weight:600;transition:all 0.3s"></div>
                 </div>
 
                 <!-- Send History -->
@@ -2032,14 +2034,14 @@
         async function sendNewsletterNow() {
             var selectedIds = getSelectedArticleIds();
             if (selectedIds.length === 0) {
-                alert('⚠️ Selecciona al menos un artículo para enviar');
+                showNlNotification('⚠️ Selecciona al menos un artículo para enviar', 'warning');
                 return;
             }
 
             var btn = document.getElementById('nl-send-now-btn');
             var selectedSubs = getSelectedSubscribers();
             if (selectedSubs.length === 0) {
-                alert('⚠️ Selecciona al menos un suscriptor para enviar');
+                showNlNotification('⚠️ Selecciona al menos un suscriptor para enviar', 'warning');
                 return;
             }
 
@@ -2047,27 +2049,53 @@
 
             btn.disabled = true;
             btn.innerHTML = '⏳ Enviando...';
+            showNlNotification('⏳ Enviando newsletter...', 'info');
 
             try {
+                console.log('[Newsletter] Enviando:', { article_ids: selectedIds, subscriber_ids: selectedSubs.map(function(s) { return s.id; }) });
                 var response = await fetch('/api/send-newsletter', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ article_ids: selectedIds, subscriber_ids: selectedSubs.map(function(s) { return s.id; }) })
                 });
                 var result = await response.json();
+                console.log('[Newsletter] Respuesta:', result);
 
                 if (result.success) {
-                    alert('✅ Newsletter enviada a ' + result.subscribersCount + ' suscriptores con ' + result.articlesCount + ' artículos');
+                    showNlNotification('✅ Newsletter enviada a ' + result.subscribersCount + ' suscriptor(es) con ' + result.articlesCount + ' artículo(s)', 'success');
                     loadNewsletterConfig();
                 } else {
-                    alert('⚠️ ' + (result.error || 'Error al enviar'));
+                    showNlNotification('⚠️ ' + (result.error || 'Error al enviar'), 'error');
                 }
             } catch(e) {
-                alert('❌ Error: ' + e.message);
+                console.error('[Newsletter] Error:', e);
+                showNlNotification('❌ Error de conexión: ' + e.message, 'error');
             }
 
             btn.disabled = false;
             btn.innerHTML = '🚀 Enviar seleccionados';
+        }
+
+        function showNlNotification(message, type) {
+            var el = document.getElementById('nl-notification');
+            if (!el) return;
+            var colors = {
+                success: { bg: 'rgba(52,199,89,0.12)', border: '#34c759', color: '#2d8a4e' },
+                error:   { bg: 'rgba(255,59,48,0.12)', border: '#ff3b30', color: '#cc2f27' },
+                warning: { bg: 'rgba(255,149,0,0.12)', border: '#ff9500', color: '#cc7700' },
+                info:    { bg: 'rgba(0,122,255,0.12)', border: '#007AFF', color: '#0062cc' }
+            };
+            var c = colors[type] || colors.info;
+            el.style.display = 'block';
+            el.style.background = c.bg;
+            el.style.border = '1px solid ' + c.border;
+            el.style.color = c.color;
+            el.textContent = message;
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            if (type !== 'info') {
+                clearTimeout(el._timeout);
+                el._timeout = setTimeout(function() { el.style.display = 'none'; }, 8000);
+            }
         }
 
         // --- Support Tickets ---
