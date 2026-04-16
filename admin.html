@@ -1731,6 +1731,62 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Logo & Icono Upload + AI -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+                    <!-- LOGO -->
+                    <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                        <h2 style="font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px">
+                            <span style="font-size:1.2rem">🖼️</span> Logo
+                        </h2>
+                        <div id="logo-preview-wrap" style="width:100%;height:130px;border-radius:14px;border:2px dashed var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden">
+                            <img id="logo-preview-img" src="" alt="Logo" style="max-width:100%;max-height:100%;object-fit:contain;display:none">
+                            <span id="logo-preview-placeholder" style="font-size:0.8rem;color:var(--text-grey)">Sin logo</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <label style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);cursor:pointer;font-size:0.8rem;font-weight:600">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Subir logo
+                                <input type="file" accept="image/*" style="display:none" onchange="handleAssetUpload(event,'logo')">
+                            </label>
+                            <button onclick="generateAssetWithAI('logo')" style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;border:1px solid rgba(88,86,214,0.4);background:rgba(88,86,214,0.07);color:#5856d6;cursor:pointer;font-size:0.8rem;font-weight:600;width:100%">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span id="logo-ai-btn-text">Crear con IA</span>
+                            </button>
+                            <button onclick="clearAsset('logo')" id="logo-clear-btn" style="display:none;padding:7px 14px;border-radius:12px;border:1px solid rgba(255,59,48,0.3);background:rgba(255,59,48,0.06);color:#ff3b30;cursor:pointer;font-size:0.75rem;font-weight:600;width:100%">Eliminar logo</button>
+                        </div>
+                        <div id="logo-ai-panel" style="display:none;margin-top:12px">
+                            <textarea id="logo-ai-prompt" class="editor-input" rows="2" placeholder="Describe el logo..." style="font-size:0.8rem;resize:none;margin-bottom:8px">Logo minimalista y profesional para Gerard Fanals, experto en IA empresarial. Azul #007AFF, tipografia moderna, icono de automatizacion/IA. Fondo blanco o transparente.</textarea>
+                            <button onclick="runAssetAIGen('logo')" style="width:100%;padding:9px;border-radius:10px;border:none;background:linear-gradient(135deg,#5856d6,#007AFF);color:white;font-weight:700;font-size:0.82rem;cursor:pointer">✨ Generar logo</button>
+                        </div>
+                    </div>
+                    <!-- ICONO / FAVICON -->
+                    <div style="padding:24px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card)">
+                        <h2 style="font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px">
+                            <span style="font-size:1.2rem">⚡</span> Icono / Favicon
+                        </h2>
+                        <div id="icon-preview-wrap" style="width:100%;height:130px;border-radius:14px;border:2px dashed var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden">
+                            <img id="icon-preview-img" src="" alt="Icono" style="max-width:90px;max-height:90px;object-fit:contain;display:none;border-radius:16px">
+                            <span id="icon-preview-placeholder" style="font-size:0.8rem;color:var(--text-grey)">Sin icono</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <label style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);cursor:pointer;font-size:0.8rem;font-weight:600">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Subir icono
+                                <input type="file" accept="image/*" style="display:none" onchange="handleAssetUpload(event,'icon')">
+                            </label>
+                            <button onclick="generateAssetWithAI('icon')" style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;border:1px solid rgba(88,86,214,0.4);background:rgba(88,86,214,0.07);color:#5856d6;cursor:pointer;font-size:0.8rem;font-weight:600;width:100%">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span id="icon-ai-btn-text">Crear con IA</span>
+                            </button>
+                            <button onclick="clearAsset('icon')" id="icon-clear-btn" style="display:none;padding:7px 14px;border-radius:12px;border:1px solid rgba(255,59,48,0.3);background:rgba(255,59,48,0.06);color:#ff3b30;cursor:pointer;font-size:0.75rem;font-weight:600;width:100%">Eliminar icono</button>
+                        </div>
+                        <div id="icon-ai-panel" style="display:none;margin-top:12px">
+                            <textarea id="icon-ai-prompt" class="editor-input" rows="2" placeholder="Describe el icono..." style="font-size:0.8rem;resize:none;margin-bottom:8px">Icono cuadrado minimalista para app de Gerard Fanals IA. Simbolo abstracto de inteligencia artificial, azul #007AFF sobre fondo solido. Estilo flat moderno, simple, reconocible a tamano pequeno.</textarea>
+                            <button onclick="runAssetAIGen('icon')" style="width:100%;padding:9px;border-radius:10px;border:none;background:linear-gradient(135deg,#5856d6,#007AFF);color:white;font-weight:700;font-size:0.82rem;cursor:pointer">✨ Generar icono</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
 
@@ -6091,6 +6147,97 @@ Solo JSON, sin explicaciones ni markdown.`;
                 document.head.appendChild(style);
             }
         }
+
+        // ========== LOGO & ICON ASSET MANAGEMENT ==========
+        function handleAssetUpload(event, type) {
+            var file = event.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var dataUrl = e.target.result;
+                _setAsset(type, dataUrl);
+                localStorage.setItem('gf_asset_' + type, dataUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function _setAsset(type, dataUrl) {
+            var img = document.getElementById(type + '-preview-img');
+            var placeholder = document.getElementById(type + '-preview-placeholder');
+            var clearBtn = document.getElementById(type + '-clear-btn');
+            if (img) { img.src = dataUrl; img.style.display = 'block'; }
+            if (placeholder) placeholder.style.display = 'none';
+            if (clearBtn) clearBtn.style.display = 'block';
+        }
+
+        function clearAsset(type) {
+            localStorage.removeItem('gf_asset_' + type);
+            var img = document.getElementById(type + '-preview-img');
+            var placeholder = document.getElementById(type + '-preview-placeholder');
+            var clearBtn = document.getElementById(type + '-clear-btn');
+            if (img) { img.src = ''; img.style.display = 'none'; }
+            if (placeholder) placeholder.style.display = 'flex';
+            if (clearBtn) clearBtn.style.display = 'none';
+        }
+
+        function generateAssetWithAI(type) {
+            var panel = document.getElementById(type + '-ai-panel');
+            var btnText = document.getElementById(type + '-ai-btn-text');
+            if (!panel) return;
+            var isHidden = panel.style.display === 'none' || panel.style.display === '';
+            panel.style.display = isHidden ? 'block' : 'none';
+            if (btnText) btnText.textContent = isHidden ? 'Cancelar' : 'Crear con IA';
+        }
+
+        async function runAssetAIGen(type) {
+            var promptEl = document.getElementById(type + '-ai-prompt');
+            var panel = document.getElementById(type + '-ai-panel');
+            var genBtn = panel ? panel.querySelector('button') : null;
+            if (!promptEl) return;
+            var prompt = promptEl.value.trim();
+            if (!prompt) { alert('Escribe una descripcion primero.'); return; }
+            if (genBtn) { genBtn.textContent = 'Generando...'; genBtn.disabled = true; }
+            try {
+                var encodedPrompt = encodeURIComponent(prompt + ', professional, clean, high quality, no text');
+                var seed = Date.now();
+                var imgUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=512&height=512&nologo=true&seed=' + seed;
+                // Try loading via canvas for dataURL (for localStorage persistence)
+                var imgEl = new Image();
+                imgEl.crossOrigin = 'anonymous';
+                imgEl.onload = function() {
+                    try {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = 512; canvas.height = 512;
+                        canvas.getContext('2d').drawImage(imgEl, 0, 0, 512, 512);
+                        var dataUrl = canvas.toDataURL('image/png');
+                        _setAsset(type, dataUrl);
+                        localStorage.setItem('gf_asset_' + type, dataUrl);
+                    } catch(corsErr) {
+                        _setAsset(type, imgUrl);
+                    }
+                    panel.style.display = 'none';
+                    var btnTxt = document.getElementById(type + '-ai-btn-text');
+                    if (btnTxt) btnTxt.textContent = 'Crear con IA';
+                    if (genBtn) { genBtn.textContent = 'Generar'; genBtn.disabled = false; }
+                };
+                imgEl.onerror = function() {
+                    alert('Error generando la imagen. Intenta con otra descripcion.');
+                    if (genBtn) { genBtn.textContent = 'Generar'; genBtn.disabled = false; }
+                };
+                imgEl.src = imgUrl;
+            } catch(e) {
+                alert('Error: ' + e.message);
+                if (genBtn) { genBtn.textContent = 'Generar'; genBtn.disabled = false; }
+            }
+        }
+
+        function restoreAssets() {
+            ['logo', 'icon'].forEach(function(type) {
+                var saved = localStorage.getItem('gf_asset_' + type);
+                if (saved) _setAsset(type, saved);
+            });
+        }
+        window.addEventListener('load', restoreAssets);
     </script>
 </body>
 </html>
