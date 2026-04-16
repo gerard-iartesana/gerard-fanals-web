@@ -1789,14 +1789,25 @@
                 </div>
 
                 <!-- Publicar en web -->
-                <div style="padding:20px 24px;border-radius:16px;border:1px solid rgba(0,122,255,0.2);background:rgba(0,122,255,0.04);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
-                    <div>
-                        <div style="font-size:0.85rem;font-weight:700">🌐 Publicar en gerardfanals.online</div>
-                        <div style="font-size:0.72rem;color:var(--text-grey);margin-top:3px">Aplica el logo y el favicon activos al sitio web p&#250;blico</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div style="padding:16px 20px;border-radius:14px;border:1px solid rgba(0,122,255,0.2);background:rgba(0,122,255,0.04);display:flex;align-items:center;justify-content:space-between;gap:12px">
+                        <div>
+                            <div style="font-size:0.8rem;font-weight:700">🖼️ Publicar logo</div>
+                            <div style="font-size:0.68rem;color:var(--text-grey);margin-top:2px">Aplica el logo al sitio web</div>
+                        </div>
+                        <button onclick="publishSingleAsset('logo')" id="btn-publish-logo" style="padding:8px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-weight:700;font-size:0.78rem;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(0,122,255,0.2)">
+                            Publicar
+                        </button>
                     </div>
-                    <button onclick="publishAssetsToWeb()" id="btn-publish-assets" style="padding:10px 22px;border-radius:12px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-weight:700;font-size:0.85rem;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(0,122,255,0.25)">
-                        &#128640; Publicar logo &amp; favicon
-                    </button>
+                    <div style="padding:16px 20px;border-radius:14px;border:1px solid rgba(88,86,214,0.2);background:rgba(88,86,214,0.04);display:flex;align-items:center;justify-content:space-between;gap:12px">
+                        <div>
+                            <div style="font-size:0.8rem;font-weight:700">⚡ Publicar favicon</div>
+                            <div style="font-size:0.68rem;color:var(--text-grey);margin-top:2px">Aplica el icono al navegador</div>
+                        </div>
+                        <button onclick="publishSingleAsset('icon')" id="btn-publish-icon" style="padding:8px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#5856d6,#007AFF);color:white;font-weight:700;font-size:0.78rem;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(88,86,214,0.2)">
+                            Publicar
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -6314,41 +6325,43 @@ Solo JSON, sin explicaciones ni markdown.`;
         }
         window.addEventListener('load', restoreAssets);
 
-        // ===== PUBLISH ASSETS TO WEB =====
-        async function publishAssetsToWeb() {
-            var btn = document.getElementById('btn-publish-assets');
-            var logoImg = document.getElementById('logo-preview-img');
-            var iconImg = document.getElementById('icon-preview-img');
+        // ===== PUBLISH INDIVIDUAL ASSET TO WEB =====
+        async function publishSingleAsset(type) {
+            var btnId = type === 'logo' ? 'btn-publish-logo' : 'btn-publish-icon';
+            var imgId = type === 'logo' ? 'logo-preview-img' : 'icon-preview-img';
+            var settingKey = type === 'logo' ? 'logo_url' : 'favicon_url';
 
-            var logoUrl = logoImg && logoImg.style.display !== 'none' ? logoImg.src : null;
-            var iconUrl = iconImg && iconImg.style.display !== 'none' ? iconImg.src : null;
+            var btn = document.getElementById(btnId);
+            var img = document.getElementById(imgId);
+            var url = img && img.style.display !== 'none' ? img.src : null;
 
-            if (!logoUrl && !iconUrl) {
-                alert('No hay logo ni icono cargado. Sube o genera uno primero.');
+            if (!url) {
+                alert('No hay ' + (type === 'logo' ? 'logo' : 'icono') + ' cargado. Sube o genera uno primero.');
                 return;
             }
 
-            if (btn) { btn.textContent = '⏳ Publicando...'; btn.disabled = true; }
+            if (btn) { btn.textContent = '⏳...'; btn.disabled = true; }
 
             try {
-                var upserts = [];
-                var now = new Date().toISOString();
-                if (logoUrl) upserts.push({ key: 'logo_url', value: logoUrl.split('?')[0], updated_at: now });
-                if (iconUrl) upserts.push({ key: 'favicon_url', value: iconUrl.split('?')[0], updated_at: now });
-
                 var { error } = await _supabase
                     .from('site_settings')
-                    .upsert(upserts, { onConflict: 'key' });
+                    .upsert([{ key: settingKey, value: url.split('?')[0], updated_at: new Date().toISOString() }], { onConflict: 'key' });
 
                 if (error) throw error;
 
-                if (btn) { btn.textContent = '✅ Publicado'; btn.style.background = '#34c759'; }
+                if (btn) { btn.textContent = '✅ Publicado'; btn.style.background = 'linear-gradient(135deg,#34c759,#30d158)'; }
                 setTimeout(function() {
-                    if (btn) { btn.textContent = '\uD83D\uDE80 Publicar logo & favicon'; btn.disabled = false; btn.style.background = ''; }
+                    if (btn) {
+                        btn.textContent = 'Publicar';
+                        btn.disabled = false;
+                        btn.style.background = type === 'logo'
+                            ? 'linear-gradient(135deg,#007AFF,#5856d6)'
+                            : 'linear-gradient(135deg,#5856d6,#007AFF)';
+                    }
                 }, 3000);
             } catch(e) {
                 alert('Error publicando: ' + e.message);
-                if (btn) { btn.textContent = '\uD83D\uDE80 Publicar logo & favicon'; btn.disabled = false; }
+                if (btn) { btn.textContent = 'Publicar'; btn.disabled = false; }
             }
         }
 
