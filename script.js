@@ -196,7 +196,7 @@ function toggleFaq(btn) {
 }
 
 // Load FAQs on page load
-document.addEventListener('DOMContentLoaded', function() { loadFAQs(); loadSiteSettings(); });
+document.addEventListener('DOMContentLoaded', function() { loadFAQs(); });
 
 // ===== SITE SETTINGS (logo + favicon from Supabase) =====
 async function loadSiteSettings() {

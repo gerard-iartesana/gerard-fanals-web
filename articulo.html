@@ -108,6 +108,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-client.js"></script>
+    <script>
+    // Apply favicon from Supabase site_settings as early as possible
+    (function() {
+        var link = document.createElement('link');
+        link.rel = 'icon';
+        link.type = 'image/png';
+        link.id = 'site-favicon';
+        document.head.appendChild(link);
+        // Load after supabase client is ready
+        function applyFavicon() {
+            if (typeof _supabase === 'undefined') { setTimeout(applyFavicon, 50); return; }
+            _supabase.from('site_settings').select('key,value').in('key',['favicon_url','logo_url'])
+                .then(function(res) {
+                    if (!res.data) return;
+                    res.data.forEach(function(row) {
+                        if (row.key === 'favicon_url' && row.value) {
+                            var el = document.getElementById('site-favicon');
+                            if (el) el.href = row.value + '?t=' + Date.now();
+                        }
+                        if (row.key === 'logo_url' && row.value) {
+                            var logoEl = document.getElementById('site-logo');
+                            if (logoEl) {
+                                logoEl.innerHTML = '<img src="' + row.value + '" alt="Gerard Fanals" style="height:28px;max-width:160px;object-fit:contain;vertical-align:middle">';
+                            }
+                        }
+                    });
+                }).catch(function() {});
+        }
+        applyFavicon();
+    })();
+    </script>
     <script src="script.js"></script>
     <script src="articles-data.js"></script>
     <script>
