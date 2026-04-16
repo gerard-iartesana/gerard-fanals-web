@@ -565,7 +565,12 @@
                     </div>
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('meetings')">
                         <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Reuniones</span>
-                        <span style="font-size:1.6rem;font-weight:700;color:#007AFF" id="stat-meetings">—</span>
+                        <div id="stat-meetings" style="display:flex;align-items:baseline;gap:4px">
+                            <span style="font-size:1.4rem;font-weight:700;color:#007AFF" id="stat-meetings-web">—</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)"> web /</span>
+                            <span style="font-size:1rem;font-weight:700;color:#5856d6" id="stat-meetings-manual">—</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)"> otras</span>
+                        </div>
                     </div>
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('soporte')">
                         <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Peticiones</span>
@@ -2602,18 +2607,27 @@
                 if (el) el.innerHTML = '<span style="font-size:1.4rem;font-weight:700;color:var(--text-grey)">0</span>';
             }
 
-            // Upcoming meetings count
+            // Meetings by source
             try {
                 var now = new Date().toISOString();
-                const { count } = await _supabase
+                var { data: allMeetings } = await _supabase
                     .from('meetings')
-                    .select('*', { count: 'exact', head: true })
+                    .select('source')
                     .gte('meeting_date', now);
-                var el = document.getElementById('stat-meetings');
-                if (el) el.textContent = count || 0;
+                var webCount = 0, manualCount = 0;
+                (allMeetings || []).forEach(function(m) {
+                    if (m.source === 'web') webCount++;
+                    else manualCount++;
+                });
+                var elWeb = document.getElementById('stat-meetings-web');
+                var elManual = document.getElementById('stat-meetings-manual');
+                if (elWeb) elWeb.textContent = webCount;
+                if (elManual) elManual.textContent = manualCount;
             } catch (e) {
-                var el = document.getElementById('stat-meetings');
-                if (el) el.textContent = '0';
+                var elWeb = document.getElementById('stat-meetings-web');
+                var elManual = document.getElementById('stat-meetings-manual');
+                if (elWeb) elWeb.textContent = '0';
+                if (elManual) elManual.textContent = '0';
             }
 
             // Support tickets stats
@@ -5354,7 +5368,8 @@ Solo JSON, sin explicaciones ni markdown.`;
                     meeting_date: dateISO,
                     meeting_type: type,
                     status: status,
-                    notes: notes || null
+                    notes: notes || null,
+                    source: 'manual'
                 };
 
                 // Store gcal event id if we have the column
