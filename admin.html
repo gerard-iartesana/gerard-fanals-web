@@ -1244,6 +1244,13 @@
                                         <option value="cancelled">❌ Cancelada</option>
                                     </select>
                                 </div>
+                                <div>
+                                    <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Origen</label>
+                                    <select id="mtg-source" class="editor-input" style="padding:10px 14px">
+                                        <option value="manual">✍️ Manual</option>
+                                        <option value="web">🌐 Web</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 <label style="font-size:0.75rem;font-weight:600;color:var(--text-grey);text-transform:uppercase;display:block;margin-bottom:4px">Notas</label>
@@ -5338,6 +5345,7 @@ Solo JSON, sin explicaciones ni markdown.`;
             var type = document.getElementById('mtg-type').value;
             var status = document.getElementById('mtg-status').value;
             var notes = document.getElementById('mtg-notes').value.trim();
+            var source = document.getElementById('mtg-source') ? document.getElementById('mtg-source').value : 'manual';
 
             if (!name || !date) {
                 showMtgNotif('⚠️ Nombre y fecha son obligatorios', 'warn');
@@ -5369,7 +5377,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                     meeting_type: type,
                     status: status,
                     notes: notes || null,
-                    source: 'manual'
+                    source: source
                 };
 
                 // Store gcal event id if we have the column
