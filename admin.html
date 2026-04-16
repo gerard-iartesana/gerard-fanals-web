@@ -6523,14 +6523,33 @@ Solo JSON, sin explicaciones ni markdown.`;
                 });
                 var { error } = await _supabase.from('brand_identity').upsert(upserts, { onConflict: 'key' });
                 if (error) throw error;
-                if (btn) { btn.textContent = '✅'; btn.style.background = '#34c759'; }
+                if (btn) { btn.textContent = '✅ Guardado'; btn.style.background = '#34c759'; }
+                _biStatus(block, '✅ Guardado correctamente', 'ok');
                 setTimeout(function() {
                     if (btn) { btn.textContent = 'Guardar'; btn.disabled = false; btn.style.background = ''; }
                 }, 2500);
             } catch(e) {
-                alert('Error guardando: ' + e.message);
+                _biStatus(block, '❌ Error guardando: ' + e.message, 'err');
                 if (btn) { btn.textContent = 'Guardar'; btn.disabled = false; }
             }
+        }
+
+        function _biStatus(block, msg, type) {
+            var statusId = 'bi-status-' + block;
+            var el = document.getElementById(statusId);
+            if (!el) {
+                el = document.createElement('div');
+                el.id = statusId;
+                el.style.cssText = 'font-size:0.75rem;font-weight:600;padding:7px 12px;border-radius:9px;margin-top:10px;transition:opacity 0.4s';
+                var blockEl = document.getElementById('bi-' + block);
+                if (blockEl) blockEl.appendChild(el);
+            }
+            el.textContent = msg;
+            el.style.opacity = '1';
+            el.style.background = type === 'ok' ? 'rgba(52,199,89,0.1)' : type === 'err' ? 'rgba(255,59,48,0.1)' : 'rgba(0,122,255,0.08)';
+            el.style.color = type === 'ok' ? '#34c759' : type === 'err' ? '#ff3b30' : '#007AFF';
+            clearTimeout(el._hideTimer);
+            el._hideTimer = setTimeout(function() { el.style.opacity = '0'; }, 4000);
         }
 
         async function genBrandField(block, field, prompt) {
@@ -6538,15 +6557,28 @@ Solo JSON, sin explicaciones ni markdown.`;
             var el = document.getElementById(elId);
             var btn = el ? el.parentElement.querySelector('.bi-ai-btn') : null;
             if (!el) return;
+
+            // Check Gemini key
+            var geminiKey = localStorage.getItem('gf_gemini_key') || '';
+            if (!geminiKey) {
+                _biStatus(block, '⚠️ Configura tu API Key de Gemini en Soporte → Configuración', 'err');
+                return;
+            }
+
             if (btn) { btn.textContent = '⏳'; btn.classList.add('loading'); }
+            _biStatus(block, '✦ Generando con IA...', 'info');
             try {
                 var result = await callGemini(
                     'Eres un experto en branding y comunicacion corporativa. Responde SOLO con el texto solicitado, sin explicaciones adicionales, sin comillas, sin formato markdown.\n\n' + prompt,
                     'gemini-2.5-flash'
                 );
-                if (result) { el.value = result.trim(); el.dispatchEvent(new Event('input')); }
+                if (result) {
+                    el.value = result.trim();
+                    el.dispatchEvent(new Event('input'));
+                    _biStatus(block, '✅ Generado. Revisa y guarda.', 'ok');
+                }
             } catch(e) {
-                alert('Error IA: ' + e.message);
+                _biStatus(block, '❌ Error IA: ' + e.message, 'err');
             } finally {
                 if (btn) { btn.textContent = '✦'; btn.classList.remove('loading'); }
             }
