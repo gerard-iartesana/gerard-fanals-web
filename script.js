@@ -196,4 +196,32 @@ function toggleFaq(btn) {
 }
 
 // Load FAQs on page load
-document.addEventListener('DOMContentLoaded', function() { loadFAQs(); });
+document.addEventListener('DOMContentLoaded', function() { loadFAQs(); loadSiteSettings(); });
+
+// ===== SITE SETTINGS (logo + favicon from Supabase) =====
+async function loadSiteSettings() {
+    if (typeof _supabase === 'undefined') return;
+    try {
+        var { data } = await _supabase
+            .from('site_settings')
+            .select('key, value')
+            .in('key', ['logo_url', 'favicon_url']);
+
+        if (!data || data.length === 0) return;
+
+        data.forEach(function(row) {
+            if (row.key === 'favicon_url' && row.value) {
+                var faviconEl = document.getElementById('site-favicon');
+                if (faviconEl) faviconEl.href = row.value;
+            }
+            if (row.key === 'logo_url' && row.value) {
+                var logoEl = document.getElementById('site-logo');
+                if (logoEl) {
+                    logoEl.innerHTML = '<img src="' + row.value + '" alt="Gerard Fanals" style="height:28px;max-width:160px;object-fit:contain;vertical-align:middle">';
+                }
+            }
+        });
+    } catch(e) {
+        console.warn('loadSiteSettings error:', e.message);
+    }
+}
