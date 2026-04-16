@@ -6148,36 +6148,73 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
 
-        // ========== LOGO & ICON ASSET MANAGEMENT ==========
-        function handleAssetUpload(event, type) {
+        // ========== LOGO & ICON ASSET MANAGEMENT (Supabase Storage) ==========
+        var BRAND_BUCKET = 'brand-assets';
+
+        async function handleAssetUpload(event, type) {
             var file = event.target.files[0];
             if (!file) return;
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var dataUrl = e.target.result;
-                _setAsset(type, dataUrl);
-                localStorage.setItem('gf_asset_' + type, dataUrl);
-            };
-            reader.readAsDataURL(file);
+            var placeholder = document.getElementById(type + '-preview-placeholder');
+            var clearBtn = document.getElementById(type + '-clear-btn');
+            if (placeholder) placeholder.textContent = '⏳ Subiendo...';
+
+            try {
+                var ext = file.name.split('.').pop().toLowerCase() || 'png';
+                var path = 'brand/' + type + '.' + ext;
+
+                var { error } = await _supabase.storage
+                    .from(BRAND_BUCKET)
+                    .upload(path, file, { upsert: true, contentType: file.type });
+
+                if (error) throw error;
+
+                var { data: urlData } = _supabase.storage.from(BRAND_BUCKET).getPublicUrl(path);
+                var url = urlData.publicUrl + '?t=' + Date.now();
+
+                _setAsset(type, url);
+                localStorage.setItem('gf_asset_' + type + '_url', url);
+                if (clearBtn) clearBtn.style.display = 'block';
+            } catch(e) {
+                // Fallback to localStorage on error (e.g. bucket not ready yet)
+                console.warn('Supabase Storage upload failed, using localStorage:', e.message);
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    _setAsset(type, ev.target.result);
+                    localStorage.setItem('gf_asset_' + type, ev.target.result);
+                    if (clearBtn) clearBtn.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        function _setAsset(type, dataUrl) {
+        function _setAsset(type, url) {
             var img = document.getElementById(type + '-preview-img');
             var placeholder = document.getElementById(type + '-preview-placeholder');
             var clearBtn = document.getElementById(type + '-clear-btn');
-            if (img) { img.src = dataUrl; img.style.display = 'block'; }
-            if (placeholder) placeholder.style.display = 'none';
+            if (img) { img.src = url; img.style.display = 'block'; }
+            if (placeholder) { placeholder.style.display = 'none'; }
             if (clearBtn) clearBtn.style.display = 'block';
         }
 
-        function clearAsset(type) {
+        async function clearAsset(type) {
+            // Remove from Supabase Storage (try both extensions)
+            try {
+                await _supabase.storage.from(BRAND_BUCKET).remove(['brand/' + type + '.png', 'brand/' + type + '.jpg', 'brand/' + type + '.svg', 'brand/' + type + '.webp']);
+            } catch(e) { console.log('Storage remove:', e.message); }
+
             localStorage.removeItem('gf_asset_' + type);
+            localStorage.removeItem('gf_asset_' + type + '_url');
+
             var img = document.getElementById(type + '-preview-img');
             var placeholder = document.getElementById(type + '-preview-placeholder');
             var clearBtn = document.getElementById(type + '-clear-btn');
             if (img) { img.src = ''; img.style.display = 'none'; }
-            if (placeholder) placeholder.style.display = 'flex';
+            if (placeholder) { placeholder.textContent = 'Sin ' + type; placeholder.style.display = 'flex'; }
             if (clearBtn) clearBtn.style.display = 'none';
+            var panel = document.getElementById(type + '-ai-panel');
+            if (panel) panel.style.display = 'none';
+            var btnTxt = document.getElementById(type + '-ai-btn-text');
+            if (btnTxt) btnTxt.textContent = 'Crear con IA';
         }
 
         function generateAssetWithAI(type) {
@@ -6195,47 +6232,73 @@ Solo JSON, sin explicaciones ni markdown.`;
             var genBtn = panel ? panel.querySelector('button') : null;
             if (!promptEl) return;
             var prompt = promptEl.value.trim();
-            if (!prompt) { alert('Escribe una descripcion primero.'); return; }
-            if (genBtn) { genBtn.textContent = 'Generando...'; genBtn.disabled = true; }
+            if (!prompt) { alert('Escribe una descripción primero.'); return; }
+            if (genBtn) { genBtn.textContent = '⏳ Generando...'; genBtn.disabled = true; }
+
             try {
-                var encodedPrompt = encodeURIComponent(prompt + ', professional, clean, high quality, no text');
-                var seed = Date.now();
-                var imgUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=512&height=512&nologo=true&seed=' + seed;
-                // Try loading via canvas for dataURL (for localStorage persistence)
-                var imgEl = new Image();
-                imgEl.crossOrigin = 'anonymous';
-                imgEl.onload = function() {
-                    try {
-                        var canvas = document.createElement('canvas');
-                        canvas.width = 512; canvas.height = 512;
-                        canvas.getContext('2d').drawImage(imgEl, 0, 0, 512, 512);
-                        var dataUrl = canvas.toDataURL('image/png');
-                        _setAsset(type, dataUrl);
-                        localStorage.setItem('gf_asset_' + type, dataUrl);
-                    } catch(corsErr) {
-                        _setAsset(type, imgUrl);
-                    }
-                    panel.style.display = 'none';
-                    var btnTxt = document.getElementById(type + '-ai-btn-text');
-                    if (btnTxt) btnTxt.textContent = 'Crear con IA';
-                    if (genBtn) { genBtn.textContent = 'Generar'; genBtn.disabled = false; }
-                };
-                imgEl.onerror = function() {
-                    alert('Error generando la imagen. Intenta con otra descripcion.');
-                    if (genBtn) { genBtn.textContent = 'Generar'; genBtn.disabled = false; }
-                };
-                imgEl.src = imgUrl;
+                var encodedPrompt = encodeURIComponent(prompt + ', professional, clean, high quality, no text overlay');
+                var imgUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=512&height=512&nologo=true&seed=' + Date.now();
+
+                // Fetch as blob to upload to Supabase Storage
+                var response = await fetch(imgUrl);
+                if (!response.ok) throw new Error('Error generando imagen');
+                var blob = await response.blob();
+
+                var path = 'brand/' + type + '.png';
+                var { error } = await _supabase.storage
+                    .from(BRAND_BUCKET)
+                    .upload(path, blob, { upsert: true, contentType: 'image/png' });
+
+                var finalUrl;
+                if (!error) {
+                    var { data: urlData } = _supabase.storage.from(BRAND_BUCKET).getPublicUrl(path);
+                    finalUrl = urlData.publicUrl + '?t=' + Date.now();
+                    localStorage.setItem('gf_asset_' + type + '_url', finalUrl);
+                } else {
+                    // Fallback: show Pollinations URL directly
+                    finalUrl = imgUrl;
+                    console.warn('Storage upload failed, showing direct URL:', error.message);
+                }
+
+                _setAsset(type, finalUrl);
+                panel.style.display = 'none';
+                var btnTxt = document.getElementById(type + '-ai-btn-text');
+                if (btnTxt) btnTxt.textContent = 'Crear con IA';
             } catch(e) {
-                alert('Error: ' + e.message);
-                if (genBtn) { genBtn.textContent = 'Generar'; genBtn.disabled = false; }
+                alert('Error generando la imagen: ' + e.message);
+            } finally {
+                if (genBtn) { genBtn.textContent = '✨ Generar ' + type; genBtn.disabled = false; }
             }
         }
 
-        function restoreAssets() {
-            ['logo', 'icon'].forEach(function(type) {
-                var saved = localStorage.getItem('gf_asset_' + type);
-                if (saved) _setAsset(type, saved);
-            });
+        async function restoreAssets() {
+            for (var t of ['logo', 'icon']) {
+                var type = t;
+                // 1. Try Supabase Storage (check common extensions)
+                var restored = false;
+                for (var ext of ['png', 'jpg', 'jpeg', 'svg', 'webp']) {
+                    var path = 'brand/' + type + '.' + ext;
+                    var { data } = _supabase.storage.from(BRAND_BUCKET).getPublicUrl(path);
+                    if (data && data.publicUrl) {
+                        // Verify file exists by attempting a HEAD request
+                        try {
+                            var check = await fetch(data.publicUrl, { method: 'HEAD' });
+                            if (check.ok) {
+                                _setAsset(type, data.publicUrl + '?t=' + Date.now());
+                                restored = true;
+                                break;
+                            }
+                        } catch(e) { /* skip */ }
+                    }
+                }
+                // 2. Fallback to localStorage cached URL
+                if (!restored) {
+                    var cachedUrl = localStorage.getItem('gf_asset_' + type + '_url');
+                    var cachedData = localStorage.getItem('gf_asset_' + type);
+                    if (cachedUrl) _setAsset(type, cachedUrl);
+                    else if (cachedData) _setAsset(type, cachedData);
+                }
+            }
         }
         window.addEventListener('load', restoreAssets);
     </script>
