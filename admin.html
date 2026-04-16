@@ -358,6 +358,58 @@
             .editor-full { grid-column: span 1; }
             .analytics-grid { grid-template-columns: repeat(2, 1fr); }
         }
+
+        /* ── Brand Identity Blocks ── */
+        .bi-block {
+            padding: 20px 24px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            margin-bottom: 16px;
+        }
+        .bi-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .bi-save-btn {
+            padding: 6px 16px;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: Inter, sans-serif;
+            transition: opacity 0.2s;
+        }
+        .bi-save-btn:hover { opacity: 0.85; }
+        .bi-fields { display: flex; flex-direction: column; gap: 14px; }
+        .bi-field-row { display: flex; flex-direction: column; gap: 5px; }
+        .bi-field-row label { font-size: 0.72rem; font-weight: 600; color: var(--text-grey); text-transform: uppercase; letter-spacing: 0.04em; }
+        .bi-input-wrap { display: flex; gap: 8px; align-items: flex-start; }
+        .bi-input-wrap .editor-input { flex: 1; }
+        .bi-ai-btn {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid rgba(88,86,214,0.3);
+            background: rgba(88,86,214,0.07);
+            color: #5856d6;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-family: Inter, sans-serif;
+        }
+        .bi-ai-btn:hover { background: rgba(88,86,214,0.15); }
+        .bi-ai-btn.loading { animation: pulse 1s infinite; opacity: 0.6; pointer-events: none; }
+
     </style>
 
     <style>
@@ -453,11 +505,11 @@
                 <div class="nav-group-title" onclick="toggleNavGroup(this)">Social Media <span class="nav-chevron">▼</span></div>
                 <div class="nav-group-items">
                     <button class="dash-nav-item" data-section="ads">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2"/><path d="M19 3v18"/><path d="M19 7H6a3 3 0 0 0-3 3v1a3 3 0 0 0 3 3h13"/><path d="M6 14v4a2 2 0 0 0 2 2h2"/></svg>
                         ADS
                     </button>
                     <button class="dash-nav-item" data-section="social">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                         Redes Sociales
                     </button>
                 </div>
@@ -476,7 +528,7 @@
                         SEO
                     </button>
                     <button class="dash-nav-item" data-section="geo-aeo">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 2v10l6.93 4"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 4-4 7-7 11C8 16 5 13 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
                         GEO & AEO
                     </button>
                 </div>
@@ -506,7 +558,7 @@
                         Academy
                     </button>
                     <button class="dash-nav-item" data-section="identidad">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M16 10a4 4 0 0 1-8 0"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                         Identidad
                     </button>
                 </div>
@@ -1732,6 +1784,123 @@
                     </div>
                 </div>
 
+
+                <!-- ── BLOQUE 1: NAMING ───────────────────────── -->
+                <div class="bi-block" id="bi-naming">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18"/><path d="M3 16h18"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Naming</span>
+                        </div>
+                        <button onclick="saveBrandBlock('naming')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Nombre de marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-naming-nombre" class="editor-input" placeholder="Gerard Fanals" style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('naming','nombre','Genera el nombre de marca ideal y su justificaicion en 2 lineas para: '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty)">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Eslogan / Tagline</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-naming-eslogan" class="editor-input" placeholder="Automatizando el futuro." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('naming','eslogan','Genera un eslogan de marca potente, conciso (max 6 palabras) para: '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Solo el eslogan, sin explicacion.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Descripción corta</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-naming-descripcion" class="editor-input" rows="2" placeholder="Una línea que define quién eres y qué haces..." style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('naming','descripcion','Genera una descripcion de marca de 1 frase (max 20 palabras) en primera persona para: '+CLIENT_CONFIG.name+', '+CLIENT_CONFIG.specialty+'. Sin comillas.')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BLOQUE 2: PERSONALIDAD ─────────────────── -->
+                <div class="bi-block" id="bi-personalidad">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Personalidad</span>
+                        </div>
+                        <button onclick="saveBrandBlock('personalidad')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Misión</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-personalidad-mision" class="editor-input" rows="2" placeholder="¿Por qué existe tu marca?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('personalidad','mision','Genera la Mision de marca (1-2 frases, accion + proposito) para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. En primera persona del singular.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Visión</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-personalidad-vision" class="editor-input" rows="2" placeholder="¿Adónde quieres llegar?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('personalidad','vision','Genera la Vision de marca (1-2 frases, futuro aspiracional) para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. En primera persona.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Valores (uno por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-personalidad-valores" class="editor-input" rows="4" placeholder="Innovación&#10;Transparencia&#10;Resultados" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('personalidad','valores','Lista 5 valores de marca (solo el nombre del valor, uno por linea, sin explicacion) para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty)">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Arquetipos de marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-personalidad-arquetipos" class="editor-input" placeholder="El Sabio, El Héroe..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('personalidad','arquetipos','Identifica el arquetipo de marca principal y secundario (max 2) para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Solo los nombres, separados por coma.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Atributos de marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="bi-personalidad-atributos" class="editor-input" placeholder="Experto, Directo, Visionario..." style="font-size:0.85rem">
+                                <button class="bi-ai-btn" onclick="genBrandField('personalidad','atributos','Lista 5 adjetivos que definen la personalidad de marca de '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BLOQUE 3: OBJETIVOS ────────────────────── -->
+                <div class="bi-block" id="bi-objetivos">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Objetivos de Marca</span>
+                        </div>
+                        <button onclick="saveBrandBlock('objetivos')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Objetivo principal</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-objetivos-principal" class="editor-input" rows="2" placeholder="¿Qué quieres conseguir con tu marca?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('objetivos','principal','Define el objetivo principal de marca (1 frase clara y medible) para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty)">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Público objetivo</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-objetivos-publico" class="editor-input" rows="2" placeholder="¿A quién te diriges?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('objetivos','publico','Describe el publico objetivo ideal en 1-2 frases para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Perfil demografico y psicografico.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Propuesta de valor única</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="bi-objetivos-propuesta" class="editor-input" rows="2" placeholder="¿Qué te hace diferente de la competencia?" style="font-size:0.85rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genBrandField('objetivos','propuesta','Genera la propuesta de valor unica (UVP) en 1 frase para '+CLIENT_CONFIG.name+', especialista en '+CLIENT_CONFIG.specialty+'. Formato: Para [cliente], yo [accion] que [beneficio] a diferencia de [competencia].')">✦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Logo & Icono Upload + AI -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
                     <!-- LOGO -->
@@ -1927,6 +2096,7 @@
                 if (btn.dataset.section === 'meetings') { loadMeetings(); }
                 if (btn.dataset.section === 'soporte') { loadSupportTickets(); }
                 if (btn.dataset.section === 'newsletter') { loadSubscribers(); loadNewsletterConfig(); }
+                if (btn.dataset.section === 'identidad') { loadBrandIdentity(); }
             });
         });
 
@@ -6324,6 +6494,64 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
         window.addEventListener('load', restoreAssets);
+
+        // ═══ BRAND IDENTITY ═══════════════════════════════════════
+        var _biCache = {};
+
+        async function loadBrandIdentity() {
+            if (typeof _supabase === 'undefined') return;
+            try {
+                var { data } = await _supabase.from('brand_identity').select('key,value');
+                if (!data) return;
+                data.forEach(function(row) {
+                    _biCache[row.key] = row.value;
+                    var el = document.getElementById('bi-' + row.key.replace(/_/g,'-'));
+                    if (el) el.value = row.value || '';
+                });
+            } catch(e) { console.warn('loadBrandIdentity:', e.message); }
+        }
+
+        async function saveBrandBlock(block) {
+            var fields = document.querySelectorAll('[id^="bi-' + block + '-"]');
+            var btn = document.querySelector('#bi-' + block + ' .bi-save-btn');
+            if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+            try {
+                var upserts = [];
+                fields.forEach(function(el) {
+                    var key = el.id.replace('bi-','').replace(/-/g,'_');
+                    upserts.push({ key: key, value: el.value.trim(), updated_at: new Date().toISOString() });
+                });
+                var { error } = await _supabase.from('brand_identity').upsert(upserts, { onConflict: 'key' });
+                if (error) throw error;
+                if (btn) { btn.textContent = '✅'; btn.style.background = '#34c759'; }
+                setTimeout(function() {
+                    if (btn) { btn.textContent = 'Guardar'; btn.disabled = false; btn.style.background = ''; }
+                }, 2500);
+            } catch(e) {
+                alert('Error guardando: ' + e.message);
+                if (btn) { btn.textContent = 'Guardar'; btn.disabled = false; }
+            }
+        }
+
+        async function genBrandField(block, field, prompt) {
+            var elId = 'bi-' + block + '-' + field;
+            var el = document.getElementById(elId);
+            var btn = el ? el.parentElement.querySelector('.bi-ai-btn') : null;
+            if (!el) return;
+            if (btn) { btn.textContent = '⏳'; btn.classList.add('loading'); }
+            try {
+                var result = await callGemini(
+                    'Eres un experto en branding y comunicacion corporativa. Responde SOLO con el texto solicitado, sin explicaciones adicionales, sin comillas, sin formato markdown.\n\n' + prompt,
+                    'gemini-2.5-flash'
+                );
+                if (result) { el.value = result.trim(); el.dispatchEvent(new Event('input')); }
+            } catch(e) {
+                alert('Error IA: ' + e.message);
+            } finally {
+                if (btn) { btn.textContent = '✦'; btn.classList.remove('loading'); }
+            }
+        }
+
 
         // ===== PUBLISH INDIVIDUAL ASSET TO WEB =====
         async function publishSingleAsset(type) {
