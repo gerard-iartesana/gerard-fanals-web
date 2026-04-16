@@ -242,6 +242,13 @@
             border-radius: 16px;
         }
 
+        /* Resumen filter bar */
+        .rfilter-group { display:flex;gap:2px;background:var(--bg-secondary);border-radius:10px;padding:3px;border:1px solid var(--border-color); }
+        .rfilter-btn { padding:5px 11px;border:none;background:transparent;border-radius:8px;font-size:0.72rem;font-weight:600;color:var(--text-grey);cursor:pointer;transition:all 0.2s; }
+        .rfilter-btn:hover { background:rgba(0,122,255,0.07);color:var(--accent-blue); }
+        .rfilter-btn.active { background:var(--accent-blue);color:white;box-shadow:0 2px 8px rgba(0,122,255,0.25); }
+        .resumen-chart-canvas { width:100%!important;height:65px!important;display:block;margin-top:8px; }
+
         .article-row-info h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
         .article-row-info span { font-size: 0.8rem; color: var(--text-grey); }
 
@@ -537,7 +544,23 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                     </button>
                 </div>
-                <p style="color:var(--text-grey);font-size:1.1rem;margin-bottom:30px">Bienvenido al panel de administración. Desde aquí puedes gestionar los artículos del blog.</p>
+                <!-- Global Date Filter Bar -->
+                <div id="resumen-filter-bar" style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+                    <div class="rfilter-group">
+                        <button class="rfilter-btn active" data-period="year" onclick="setResumenPeriod('year')">Este año</button>
+                        <button class="rfilter-btn" data-period="semester" onclick="setResumenPeriod('semester')">Semestre</button>
+                        <button class="rfilter-btn" data-period="quarter" onclick="setResumenPeriod('quarter')">Trimestre</button>
+                        <button class="rfilter-btn" data-period="month" onclick="setResumenPeriod('month')">Mes</button>
+                        <button class="rfilter-btn" data-period="custom" onclick="setResumenPeriod('custom')">Personalizado</button>
+                    </div>
+                    <div id="resumen-custom-dates" style="display:none;gap:6px;align-items:center">
+                        <input type="date" id="resumen-date-from" onchange="applyResumenCustomFilter()" class="editor-input" style="padding:5px 10px;font-size:0.8rem;width:140px">
+                        <span style="color:var(--text-grey);font-weight:600">→</span>
+                        <input type="date" id="resumen-date-to" onchange="applyResumenCustomFilter()" class="editor-input" style="padding:5px 10px;font-size:0.8rem;width:140px">
+                    </div>
+                    <span id="resumen-period-label" style="font-size:0.72rem;color:var(--text-grey);margin-left:4px"></span>
+                </div>
+
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
                     <!-- 1. Dominio -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
@@ -574,21 +597,20 @@
                             <span style="font-size:1rem;font-weight:700;color:#ff3b30">—</span>
                         </div>
                     </div>
-                    <!-- 6. Artículos -->
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos</span>
+                    <!-- 6. Artículos (with chart) -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('articulos')">
+                        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;margin-bottom:4px">
+                            <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos</span>
+                            <span style="font-size:0.58rem;color:var(--text-grey)" id="chart-articles-legend"></span>
+                        </div>
                         <span style="font-size:1.6rem;font-weight:700" id="stat-articles">—</span>
+                        <canvas id="chart-articles" class="resumen-chart-canvas"></canvas>
                     </div>
-                    <!-- 7. Reuniones -->
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:12px 16px;gap:8px">
-                        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-                            <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;cursor:pointer" onclick="showSection('meetings')">Reuniones</span>
-                            <select id="meetings-period" onchange="loadMeetingStats()" style="font-size:0.65rem;padding:2px 6px;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-grey);cursor:pointer">
-                                <option value="7">7 días</option>
-                                <option value="30" selected>30 días</option>
-                                <option value="mes">Este mes</option>
-                                <option value="90">90 días</option>
-                            </select>
+                    <!-- 7. Reuniones (with chart) -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:12px 16px;gap:4px" onclick="showSection('meetings')" style="cursor:pointer">
+                        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+                            <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;cursor:pointer">Reuniones</span>
+                            <span style="font-size:0.58rem;color:var(--text-grey)" id="chart-meetings-legend"></span>
                         </div>
                         <div style="display:flex;align-items:baseline;gap:3px;flex-wrap:wrap">
                             <span style="font-size:1.3rem;font-weight:700;color:#007AFF" id="stat-meetings-web">—</span>
@@ -598,6 +620,7 @@
                             <span style="font-size:0.85rem;font-weight:700;color:#ff9500" id="stat-meetings-gcal">—</span>
                             <span style="font-size:0.6rem;color:var(--text-grey)">cal</span>
                         </div>
+                        <canvas id="chart-meetings" class="resumen-chart-canvas"></canvas>
                     </div>
                     <!-- 8. Cobros -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('cobros')">
@@ -607,16 +630,25 @@
                             <span style="font-size:0.65rem;color:var(--text-grey)"> ops · </span>
                             <span style="font-size:0.9rem;font-weight:700;color:#34c759">0€</span>
                         </div>
+                        <span style="font-size:0.6rem;color:var(--text-grey);margin-top:6px">Sin datos históricos</span>
                     </div>
-                    <!-- 9. Suscriptores -->
+                    <!-- 9. Suscriptores (with chart) -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Suscriptores</span>
+                        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;margin-bottom:4px">
+                            <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Suscriptores</span>
+                            <span style="font-size:0.58rem;color:var(--text-grey)" id="chart-subscribers-legend"></span>
+                        </div>
                         <span style="font-size:1.6rem;font-weight:700;color:#007AFF" id="stat-subscribers">—</span>
+                        <canvas id="chart-subscribers" class="resumen-chart-canvas"></canvas>
                     </div>
-                    <!-- 10. Newsletter enviadas -->
+                    <!-- 10. Newsletter enviadas (with chart) -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Newsletters enviadas</span>
+                        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;margin-bottom:4px">
+                            <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Newsletter</span>
+                            <span style="font-size:0.58rem;color:var(--text-grey)" id="chart-newsletter-legend"></span>
+                        </div>
                         <span style="font-size:1.6rem;font-weight:700;color:#34c759" id="stat-nl-sends">—</span>
+                        <canvas id="chart-newsletter" class="resumen-chart-canvas"></canvas>
                     </div>
                     <!-- 11. ADS -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('ads')">
@@ -627,6 +659,7 @@
                             <span style="font-size:0.9rem;font-weight:700;color:#007AFF">0</span>
                             <span style="font-size:0.65rem;color:var(--text-grey)"> leads</span>
                         </div>
+                        <span style="font-size:0.6rem;color:var(--text-grey);margin-top:6px">Sin datos históricos</span>
                     </div>
                 </div>
             </div>
@@ -1705,6 +1738,7 @@
     </div>
 
     <!-- Google APIs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://apis.google.com/js/api.js" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1773,6 +1807,7 @@
                 document.getElementById('dashboard').classList.add('active');
                 loadArticlesList();
                 loadStats();
+                loadResumenData();
                 loadArticleStats();
             } catch (e) {
                 errorEl.textContent = e.message || 'Credenciales incorrectas';
@@ -1788,6 +1823,7 @@
                 document.getElementById('dashboard').classList.add('active');
                 loadArticlesList();
                 loadStats();
+                loadResumenData();
             }
         })();
 
@@ -2676,23 +2712,15 @@
         }
 
         async function loadMeetingStats() {
-            var periodEl = document.getElementById('meetings-period');
-            var period = periodEl ? periodEl.value : '30';
-
-            var now = new Date();
-            var endDate;
-            if (period === 'mes') {
-                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-            } else {
-                endDate = new Date(now.getTime() + parseInt(period) * 24 * 60 * 60 * 1000);
-            }
+            var range = getResumenDateRange();
+            var from = range.from, to = range.to;
 
             try {
                 var { data: allMeetings } = await _supabase
                     .from('meetings')
                     .select('source')
-                    .gte('meeting_date', now.toISOString())
-                    .lte('meeting_date', endDate.toISOString());
+                    .gte('meeting_date', from.toISOString())
+                    .lte('meeting_date', to.toISOString());
 
                 var webCount = 0, manualCount = 0;
                 (allMeetings || []).forEach(function(m) {
@@ -2712,8 +2740,205 @@
             }
             // GCal external count
             if (_gcalConnected && _gcalToken) {
-                loadGCalExternalCount(now, endDate);
+                loadGCalExternalCount(from, to);
             }
+        }
+
+        // ========== RESUMEN GLOBAL FILTER + CHARTS ==========
+        var _resumenPeriod = 'year';
+        var _resumenCharts = {};
+
+        function setResumenPeriod(period) {
+            _resumenPeriod = period;
+            document.querySelectorAll('.rfilter-btn').forEach(function(b) {
+                b.classList.toggle('active', b.dataset.period === period);
+            });
+            var customEl = document.getElementById('resumen-custom-dates');
+            if (customEl) customEl.style.display = period === 'custom' ? 'flex' : 'none';
+            if (period !== 'custom') loadResumenData();
+        }
+
+        function applyResumenCustomFilter() {
+            var f = document.getElementById('resumen-date-from').value;
+            var t = document.getElementById('resumen-date-to').value;
+            if (f && t) loadResumenData();
+        }
+
+        function getResumenDateRange() {
+            var now = new Date();
+            var from, to, prevFrom, prevTo;
+            if (_resumenPeriod === 'year') {
+                from = new Date(now.getFullYear(), 0, 1);
+                to = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+                prevFrom = new Date(now.getFullYear() - 1, 0, 1);
+                prevTo = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59);
+            } else if (_resumenPeriod === 'semester') {
+                var h = now.getMonth() < 6 ? 0 : 6;
+                from = new Date(now.getFullYear(), h, 1);
+                to = new Date(now.getFullYear(), h + 6, 0, 23, 59, 59);
+                prevFrom = new Date(now.getFullYear() - 1, h, 1);
+                prevTo = new Date(now.getFullYear() - 1, h + 6, 0, 23, 59, 59);
+            } else if (_resumenPeriod === 'quarter') {
+                var q = Math.floor(now.getMonth() / 3);
+                from = new Date(now.getFullYear(), q * 3, 1);
+                to = new Date(now.getFullYear(), q * 3 + 3, 0, 23, 59, 59);
+                prevFrom = new Date(now.getFullYear() - 1, q * 3, 1);
+                prevTo = new Date(now.getFullYear() - 1, q * 3 + 3, 0, 23, 59, 59);
+            } else if (_resumenPeriod === 'month') {
+                from = new Date(now.getFullYear(), now.getMonth(), 1);
+                to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+                prevFrom = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                prevTo = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+            } else if (_resumenPeriod === 'custom') {
+                var fv = document.getElementById('resumen-date-from') ? document.getElementById('resumen-date-from').value : '';
+                var tv = document.getElementById('resumen-date-to') ? document.getElementById('resumen-date-to').value : '';
+                from = fv ? new Date(fv) : new Date(now.getFullYear(), 0, 1);
+                to = tv ? new Date(tv + 'T23:59:59') : now;
+                var dur = to - from;
+                prevTo = new Date(from.getTime() - 1);
+                prevFrom = new Date(prevTo.getTime() - dur);
+            } else {
+                from = new Date(now.getFullYear(), 0, 1);
+                to = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+                prevFrom = new Date(now.getFullYear() - 1, 0, 1);
+                prevTo = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59);
+            }
+            return { from: from, to: to, prevFrom: prevFrom, prevTo: prevTo };
+        }
+
+        async function loadResumenData() {
+            var range = getResumenDateRange();
+            // Update period label
+            var lbl = document.getElementById('resumen-period-label');
+            var opts = { day: 'numeric', month: 'short' };
+            if (lbl) lbl.textContent = range.from.toLocaleDateString('es-ES', opts) + ' → ' + range.to.toLocaleDateString('es-ES', opts);
+            // Load charts + meeting stats in parallel
+            await Promise.all([
+                loadResumenChart('meetings', 'meetings', 'meeting_date', '#007AFF', range),
+                loadResumenChart('articles', 'articles', 'created_at', '#ff9500', range),
+                loadResumenChart('subscribers', 'newsletter_subscribers', 'created_at', '#34c759', range),
+                loadResumenChart('newsletter', 'newsletter_sends', 'created_at', '#5856d6', range),
+            ]);
+            loadMeetingStats();
+        }
+
+        function _groupByMonth(rows, dateField, year, fromMonth, toMonth) {
+            var counts = [];
+            for (var m = fromMonth; m <= toMonth; m++) counts.push(0);
+            rows.forEach(function(r) {
+                var d = new Date(r[dateField]);
+                if (d.getFullYear() === year) {
+                    var idx = d.getMonth() - fromMonth;
+                    if (idx >= 0 && idx < counts.length) counts[idx]++;
+                }
+            });
+            return counts;
+        }
+
+        async function loadResumenChart(chartId, table, dateField, color, range) {
+            var canvas = document.getElementById('chart-' + chartId);
+            if (!canvas) return;
+            var from = range.from, to = range.to, prevFrom = range.prevFrom, prevTo = range.prevTo;
+            var currYear = from.getFullYear(), prevYear = prevFrom.getFullYear();
+            var fromMonth = from.getMonth(), toMonth = to.getMonth();
+            // Clamp months
+            if (to.getFullYear() > from.getFullYear()) toMonth = 11;
+            var prevFromMonth = prevFrom.getMonth(), prevToMonth = prevTo.getMonth();
+            if (prevTo.getFullYear() > prevFrom.getFullYear()) prevToMonth = 11;
+
+            try {
+                // Fetch data for both periods in one query
+                var minDate = prevFrom < from ? prevFrom : from;
+                var maxDate = to > prevTo ? to : prevTo;
+                var { data: rows } = await _supabase
+                    .from(table)
+                    .select(dateField)
+                    .gte(dateField, minDate.toISOString())
+                    .lte(dateField, maxDate.toISOString());
+
+                var curr = _groupByMonth(rows || [], dateField, currYear, fromMonth, toMonth);
+                var prev = _groupByMonth(rows || [], dateField, prevYear, prevFromMonth, prevToMonth);
+
+                // Update stat number
+                var total = (rows || []).filter(function(r) {
+                    var d = new Date(r[dateField]); return d >= from && d <= to;
+                }).length;
+                var statIds = { meetings: 'stat-meetings-total', articles: 'stat-articles', subscribers: 'stat-subscribers', newsletter: 'stat-nl-sends' };
+                var elId = statIds[chartId];
+                if (elId) { var el = document.getElementById(elId); if (el) el.textContent = total; }
+
+                // Legend
+                var legEl = document.getElementById('chart-' + chartId + '-legend');
+                if (legEl) legEl.textContent = currYear + ' vs ' + prevYear;
+
+                var months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'].slice(fromMonth, toMonth + 1);
+                _renderResumenLine('chart-' + chartId, months, curr, prev, color, currYear, prevYear);
+            } catch(e) { console.log('Chart error ' + chartId + ':', e); }
+        }
+
+        function _renderResumenLine(canvasId, labels, currData, prevData, color, currYear, prevYear) {
+            if (_resumenCharts[canvasId]) { _resumenCharts[canvasId].destroy(); delete _resumenCharts[canvasId]; }
+            var canvas = document.getElementById(canvasId);
+            if (!canvas || typeof Chart === 'undefined') return;
+            var isDark = document.body.classList.contains('dark-mode') || document.documentElement.getAttribute('data-theme') === 'dark';
+            var tickColor = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)';
+            var gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+            _resumenCharts[canvasId] = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: String(currYear),
+                            data: currData,
+                            borderColor: color,
+                            backgroundColor: color + '18',
+                            borderWidth: 2,
+                            pointRadius: 2.5,
+                            pointHoverRadius: 5,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: String(prevYear),
+                            data: prevData,
+                            borderColor: 'rgba(150,150,150,0.55)',
+                            backgroundColor: 'transparent',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 2,
+                            pointHoverRadius: 4,
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index', intersect: false,
+                            backgroundColor: 'rgba(20,20,30,0.88)',
+                            titleFont: { size: 10, weight: '600' },
+                            bodyFont: { size: 10 },
+                            padding: 8,
+                            callbacks: {
+                                title: function(items) { return items[0].label; },
+                                label: function(item) {
+                                    return (item.datasetIndex === 0 ? currYear : prevYear) + ': ' + item.raw;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 8 }, color: tickColor, maxRotation: 0 } },
+                        y: { grid: { color: gridColor }, ticks: { font: { size: 8 }, color: tickColor, maxTicksLimit: 3 }, beginAtZero: true }
+                    },
+                    animation: { duration: 500 }
+                }
+            });
         }
 
         async function loadGCalExternalCount(fromDate, toDate) {
