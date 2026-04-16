@@ -539,30 +539,47 @@
                 </div>
                 <p style="color:var(--text-grey);font-size:1.1rem;margin-bottom:30px">Bienvenido al panel de administración. Desde aquí puedes gestionar los artículos del blog.</p>
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos</span>
-                        <span style="font-size:1.6rem;font-weight:700" id="stat-articles">—</span>
-                    </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Estado</span>
-                        <span style="font-size:1.2rem;font-weight:700;color:#34c759">🟢 Online</span>
-                    </div>
+                    <!-- 1. Dominio -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
                         <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Dominio</span>
                         <span style="font-size:0.9rem;font-weight:600" id="resumen-domain">—</span>
                     </div>
+                    <!-- 2. Estado -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Estado</span>
+                        <span style="font-size:1.2rem;font-weight:700;color:#34c759">🟢 Online</span>
+                    </div>
+                    <!-- 3. Peticiones -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('soporte')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Peticiones</span>
+                        <div id="stat-tickets" style="display:flex;align-items:baseline;gap:4px">
+                            <span style="font-size:1.4rem;font-weight:700;color:#34c759">—</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)">✓</span>
+                            <span style="font-size:0.7rem;color:var(--text-grey)">/</span>
+                            <span style="font-size:1rem;font-weight:700;color:#ff9500">—</span>
+                            <span style="font-size:0.65rem;color:var(--text-grey)">⏳</span>
+                        </div>
+                    </div>
+                    <!-- 4. Score SEO -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('seo')">
                         <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Score SEO</span>
                         <div id="resumen-seo-score"><span style="font-size:1.6rem;font-weight:700;color:var(--text-grey)">—</span></div>
                     </div>
+                    <!-- 5. GEO & AEO -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('geo')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">GEO & AEO</span>
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">GEO &amp; AEO</span>
                         <div id="stat-geo" style="display:flex;align-items:baseline;gap:4px">
                             <span style="font-size:1.4rem;font-weight:700;color:#34c759">—</span>
                             <span style="font-size:0.7rem;color:var(--text-grey)">/</span>
                             <span style="font-size:1rem;font-weight:700;color:#ff3b30">—</span>
                         </div>
                     </div>
+                    <!-- 6. Artículos -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Artículos</span>
+                        <span style="font-size:1.6rem;font-weight:700" id="stat-articles">—</span>
+                    </div>
+                    <!-- 7. Reuniones -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:12px 16px;gap:8px">
                         <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
                             <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase;cursor:pointer" onclick="showSection('meetings')">Reuniones</span>
@@ -582,16 +599,7 @@
                             <span style="font-size:0.6rem;color:var(--text-grey)">cal</span>
                         </div>
                     </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('soporte')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Peticiones</span>
-                        <div id="stat-tickets" style="display:flex;align-items:baseline;gap:4px">
-                            <span style="font-size:1.4rem;font-weight:700;color:#34c759">—</span>
-                            <span style="font-size:0.65rem;color:var(--text-grey)">✓</span>
-                            <span style="font-size:0.7rem;color:var(--text-grey)">/</span>
-                            <span style="font-size:1rem;font-weight:700;color:#ff9500">—</span>
-                            <span style="font-size:0.65rem;color:var(--text-grey)">⏳</span>
-                        </div>
-                    </div>
+                    <!-- 8. Cobros -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('cobros')">
                         <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Cobros</span>
                         <div id="stat-cobros">
@@ -600,6 +608,17 @@
                             <span style="font-size:0.9rem;font-weight:700;color:#34c759">0€</span>
                         </div>
                     </div>
+                    <!-- 9. Suscriptores -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Suscriptores</span>
+                        <span style="font-size:1.6rem;font-weight:700;color:#007AFF" id="stat-subscribers">—</span>
+                    </div>
+                    <!-- 10. Newsletter enviadas -->
+                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
+                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Newsletters enviadas</span>
+                        <span style="font-size:1.6rem;font-weight:700;color:#34c759" id="stat-nl-sends">—</span>
+                    </div>
+                    <!-- 11. ADS -->
                     <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('ads')">
                         <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">ADS</span>
                         <div id="stat-ads">
@@ -608,14 +627,6 @@
                             <span style="font-size:0.9rem;font-weight:700;color:#007AFF">0</span>
                             <span style="font-size:0.65rem;color:var(--text-grey)"> leads</span>
                         </div>
-                    </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Suscriptores</span>
-                        <span style="font-size:1.6rem;font-weight:700;color:#007AFF" id="stat-subscribers">—</span>
-                    </div>
-                    <div class="article-row" style="flex-direction:column;align-items:flex-start;padding:14px 16px;cursor:pointer" onclick="showSection('newsletter')">
-                        <span style="font-size:0.68rem;color:var(--text-grey);font-weight:600;text-transform:uppercase">Newsletters enviadas</span>
-                        <span style="font-size:1.6rem;font-weight:700;color:#34c759" id="stat-nl-sends">—</span>
                     </div>
                 </div>
             </div>
