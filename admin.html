@@ -2139,10 +2139,1011 @@
                 </div>
                 <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:40px">
                     <!-- Bloques se añadirán aquí -->
-                    <div style="padding:40px;text-align:center;border-radius:18px;border:2px dashed var(--border-color);color:var(--text-grey)">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block"><path d="M3 3h18v5H3z"/><path d="M3 10h18v5H3z"/><path d="M3 17h18v4H3z"/></svg>
-                        <p style="font-size:0.9rem;margin:0">Los bloques del plan de comunicación se añadirán próximamente</p>
+                    
+                <!-- 📅 CRONOGRAMA -->
+                <div class="bi-block" style="background:transparent;border:none;padding:0">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <h2 style="font-size:1rem;font-weight:700;margin:0">Cronograma Anual</h2>
                     </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+                        
+                    <div class="bi-block" id="cp-cronograma-enero" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Enero</span>
+                            <button onclick="saveCommBlock('cronograma-enero')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-enero-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Enero..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-enero','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Enero para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-febrero" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Febrero</span>
+                            <button onclick="saveCommBlock('cronograma-febrero')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-febrero-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Febrero..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-febrero','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Febrero para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-marzo" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Marzo</span>
+                            <button onclick="saveCommBlock('cronograma-marzo')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-marzo-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Marzo..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-marzo','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Marzo para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-abril" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Abril</span>
+                            <button onclick="saveCommBlock('cronograma-abril')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-abril-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Abril..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-abril','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Abril para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-mayo" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Mayo</span>
+                            <button onclick="saveCommBlock('cronograma-mayo')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-mayo-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Mayo..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-mayo','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Mayo para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-junio" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Junio</span>
+                            <button onclick="saveCommBlock('cronograma-junio')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-junio-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Junio..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-junio','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Junio para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-julio" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Julio</span>
+                            <button onclick="saveCommBlock('cronograma-julio')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-julio-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Julio..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-julio','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Julio para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-agosto" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Agosto</span>
+                            <button onclick="saveCommBlock('cronograma-agosto')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-agosto-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Agosto..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-agosto','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Agosto para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-septiembre" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Septiembre</span>
+                            <button onclick="saveCommBlock('cronograma-septiembre')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-septiembre-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Septiembre..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-septiembre','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Septiembre para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-octubre" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Octubre</span>
+                            <button onclick="saveCommBlock('cronograma-octubre')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-octubre-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Octubre..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-octubre','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Octubre para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-noviembre" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Noviembre</span>
+                            <button onclick="saveCommBlock('cronograma-noviembre')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-noviembre-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Noviembre..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-noviembre','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Noviembre para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bi-block" id="cp-cronograma-diciembre" style="padding:16px 18px">
+                        <div class="bi-block-header" style="margin-bottom:10px">
+                            <span style="font-size:0.85rem;font-weight:700">Diciembre</span>
+                            <button onclick="saveCommBlock('cronograma-diciembre')" class="bi-save-btn" style="font-size:0.7rem;padding:4px 10px">Guardar</button>
+                        </div>
+                        <div class="bi-fields">
+                            <div class="bi-field-row">
+                                <div class="bi-input-wrap">
+                                    <textarea id="cp-cronograma-diciembre-acciones" class="editor-input" rows="4" placeholder="Acciones previstas en Diciembre..." style="font-size:0.78rem;resize:none"></textarea>
+                                    <button class="bi-ai-btn" onclick="genCommField('cronograma-diciembre','acciones','Propón 3-4 acciones de comunicación concretas para el mes de Diciembre para '+CLIENT_CONFIG.name+\", especialista en \"+CLIENT_CONFIG.specialty+'. Formato: una acción por línea con verbo de acción. Sin numeración.')">✦</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                
+                <div class="bi-block" id="cp-intro">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Introducción</span>
+                        </div>
+                        <button onclick="saveCommBlock('intro')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Historia de la marca</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-intro-historia" class="editor-input" rows="3" placeholder="Cómo nació la marca, trayectoria..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('intro','historia','Redacta un párrafo de historia de marca para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Origen, evolución y punto de inflexión actual. 3-4 frases, primera persona.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Misión</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-intro-mision" class="editor-input" rows="2" placeholder="Por qué existe la marca..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('intro','mision','Redacta la Misión de la marca para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 2 frases claras con acción + propósito. Sin comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Visión</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-intro-vision" class="editor-input" rows="2" placeholder="Adónde quiere llegar..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('intro','vision','Redacta la Visión de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 2 frases aspiracionales a 3-5 años. Sin comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Valores (uno por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-intro-valores" class="editor-input" rows="4" placeholder="Confianza
+Compromiso
+Empatía..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('intro','valores','Lista 5 valores de marca con su breve descripción (valor: descripción en 1 frase) para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Uno por línea.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Meta estratégica</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-intro-meta" class="editor-input" rows="2" placeholder="El objetivo principal de este plan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('intro','meta','Define en 2-3 frases la meta estratégica de comunicación para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Clara, ambiciosa, medible.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-sa">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Situación Actual</span>
+                        </div>
+                        <button onclick="saveCommBlock('sa')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Canales actuales</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-canales-actuales" class="editor-input" rows="3" placeholder="WhatsApp, teléfono, email, web, redes..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','canales-actuales','Describe los canales de comunicación actuales de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty y cómo se usan. Formato: uno por línea con nombre y uso actual.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Canales con oportunidad de mejora</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-canales-oportunidad" class="editor-input" rows="3" placeholder="Email marketing sin explotar, LinkedIn infrautilizado..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','canales-oportunidad','Identifica 3-4 canales con potencial de mejora o sin explotar para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Uno por línea con el nombre y la oportunidad.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Colaboraciones actuales</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-colaboraciones" class="editor-input" rows="3" placeholder="Medios, sectores, socios estratégicos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','colaboraciones','Describe las colaboraciones y vínculos actuales de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué aportan y con quién son.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Relaciones públicas</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-rrpp" class="editor-input" rows="3" placeholder="Presencia en medios, entrevistas, eventos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','rrpp','Describe el estado actual de las relaciones públicas de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué funciona y qué falta. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Competencia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-competencia" class="editor-input" rows="3" placeholder="Perfil de competidores principales..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','competencia','Describe brevemente la competencia de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty en su sector. 2-3 competidores tipo y cómo se diferencia de ellos.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>DAFO – Fortalezas</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-dafo-fortalezas" class="editor-input" rows="4" placeholder="Reputación, experiencia, presencia en medios..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','dafo-fortalezas','Lista 5-6 fortalezas clave de la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con sustantivo.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>DAFO – Debilidades</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-dafo-debilidades" class="editor-input" rows="4" placeholder="Dependencia de marca personal, LinkedIn infrautilizado..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','dafo-debilidades','Lista 5-6 debilidades o áreas de mejora de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con sustantivo.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>DAFO – Oportunidades</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-dafo-oportunidades" class="editor-input" rows="4" placeholder="Expansión digital, podcast, email marketing..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','dafo-oportunidades','Lista 5-6 oportunidades de crecimiento para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo en infinitivo.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>DAFO – Amenazas</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-sa-dafo-amenazas" class="editor-input" rows="4" placeholder="Competencia digital, saturación de contenido..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('sa','dafo-amenazas','Lista 5-6 amenazas externas para la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con sustantivo.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-obj">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Objetivos Específicos</span>
+                        </div>
+                        <button onclick="saveCommBlock('obj')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Objetivo 1</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-obj-obj1" class="editor-input" rows="2" placeholder="Objetivo específico 1..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('obj','obj1','Genera el objetivo estratégico de comunicación número 1 para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Específico, medible, 1-2 frases. Sin numeración.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Objetivo 2</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-obj-obj2" class="editor-input" rows="2" placeholder="Objetivo específico 2..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('obj','obj2','Genera el objetivo estratégico de comunicación número 2 para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Específico, medible, 1-2 frases. Sin numeración.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Objetivo 3</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-obj-obj3" class="editor-input" rows="2" placeholder="Objetivo específico 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('obj','obj3','Genera el objetivo estratégico de comunicación número 3 para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Específico, medible, 1-2 frases. Sin numeración.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Objetivo 4</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-obj-obj4" class="editor-input" rows="2" placeholder="Objetivo específico 4..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('obj','obj4','Genera el objetivo estratégico de comunicación número 4 para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Específico, medible, 1-2 frases. Sin numeración.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Objetivo 5</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-obj-obj5" class="editor-input" rows="2" placeholder="Objetivo específico 5..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('obj','obj5','Genera el objetivo estratégico de comunicación número 5 para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Específico, medible, 1-2 frases. Sin numeración.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-pub">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Públicos</span>
+                        </div>
+                        <button onclick="saveCommBlock('pub')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields"><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Empresarios y Autónomos Locales</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-empresarios-locales-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','empresarios-locales-desc','Describe el perfil del público "Empresarios y Autónomos Locales" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-empresarios-locales-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','empresarios-locales-llegada','¿Cómo llega el público "Empresarios y Autónomos Locales" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Directivos y Empresarios Balear/Nacional</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-directivos-baleares-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','directivos-baleares-desc','Describe el perfil del público "Directivos y Empresarios Balear/Nacional" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-directivos-baleares-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','directivos-baleares-llegada','¿Cómo llega el público "Directivos y Empresarios Balear/Nacional" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Entidades Sociales y Asociaciones</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-entidades-sociales-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','entidades-sociales-desc','Describe el perfil del público "Entidades Sociales y Asociaciones" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-entidades-sociales-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','entidades-sociales-llegada','¿Cómo llega el público "Entidades Sociales y Asociaciones" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Familias y Particulares en Procesos Complejos</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-familias-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','familias-desc','Describe el perfil del público "Familias y Particulares en Procesos Complejos" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-familias-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','familias-llegada','¿Cómo llega el público "Familias y Particulares en Procesos Complejos" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Propietarios y Gestores de Fincas Rústicas</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-fincas-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','fincas-desc','Describe el perfil del público "Propietarios y Gestores de Fincas Rústicas" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-fincas-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','fincas-llegada','¿Cómo llega el público "Propietarios y Gestores de Fincas Rústicas" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Público General – Desarrollo Personal</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-general-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','general-desc','Describe el perfil del público "Público General – Desarrollo Personal" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-general-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','general-llegada','¿Cómo llega el público "Público General – Desarrollo Personal" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Comunidad Educativa, Deportiva y Juvenil</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-educativo-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','educativo-desc','Describe el perfil del público "Comunidad Educativa, Deportiva y Juvenil" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-educativo-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','educativo-llegada','¿Cómo llega el público "Comunidad Educativa, Deportiva y Juvenil" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Medios de Comunicación y Referentes</div>
+                        <div class="bi-field-row">
+                            <label>Descripción del perfil</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pub-medios-desc" class="editor-input" rows="3" placeholder="Quiénes son, qué buscan, cómo piensan..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pub','medios-desc','Describe el perfil del público "Medios de Comunicación y Referentes" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Quiénes son, necesidades y comportamiento. 3-4 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Cómo llegan a la marca</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pub-medios-llegada" class="editor-input" placeholder="Por boca a boca, LinkedIn, radio..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pub','medios-llegada','¿Cómo llega el público "Medios de Comunicación y Referentes" a conocer la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty? 1 frase específica.')">✦</button>
+                            </div>
+                        </div></div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-msg">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Mensajes por Público</span>
+                        </div>
+                        <button onclick="saveCommBlock('msg')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields"><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Empresarios y Autónomos Locales</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-empresarios-locales-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','empresarios-locales-msg1','Genera el Mensaje Clave 1 para el público "Empresarios y Autónomos Locales" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-empresarios-locales-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','empresarios-locales-msg2','Genera el Mensaje Clave 2 para el público "Empresarios y Autónomos Locales" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-empresarios-locales-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','empresarios-locales-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Empresarios y Autónomos Locales" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Directivos y Empresarios Balear/Nacional</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-directivos-baleares-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','directivos-baleares-msg1','Genera el Mensaje Clave 1 para el público "Directivos y Empresarios Balear/Nacional" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-directivos-baleares-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','directivos-baleares-msg2','Genera el Mensaje Clave 2 para el público "Directivos y Empresarios Balear/Nacional" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-directivos-baleares-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','directivos-baleares-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Directivos y Empresarios Balear/Nacional" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Entidades Sociales y Asociaciones</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-entidades-sociales-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','entidades-sociales-msg1','Genera el Mensaje Clave 1 para el público "Entidades Sociales y Asociaciones" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-entidades-sociales-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','entidades-sociales-msg2','Genera el Mensaje Clave 2 para el público "Entidades Sociales y Asociaciones" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-entidades-sociales-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','entidades-sociales-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Entidades Sociales y Asociaciones" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Familias y Particulares en Procesos Complejos</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-familias-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','familias-msg1','Genera el Mensaje Clave 1 para el público "Familias y Particulares en Procesos Complejos" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-familias-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','familias-msg2','Genera el Mensaje Clave 2 para el público "Familias y Particulares en Procesos Complejos" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-familias-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','familias-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Familias y Particulares en Procesos Complejos" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Propietarios y Gestores de Fincas Rústicas</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-fincas-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','fincas-msg1','Genera el Mensaje Clave 1 para el público "Propietarios y Gestores de Fincas Rústicas" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-fincas-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','fincas-msg2','Genera el Mensaje Clave 2 para el público "Propietarios y Gestores de Fincas Rústicas" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-fincas-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','fincas-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Propietarios y Gestores de Fincas Rústicas" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Público General – Desarrollo Personal</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-general-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','general-msg1','Genera el Mensaje Clave 1 para el público "Público General – Desarrollo Personal" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-general-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','general-msg2','Genera el Mensaje Clave 2 para el público "Público General – Desarrollo Personal" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-general-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','general-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Público General – Desarrollo Personal" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Comunidad Educativa, Deportiva y Juvenil</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-educativo-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','educativo-msg1','Genera el Mensaje Clave 1 para el público "Comunidad Educativa, Deportiva y Juvenil" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-educativo-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','educativo-msg2','Genera el Mensaje Clave 2 para el público "Comunidad Educativa, Deportiva y Juvenil" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-educativo-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','educativo-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Comunidad Educativa, Deportiva y Juvenil" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Medios de Comunicación y Referentes</div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 1</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-medios-msg1" class="editor-input" placeholder=""Frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','medios-msg1','Genera el Mensaje Clave 1 para el público "Medios de Comunicación y Referentes" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase corta, directa, entre comillas. Solo la frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Mensaje clave 2</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-medios-msg2" class="editor-input" placeholder=""Segunda frase de impacto..."" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','medios-msg2','Genera el Mensaje Clave 2 para el público "Medios de Comunicación y Referentes" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Frase diferente a la primera, complementaria. Solo la frase entre comillas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Tono de comunicación</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-msg-medios-tono" class="editor-input" placeholder="Cercano, profesional, empático..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('msg','medios-tono','Define en 2-3 adjetivos el tono de comunicación para el público "Medios de Comunicación y Referentes" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Solo adjetivos separados por coma.')">✦</button>
+                            </div>
+                        </div></div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-est">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Estrategias y Tácticas</span>
+                        </div>
+                        <button onclick="saveCommBlock('est')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields"><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Posicionamiento Digital y Autoridad</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-posicionamiento-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','posicionamiento-desc','Redacta la estrategia de "Posicionamiento Digital y Autoridad" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-posicionamiento-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','posicionamiento-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Posicionamiento Digital y Autoridad" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Generación de Confianza y Cercanía</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-confianza-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','confianza-desc','Redacta la estrategia de "Generación de Confianza y Cercanía" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-confianza-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','confianza-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Generación de Confianza y Cercanía" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Segmentación y Personalización de Mensajes</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-segmentacion-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','segmentacion-desc','Redacta la estrategia de "Segmentación y Personalización de Mensajes" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-segmentacion-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','segmentacion-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Segmentación y Personalización de Mensajes" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Visibilidad a través de Contenidos Propios</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-contenidos-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','contenidos-desc','Redacta la estrategia de "Visibilidad a través de Contenidos Propios" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-contenidos-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','contenidos-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Visibilidad a través de Contenidos Propios" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Relaciones Públicas y Colaboraciones</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-rrpp-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','rrpp-desc','Redacta la estrategia de "Relaciones Públicas y Colaboraciones" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-rrpp-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','rrpp-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Relaciones Públicas y Colaboraciones" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Activación WhatsApp y Email Marketing</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-activacion-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','activacion-desc','Redacta la estrategia de "Activación WhatsApp y Email Marketing" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-activacion-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','activacion-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Activación WhatsApp y Email Marketing" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Coherencia Visual y Verbal</div>
+                        <div class="bi-field-row">
+                            <label>Descripción de la estrategia</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-coherencia-desc" class="editor-input" rows="3" placeholder="En qué consiste esta estrategia..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','coherencia-desc','Redacta la estrategia de "Coherencia Visual y Verbal" para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Qué busca conseguir y cómo. 3-4 frases estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Acciones tácticas (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-est-coherencia-acciones" class="editor-input" rows="4" placeholder="Acción 1
+Acción 2
+Acción 3..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('est','coherencia-acciones','Lista 4-5 acciones tácticas concretas para implementar la estrategia de "Coherencia Visual y Verbal" en CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea, comenzando con verbo.')">✦</button>
+                            </div>
+                        </div></div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-pda">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Plan de Acción</span>
+                        </div>
+                        <button onclick="saveCommBlock('pda')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields"><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Posicionamiento Digital y Autoridad</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-posicionamiento-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','posicionamiento-plan','Desarrolla el plan de acción detallado para la estrategia "Posicionamiento Digital y Autoridad" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Generación de Confianza y Cercanía</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-confianza-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','confianza-plan','Desarrolla el plan de acción detallado para la estrategia "Generación de Confianza y Cercanía" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Segmentación y Personalización de Mensajes</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-segmentacion-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','segmentacion-plan','Desarrolla el plan de acción detallado para la estrategia "Segmentación y Personalización de Mensajes" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Visibilidad a través de Contenidos Propios</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-contenidos-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','contenidos-plan','Desarrolla el plan de acción detallado para la estrategia "Visibilidad a través de Contenidos Propios" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Relaciones Públicas y Colaboraciones</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-rrpp-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','rrpp-plan','Desarrolla el plan de acción detallado para la estrategia "Relaciones Públicas y Colaboraciones" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Activación WhatsApp y Email Marketing</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-activacion-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','activacion-plan','Desarrolla el plan de acción detallado para la estrategia "Activación WhatsApp y Email Marketing" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div><div style="padding:14px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);margin-bottom:12px"><div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:10px">▸ Coherencia Visual y Verbal</div>
+                        <div class="bi-field-row">
+                            <label>Plan de acción detallado</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pda-coherencia-plan" class="editor-input" rows="4" placeholder="Pasos concretos, responsables, plazos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pda','coherencia-plan','Desarrolla el plan de acción detallado para la estrategia "Coherencia Visual y Verbal" de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Pasos concretos y secuenciales, una acción por línea.')">✦</button>
+                            </div>
+                        </div></div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-hrr">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Herramientas y Recursos</span>
+                        </div>
+                        <button onclick="saveCommBlock('hrr')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Herramientas digitales</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-hrr-herramientas" class="editor-input" rows="4" placeholder="CRM, email marketing, redes, SEO, analytics..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('hrr','herramientas','Lista las herramientas digitales recomendadas para implementar el plan de comunicación de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea con nombre y función.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Recursos humanos y materiales</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-hrr-recursos" class="editor-input" rows="3" placeholder="Equipo, freelancers, estudio de grabación..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('hrr','recursos','Describe los recursos humanos y materiales necesarios para ejecutar el plan de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Concreto y realista.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Formación recomendada</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-hrr-formacion" class="editor-input" rows="3" placeholder="Cursos, certificaciones, mentorías..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('hrr','formacion','Lista 3-4 áreas o recursos de formación recomendados para el equipo de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Uno por línea.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-eval">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Evaluación y Medición</span>
+                        </div>
+                        <button onclick="saveCommBlock('eval')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>KPIs principales (uno por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-eval-kpis" class="editor-input" rows="4" placeholder="Visitas web/mes
+Seguidores LinkedIn
+Clientes nuevos..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('eval','kpis','Lista 6-8 KPIs clave para medir el éxito del plan de comunicación de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Formato: Nombre del KPI – objetivo numérico. Uno por línea.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Frecuencia de revisión</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-eval-frecuencia" class="editor-input" placeholder="Mensual, trimestral, semestral..." style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('eval','frecuencia','Define la frecuencia de revisión de métricas recomendada para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 1 frase.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Herramientas de medición</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-eval-herramientas" class="editor-input" rows="3" placeholder="Google Analytics, Search Console, Meta Insights..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('eval','herramientas','Lista las herramientas de medición y análisis recomendadas para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Una por línea con su función.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Estructura de informes</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-eval-informes" class="editor-input" rows="3" placeholder="Qué incluye el informe mensual/trimestral..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('eval','informes','Describe qué debe incluir el informe de seguimiento del plan de comunicación de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 3-4 elementos clave.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-pres">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Presupuesto</span>
+                        </div>
+                        <button onclick="saveCommBlock('pres')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Presupuesto total estimado</label>
+                            <div class="bi-input-wrap">
+                                <input type="text" id="cp-pres-total" class="editor-input" placeholder="€ / año o / mes" style="font-size:0.82rem">
+                                <button class="bi-ai-btn" onclick="genCommField('pres','total','Estima el presupuesto total anual de comunicación recomendado para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Da un rango realista con justificación breve. 1-2 frases.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Partidas principales (una por línea)</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pres-partidas" class="editor-input" rows="5" placeholder="Web y SEO – X€
+Redes sociales – X€
+Contenidos – X€..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pres','partidas','Lista las partidas presupuestarias principales para el plan de comunicación de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Formato: Partida – importe estimado. Una por línea.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Orden de prioridad de inversión</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-pres-prioridad" class="editor-input" rows="3" placeholder="Primero web, luego contenidos, luego paid..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('pres','prioridad','Define el orden de prioridad de inversión presupuestaria para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Del más urgente al menos urgente. Una por línea.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-crisis">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Gestión de Crisis</span>
+                        </div>
+                        <button onclick="saveCommBlock('crisis')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Protocolo de respuesta</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-crisis-protocolo" class="editor-input" rows="4" placeholder="Pasos a seguir ante una crisis de reputación..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('crisis','protocolo','Define un protocolo básico de gestión de crisis de comunicación para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 4-5 pasos ordenados. Uno por línea.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Posibles escenarios de crisis</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-crisis-escenarios" class="editor-input" rows="3" placeholder="Reseña negativa viral, error de comunicación..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('crisis','escenarios','Identifica 3-4 posibles escenarios de crisis para la marca de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Uno por línea.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Portavoz y mensajes de crisis</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-crisis-vocero" class="editor-input" rows="2" placeholder="Quién habla, qué dice, qué no dice..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('crisis','vocero','Define quién es el portavoz en caso de crisis y cuál es la línea de comunicación de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 2-3 frases.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+                
+                <div class="bi-block" id="cp-concl">
+                    <div class="bi-block-header">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span style="font-size:0.95rem;font-weight:700">Conclusión</span>
+                        </div>
+                        <button onclick="saveCommBlock('concl')" class="bi-save-btn">Guardar</button>
+                    </div>
+                    <div class="bi-fields">
+                        <div class="bi-field-row">
+                            <label>Resumen ejecutivo del plan</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-concl-resumen" class="editor-input" rows="4" placeholder="En síntesis, este plan de comunicación busca..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('concl','resumen','Redacta una conclusión ejecutiva del plan de comunicación de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Resume los pilares clave y el camino a seguir. 3-4 frases inspiradoras y estratégicas.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Próximos pasos inmediatos</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-concl-proximos-pasos" class="editor-input" rows="3" placeholder="En los próximos 30 días: ..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('concl','proximos-pasos','Lista los 3-5 próximos pasos inmediatos (primeros 30 días) para poner en marcha el plan de CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. Uno por línea, con verbo de acción.')">✦</button>
+                            </div>
+                        </div>
+                        <div class="bi-field-row">
+                            <label>Compromiso de marca</label>
+                            <div class="bi-input-wrap">
+                                <textarea id="cp-concl-compromiso" class="editor-input" rows="2" placeholder="Declaración de intención y compromiso..." style="font-size:0.82rem;resize:none"></textarea>
+                                <button class="bi-ai-btn" onclick="genCommField('concl','compromiso','Redacta una declaración de compromiso de marca en primera persona para CLIENT_CONFIG.name+\\", especialista en \\"+CLIENT_CONFIG.specialty. 2-3 frases que cierren el plan con fuerza e intención.')">✦</button>
+                            </div>
+                        </div></div>
+                </div>
+
                 </div>
             </div>
         </main>
@@ -2260,6 +3261,7 @@
                 if (btn.dataset.section === 'soporte') { loadSupportTickets(); }
                 if (btn.dataset.section === 'newsletter') { loadSubscribers(); loadNewsletterConfig(); }
                 if (btn.dataset.section === 'identidad') { loadBrandIdentity(); }
+                if (btn.dataset.section === 'plan-comunicacion') { loadCommPlan(); }
             });
         });
 
@@ -6657,6 +7659,112 @@ Solo JSON, sin explicaciones ni markdown.`;
             }
         }
         window.addEventListener('load', restoreAssets);
+
+
+        // ═══ COMMUNICATION PLAN ═══════════════════════════════════════════════
+
+        async function loadCommPlan() {
+            if (typeof _supabase === 'undefined') return;
+            try {
+                var { data } = await _supabase.from('communication_plan').select('key,value');
+                if (!data) return;
+                data.forEach(function(row) {
+                    var el = document.getElementById('cp-' + row.key.replace(/_/g,'-'));
+                    if (el) el.value = row.value || '';
+                });
+            } catch(e) { console.warn('loadCommPlan:', e.message); }
+        }
+
+        async function saveCommBlock(block) {
+            var prefix = 'cp-' + block + '-';
+            var fields = document.querySelectorAll('[id^="' + prefix + '"]');
+            var btn = document.querySelector('#cp-' + block + ' .bi-save-btn');
+            if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+            try {
+                var upserts = [];
+                fields.forEach(function(el) {
+                    var key = el.id.replace('cp-','').replace(/-/g,'_');
+                    upserts.push({ key: key, value: el.value.trim(), updated_at: new Date().toISOString() });
+                });
+                if (upserts.length === 0) { if(btn){btn.textContent='Guardar';btn.disabled=false;} return; }
+                var { error } = await _supabase.from('communication_plan').upsert(upserts, { onConflict: 'key' });
+                if (error) throw error;
+                if (btn) { btn.textContent = '✅ Guardado'; btn.style.background = '#34c759'; }
+                _cpStatus(block, '✅ Guardado', 'ok');
+                setTimeout(function() {
+                    if (btn) { btn.textContent = 'Guardar'; btn.disabled = false; btn.style.background = ''; }
+                }, 2500);
+            } catch(e) {
+                _cpStatus(block, '❌ Error: ' + e.message, 'err');
+                if (btn) { btn.textContent = 'Guardar'; btn.disabled = false; }
+            }
+        }
+
+        function _cpStatus(block, msg, type) {
+            var statusId = 'cp-status-' + block;
+            var el = document.getElementById(statusId);
+            if (!el) {
+                el = document.createElement('div');
+                el.id = statusId;
+                el.style.cssText = 'font-size:0.75rem;font-weight:600;padding:7px 12px;border-radius:9px;margin-top:10px;transition:opacity 0.4s';
+                var blockEl = document.getElementById('cp-' + block);
+                if (blockEl) blockEl.appendChild(el);
+            }
+            el.textContent = msg;
+            el.style.opacity = '1';
+            el.style.background = type==='ok' ? 'rgba(52,199,89,0.1)' : type==='err' ? 'rgba(255,59,48,0.1)' : 'rgba(0,122,255,0.08)';
+            el.style.color = type==='ok' ? '#34c759' : type==='err' ? '#ff3b30' : '#007AFF';
+            clearTimeout(el._hideTimer);
+            el._hideTimer = setTimeout(function() { el.style.opacity='0'; }, 4000);
+        }
+
+        async function genCommField(block, field, prompt) {
+            var elId = 'cp-' + block + '-' + field;
+            var el = document.getElementById(elId);
+            var btn = el ? el.parentElement.querySelector('.bi-ai-btn') : null;
+            if (!el) return;
+            var geminiKey = localStorage.getItem('gf_gemini_key') || '';
+            if (!geminiKey) { _cpStatus(block, '⚠️ Configura tu API Key de Gemini en Soporte', 'err'); return; }
+
+            var userCtx = await _biShowContextPanel(btn, block, field);
+            if (userCtx === null) return;
+
+            if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+            _cpStatus(block, '✦ Generando con IA...', 'info');
+            try {
+                var fullPrompt = 'Eres un experto en comunicación estratégica y branding. Responde SOLO con el texto pedido, sin explicaciones, sin comillas, sin markdown.\n\n'
+                    + prompt
+                    + (userCtx ? '\n\nInstrucciones adicionales: ' + userCtx : '');
+                var result = await callGemini(fullPrompt, 'gemini-2.5-flash');
+                var text = result && result.candidates && result.candidates[0]
+                    ? result.candidates[0].content.parts[0].text
+                    : (typeof result === 'string' ? result : null);
+                if (text) {
+                    el.value = text.trim();
+                    el.dispatchEvent(new Event('input'));
+                    _cpStatus(block, '✅ Generado. Revisa y guarda.', 'ok');
+                } else {
+                    _cpStatus(block, '⚠️ Sin respuesta. Inténtalo de nuevo.', 'err');
+                }
+            } catch(e) {
+                _cpStatus(block, '❌ Error IA: ' + e.message, 'err');
+            } finally {
+                if (btn) { btn.textContent = '✦'; btn.disabled = false; }
+            }
+        }
+
+        // Auto-save on blur for communication_plan fields
+        document.addEventListener('focusout', function(e) {
+            var el = e.target;
+            if (!el.id || !el.id.startsWith('cp-')) return;
+            var value = (el.value || '').trim();
+            if (!value || typeof _supabase === 'undefined') return;
+            var key = el.id.replace('cp-','').replace(/-/g,'_');
+            if (key.split('_').length < 3) return;
+            _supabase.from('communication_plan')
+                .upsert([{ key: key, value: value, updated_at: new Date().toISOString() }], { onConflict: 'key' })
+                .then().catch();
+        });
 
         // ═══ BRAND IDENTITY ═══════════════════════════════════════
         var _biCache = {};
