@@ -1451,18 +1451,23 @@
                             </h2>
                         </div>
                         <!-- Add subscriber -->
-                        <div style="display:flex;gap:8px;margin-bottom:16px">
+                        <div style="display:flex;gap:8px;margin-bottom:10px">
                             <input type="text" id="new-sub-name" placeholder="Nombre" style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:Inter,sans-serif">
                             <input type="email" id="new-sub-email" placeholder="email@ejemplo.com" style="flex:1.5;padding:8px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:Inter,sans-serif">
                             <button onclick="addSubscriber()" style="padding:8px 14px;border-radius:10px;border:none;background:#007AFF;color:white;font-weight:600;font-size:0.75rem;cursor:pointer;white-space:nowrap">+ Añadir</button>
                         </div>
+                        <!-- Search bar -->
+                        <div style="position:relative;margin-bottom:10px">
+                            <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:0.85rem;opacity:0.5">🔍</span>
+                            <input type="text" id="sub-search" placeholder="Buscar por nombre o email..." oninput="filterSubscribers(this.value)" style="width:100%;padding:8px 12px 8px 32px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-primary);font-size:0.8rem;font-family:Inter,sans-serif;box-sizing:border-box">
+                        </div>
                         <!-- Subscriber selection controls -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:6px 0;border-bottom:1px solid var(--border-color)">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:6px 0;border-bottom:1px solid var(--border-color)">
                             <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-grey);cursor:pointer"><input type="checkbox" id="nl-select-all-subs" checked onchange="toggleSelectAllSubs(this.checked)" style="accent-color:#007AFF;width:15px;height:15px;cursor:pointer"> Seleccionar todos</label>
                             <span id="nl-selected-subs-count" style="font-size:0.7rem;color:#007AFF;font-weight:600">0 seleccionados</span>
                         </div>
-                        <!-- Subscribers list -->
-                        <div id="subscribers-list" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+                        <!-- Subscribers list with enforced scroll -->
+                        <div id="subscribers-list" style="height:220px;overflow-y:scroll;display:flex;flex-direction:column;gap:6px;border:1px solid var(--border-color);border-radius:10px;padding:6px;background:var(--bg-secondary)">
                             <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Cargando...</p>
                         </div>
                     </div>
@@ -1534,7 +1539,7 @@
                     <h2 style="font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px">
                         <span style="font-size:1.2rem">📋</span> Historial de envíos
                     </h2>
-                    <div id="nl-send-history" style="display:flex;flex-direction:column;gap:8px">
+                    <div id="nl-send-history" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;border:1px solid var(--border-color);border-radius:10px;padding:6px;background:var(--bg-secondary)">
                         <p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Sin envíos todavía</p>
                     </div>
                 </div>
@@ -2014,14 +2019,15 @@
 
                 container.innerHTML = history.map(function(h) {
                     var d = new Date(h.sent_at);
-                    return '<div style="padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-secondary);display:flex;align-items:center;justify-content:space-between">' +
-                        '<div>' +
+                    var articleIds = JSON.stringify(h.article_ids || []);
+                    return '<div style="padding:12px 16px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-primary);display:flex;align-items:center;justify-content:space-between;gap:10px">' +
+                        '<div style="flex:1">' +
                         '<div style="font-size:0.82rem;font-weight:600">📧 Newsletter enviada</div>' +
                         '<div style="font-size:0.7rem;color:var(--text-grey)">' + d.toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'}) + ' · ' + d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}) + '</div>' +
                         '</div>' +
-                        '<div style="text-align:right">' +
-                        '<div style="font-size:0.82rem;font-weight:700">' + (h.articles_count || 0) + ' arts.</div>' +
-                        '<div style="font-size:0.7rem;color:var(--text-grey)">' + (h.subscribers_count || 0) + ' subs.</div>' +
+                        '<div style="text-align:right;flex-shrink:0">' +
+                        '<div style="font-size:0.82rem;font-weight:700">' + (h.articles_count || 0) + ' arts. · ' + (h.subscribers_count || 0) + ' subs.</div>' +
+                        '<button onclick="resendNewsletter(' + articleIds.replace(/"/g, "'") + ')" style="margin-top:6px;padding:5px 12px;border-radius:8px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-size:0.72rem;font-weight:700;cursor:pointer">🔄 Re-enviar</button>' +
                         '</div>' +
                         '</div>';
                 }).join('');
@@ -2029,6 +2035,72 @@
             } catch(err) {
                 container.innerHTML = '<p style="color:var(--text-grey);font-size:0.82rem;text-align:center;padding:16px 0">Sin envíos todavía</p>';
             }
+        }
+
+        // --- Subscriber filter ---
+        function filterSubscribers(query) {
+            var q = query.toLowerCase();
+            document.querySelectorAll('#subscribers-list > div').forEach(function(row) {
+                var text = row.textContent.toLowerCase();
+                row.style.display = (!q || text.includes(q)) ? '' : 'none';
+            });
+        }
+
+        // --- Resend from history ---
+        async function resendNewsletter(articleIds) {
+            // Load all subscribers for selection
+            var { data: subs } = await _supabase.from('newsletter_subscribers').select('*').order('created_at', { ascending: false });
+            if (!subs || subs.length === 0) {
+                showNlNotification('⚠️ No hay suscriptores disponibles', 'warning');
+                return;
+            }
+
+            var existing = document.getElementById('nl-resend-modal');
+            if (existing) existing.remove();
+
+            var subsHtml = subs.map(function(s) {
+                return '<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;background:rgba(255,255,255,0.04)">' +
+                    '<input type="checkbox" class="resend-sub-check" value="' + s.id + '" data-email="' + s.email + '" checked style="accent-color:#007AFF;width:15px;height:15px;cursor:pointer;flex-shrink:0">' +
+                    '<div style="min-width:0">' +
+                    '<div style="font-size:0.82rem;font-weight:600;color:white">' + (s.name || 'Sin nombre') + '</div>' +
+                    '<div style="font-size:0.7rem;color:#aaa">' + s.email + '</div>' +
+                    '</div></label>';
+            }).join('');
+
+            var overlay = document.createElement('div');
+            overlay.id = 'nl-resend-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif';
+            overlay.innerHTML = '<div style="background:#1c1c1e;border-radius:20px;padding:28px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.6)">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">' +
+                '<h3 style="margin:0;color:white;font-size:1rem">🔄 Re-enviar newsletter</h3>' +
+                '<button id="resend-close" style="background:none;border:none;color:#aaa;font-size:1.2rem;cursor:pointer">✕</button>' +
+                '</div>' +
+                '<p style="color:#aaa;font-size:0.78rem;margin:0 0 12px">' + (articleIds ? articleIds.length : 0) + ' artículo(s) · Elige a quién enviar:</p>' +
+                '<div style="margin-bottom:10px">' +
+                '<label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#aaa;cursor:pointer"><input type="checkbox" id="resend-select-all" checked onchange="document.querySelectorAll(\'\'.resend-sub-check\'\').forEach(function(c){c.checked=this.checked},this)" style="accent-color:#007AFF"> Seleccionar todos</label>' +
+                '</div>' +
+                '<div style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;padding-right:4px">' + subsHtml + '</div>' +
+                '<div style="display:flex;gap:10px">' +
+                '<button id="resend-cancel" style="flex:1;padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#aaa;font-weight:600;font-size:0.85rem;cursor:pointer">Cancelar</button>' +
+                '<button id="resend-ok" style="flex:1;padding:11px;border-radius:12px;border:none;background:linear-gradient(135deg,#007AFF,#5856d6);color:white;font-weight:700;font-size:0.85rem;cursor:pointer">🚀 Enviar</button>' +
+                '</div></div>';
+            document.body.appendChild(overlay);
+
+            document.getElementById('resend-close').onclick = function() { overlay.remove(); };
+            document.getElementById('resend-cancel').onclick = function() { overlay.remove(); };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            document.getElementById('resend-ok').onclick = function() {
+                var selectedSubs = [];
+                document.querySelectorAll('.resend-sub-check:checked').forEach(function(cb) {
+                    selectedSubs.push({ id: cb.value, email: cb.dataset.email });
+                });
+                if (selectedSubs.length === 0) {
+                    showNlNotification('⚠️ Selecciona al menos un suscriptor', 'warning');
+                    return;
+                }
+                overlay.remove();
+                doSendNewsletter(articleIds || [], selectedSubs);
+            };
         }
 
         async function sendNewsletterNow() {
