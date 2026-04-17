@@ -1799,7 +1799,7 @@
                             <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary)">
                                 <div style="font-size:0.7rem;font-weight:700;color:var(--text-grey);text-transform:uppercase;margin-bottom:6px">Títulos</div>
                                 <select id="bi-tipografia-titulos" class="editor-input" style="font-size:0.85rem;margin-bottom:8px" onchange="updateFontPreview('titulos',this.value)">
-                                    <option value="Inter">Inter</option><option value="Roboto">Roboto</option><option value="Outfit">Outfit</option><option value="Playfair Display">Playfair Display</option><option value="Montserrat">Montserrat</option><option value="Poppins">Poppins</option><option value="Raleway">Raleway</option><option value="Lato">Lato</option><option value="Open Sans">Open Sans</option><option value="Source Serif 4">Source Serif 4</option><option value="DM Sans">DM Sans</option><option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                                    <option value="Inter">Inter</option><option value="Roboto">Roboto</option><option value="Outfit">Outfit</option><option value="Playfair Display">Playfair Display</option><option value="Montserrat">Montserrat</option><option value="Poppins">Poppins</option><option value="Raleway">Raleway</option><option value="Lato">Lato</option><option value="Open Sans">Open Sans</option><option value="Source Serif 4">Source Serif 4</option><option value="DM Sans">DM Sans</option><option value="Plus Jakarta Sans">Plus Jakarta Sans</option><option value="Josefin Sans">Josefin Sans</option><option value="Unbounded">Unbounded</option><option value="Space Grotesk">Space Grotesk</option><option value="Syne">Syne</option><option value="Urbanist">Urbanist</option><option value="Cormorant Garamond">Cormorant Garamond</option><option value="Libre Baskerville">Libre Baskerville</option><option value="Merriweather">Merriweather</option><option value="EB Garamond">EB Garamond</option><option value="Bebas Neue">Bebas Neue</option><option value="Anton">Anton</option><option value="Oswald">Oswald</option>
                                 </select>
                                 <div id="bi-tipografia-preview-titulos" style="font-size:1.8rem;font-weight:700;font-family:Inter,sans-serif;line-height:1.1;margin-bottom:6px">Aa — Texto de ejemplo</div>
                                 <input type="text" id="bi-tipografia-titulos-desc" class="editor-input" value="Títulos y textos principales · Peso: 600-700" placeholder="Descripción de uso..." style="font-size:0.72rem">
@@ -1807,7 +1807,7 @@
                             <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-secondary)">
                                 <div style="font-size:0.7rem;font-weight:700;color:var(--text-grey);text-transform:uppercase;margin-bottom:6px">Cuerpo de texto</div>
                                 <select id="bi-tipografia-cuerpo" class="editor-input" style="font-size:0.85rem;margin-bottom:8px" onchange="updateFontPreview('cuerpo',this.value)">
-                                    <option value="Inter">Inter</option><option value="Roboto">Roboto</option><option value="Outfit">Outfit</option><option value="Lato">Lato</option><option value="Open Sans">Open Sans</option><option value="Source Sans 3">Source Sans 3</option><option value="Nunito">Nunito</option><option value="DM Sans">DM Sans</option><option value="Noto Sans">Noto Sans</option>
+                                    <option value="Inter">Inter</option><option value="Roboto">Roboto</option><option value="Outfit">Outfit</option><option value="Lato">Lato</option><option value="Open Sans">Open Sans</option><option value="Source Sans 3">Source Sans 3</option><option value="Nunito">Nunito</option><option value="DM Sans">DM Sans</option><option value="Noto Sans">Noto Sans</option><option value="Poppins">Poppins</option><option value="Montserrat">Montserrat</option><option value="Plus Jakarta Sans">Plus Jakarta Sans</option><option value="Urbanist">Urbanist</option><option value="Space Grotesk">Space Grotesk</option><option value="Mulish">Mulish</option><option value="Manrope">Manrope</option><option value="Work Sans">Work Sans</option><option value="Karla">Karla</option><option value="Quicksand">Quicksand</option><option value="Josefin Sans">Josefin Sans</option>
                                 </select>
                                 <div id="bi-tipografia-preview-cuerpo" style="font-size:1.1rem;font-weight:400;font-family:Inter,sans-serif;margin-bottom:6px">Aa — Texto de ejemplo para cuerpo</div>
                                 <input type="text" id="bi-tipografia-cuerpo-desc" class="editor-input" value="Cuerpo de texto · Peso: 400-500" placeholder="Descripción de uso..." style="font-size:0.72rem">
@@ -7488,7 +7488,11 @@ Solo JSON, sin explicaciones ni markdown.`;
             try {
                 var upserts = [];
                 fields.forEach(function(el) {
-                    if (el.type === 'color') return; // skip color pickers (hex inputs handle these)
+                    // Only process actual form inputs (not divs, spans, etc.)
+                    var tag = el.tagName;
+                    if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
+                    if (el.type === 'color') return; // pickers are redundant with hex inputs
+                    if (el.value === undefined || el.value === null) return;
                     var key = el.id.replace('bi-','').replace(/-/g,'_');
                     upserts.push({ key: key, value: el.value.trim(), updated_at: new Date().toISOString() });
                 });
