@@ -3352,9 +3352,15 @@
             if (meetingIntent) {
                 try {
                     // Use Gemini to extract structured meeting data from natural language
+                    var _today = new Date();
+                    var _dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+                    var _diaHoy = _dias[_today.getDay()];
+                    var _fechaHoy = _today.toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit',year:'numeric'});
+                    var _isoHoy = _today.getFullYear() + '-' + String(_today.getMonth()+1).padStart(2,'0') + '-' + String(_today.getDate()).padStart(2,'0');
                     var extractPrompt = 'Extrae los datos de la reunión del siguiente mensaje y responde SOLO con un JSON válido (sin markdown, sin explicación).\n' +
                         'Campos: { "name": "nombre del cliente", "email": "email o null", "date": "YYYY-MM-DD o null", "time": "HH:MM o null", "type": "discovery|followup|consulting|demo|otro", "notes": "notas o null" }\n' +
-                        'Hoy es: ' + new Date().toLocaleDateString('es-ES') + ' (' + new Date().toISOString().substring(0,10) + '). Zona horaria: España (UTC+2). Las horas que el usuario escriba son en hora LOCAL española.\n' +
+                        'HOY ES: ' + _diaHoy.toUpperCase() + ' ' + _fechaHoy + ' (ISO: ' + _isoHoy + '). Zona horaria España (UTC+2). Horas en hora local española.\n' +
+                        'IMPORTANTE: Calcula correctamente los días relativos. Si hoy es ' + _diaHoy + ', "próximo martes" es el martes de esta semana o la siguiente según corresponda. "Mañana" = ' + new Date(_today.getTime()+86400000).toISOString().substring(0,10) + '.\n' +
                         'Mensaje: "' + msg + '"';
                     var extractRes = await callGemini(extractPrompt, 'gemini-2.5-flash');
                     var rawJson = (extractRes.candidates?.[0]?.content?.parts?.[0]?.text || '{}').replace(/```json|```/g,'').trim();
