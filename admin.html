@@ -6758,6 +6758,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                     .upsert([{key: key, value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
                 if (res.error) throw res.error;
                 if (btn) { btn.innerHTML = '✅ Guardado'; btn.style.background = '#34c759'; }
+                renderPdaReadView(eid, items);
                 setTimeout(function() {
                     if (btn) { btn.innerHTML = origText; btn.disabled = false; btn.style.background = ''; }
                 }, 2500);
@@ -6806,30 +6807,45 @@ Solo JSON, sin explicaciones ni markdown.`;
             renderChronoLinked();
         }
 
-        // renderChronoLinked: reads DIRECTLY from DOM - no dependency on _pdaActions cache
+        // renderChronoLinked: uses _pdaActions cache (primary) + DOM fallback
         function renderChronoLinked() {
             var allActions = [];
             var EST_IDS = ['posicionamiento','confianza','segmentacion','contenidos','rrpp','activacion','coherencia'];
-            // Scan all PDA action rows from DOM
+            // PRIMARY: use _pdaActions cache (set on save and on load)
             EST_IDS.forEach(function(eid) {
-                var list = document.getElementById('pda-list-' + eid);
-                if (!list) return;
-                list.querySelectorAll('.pda-action-row').forEach(function(row) {
-                    var txt = row.querySelector('.pda-action-txt');
-                    var sel = row.querySelector('.pda-month-sel');
-                    if (txt && sel && txt.value.trim() && sel.value) {
-                        allActions.push({tipo:'plan', texto:txt.value.trim(), mes:sel.value});
-                    }
+                (_pdaActions[eid] || []).forEach(function(item) {
+                    if (item.texto && item.mes) allActions.push({tipo:'plan', texto:item.texto, mes:item.mes});
                 });
+                // FALLBACK: also scan DOM form rows (for unsaved items being edited)
+                var list = document.getElementById('pda-list-' + eid);
+                if (list) {
+                    list.querySelectorAll('.pda-action-row').forEach(function(row) {
+                        var txt = row.querySelector('.pda-action-txt');
+                        var sel = row.querySelector('.pda-month-sel');
+                        if (txt && sel && txt.value.trim() && sel.value) {
+                            // Avoid double-counting if already in _pdaActions
+                            var alreadyCached = (_pdaActions[eid] || []).some(function(c) {
+                                return c.texto === txt.value.trim() && c.mes === sel.value;
+                            });
+                            if (!alreadyCached) allActions.push({tipo:'plan', texto:txt.value.trim(), mes:sel.value});
+                        }
+                    });
+                }
             });
-            // Scan proximos pasos
+            // Próximos pasos
+            (_proximosActions || []).forEach(function(item) {
+                if (item.texto && item.mes) allActions.push({tipo:'proximo', texto:item.texto, mes:item.mes});
+            });
             var plist = document.getElementById('proximos-list');
             if (plist) {
                 plist.querySelectorAll('.pda-action-row').forEach(function(row) {
                     var txt = row.querySelector('.pda-action-txt');
                     var sel = row.querySelector('.pda-month-sel');
                     if (txt && sel && txt.value.trim() && sel.value) {
-                        allActions.push({tipo:'proximo', texto:txt.value.trim(), mes:sel.value});
+                        var alreadyCached = (_proximosActions || []).some(function(c) {
+                            return c.texto === txt.value.trim() && c.mes === sel.value;
+                        });
+                        if (!alreadyCached) allActions.push({tipo:'proximo', texto:txt.value.trim(), mes:sel.value});
                     }
                 });
             }
@@ -6851,6 +6867,59 @@ Solo JSON, sin explicaciones ni markdown.`;
                     }).join('');
                 }
             });
+        }
+
+        // Show saved actions as a compact read-only list inside the PDA card
+        function renderPdaReadView(eid, items) {
+            var list = document.getElementById('pda-list-' + eid);
+            if (!list) return;
+            list.innerHTML = '';
+            if (items.length === 0) {
+                list.innerHTML = '<p style="font-size:0.75rem;color:var(--text-grey);font-style:italic;margin:0">Sin acciones. Pulsa + Accion para añadir.</p>';
+                return;
+            }
+            // Months summary for mini cronograma indicator
+            var monthsUsed = {};
+            items.forEach(function(item) {
+                if (item.mes) {
+                    if (!monthsUsed[item.mes]) monthsUsed[item.mes] = 0;
+                    monthsUsed[item.mes]++;
+                }
+            });
+            // Render each action as compact chip
+            items.forEach(function(item) {
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid rgba(0,0,0,0.06)';
+                var mesLabel = item.mes ? (item.mes.charAt(0).toUpperCase() + item.mes.slice(1)) : '';
+                row.innerHTML = '<span style="color:#5856d6;flex-shrink:0;font-size:0.65rem">●</span>'
+                    + '<span style="flex:1;font-size:0.8rem;color:var(--text-main)">' + item.texto + '</span>'
+                    + (mesLabel ? '<span style="font-size:0.68rem;color:white;background:#5856d6;padding:2px 9px;border-radius:10px;flex-shrink:0">' + mesLabel + '</span>' : '');
+                list.appendChild(row);
+            });
+            // Mini cronograma preview line
+            var cronLine = document.createElement('div');
+            cronLine.style.cssText = 'margin-top:8px;font-size:0.7rem;color:#5856d6;font-weight:600';
+            var monthList = Object.keys(monthsUsed).map(function(m) {
+                return m.charAt(0).toUpperCase() + m.slice(1) + ' (' + monthsUsed[m] + ')';
+            }).join(' · ');
+            cronLine.innerHTML = '📅 Añadido al cronograma: ' + (monthList || '—');
+            list.appendChild(cronLine);
+            // Edit button
+            var editBtn = document.createElement('button');
+            editBtn.innerHTML = '✏️ Editar acciones';
+            editBtn.style.cssText = 'margin-top:8px;padding:4px 12px;border-radius:8px;border:1px solid var(--border-color);background:transparent;cursor:pointer;font-size:0.72rem;color:var(--text-grey);font-family:Inter,sans-serif;display:block';
+            editBtn.onclick = function() {
+                list.innerHTML = '';
+                if (items.length === 0) {
+                    list.innerHTML = '<p style="font-size:0.75rem;color:var(--text-grey);font-style:italic;margin:0">Pulsa + Accion para añadir una tarea</p>';
+                }
+                items.forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.innerHTML = _actionItemHTML(item.texto, item.mes);
+                    list.appendChild(div.firstElementChild);
+                });
+            };
+            list.appendChild(editBtn);
         }
 
         // Live updates: when month is selected or text changed → update cronograma instantly
