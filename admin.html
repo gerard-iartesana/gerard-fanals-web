@@ -6349,7 +6349,8 @@ Solo JSON, sin explicaciones ni markdown.`;
         let _meetingsTableReady = false;
 
         async function ensureMeetingsTable() {
-            if (_meetingsTableReady) return true;
+            // Always re-check to ensure fresh data on each section visit
+            // if (_meetingsTableReady) return true; // disabled cache
             // Try to query the table - if it fails, table doesn't exist
             const { error } = await _supabase.from('meetings').select('id').limit(1);
             if (error && (error.code === '42P01' || (error.message && error.message.includes('meetings')))) {
@@ -6451,6 +6452,8 @@ Solo JSON, sin explicaciones ni markdown.`;
             '</select>';
 
             var hasSynced = !!(m.gcal_event_id);
+            var gcalBtn = !isPast && !hasSynced && _gcalConnected ?
+                '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" style="font-size:0.7rem;padding:3px 8px;border-radius:6px;border:1px solid #4285F4;color:#4285F4;background:transparent;cursor:pointer;margin-left:6px">🗓️ Sync GCal</button>' : '';
             var syncBtn = '';
             if (!isPast && hasSynced) {
                 syncBtn = '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>';
