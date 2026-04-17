@@ -7007,10 +7007,19 @@ Solo JSON, sin explicaciones ni markdown.`;
             var value = (el.value || '').trim();
             if (!value || typeof _supabase === 'undefined') return;
             var key = el.id.replace('cp-','').replace(/-/g,'_');
-            if (key.split('_').length < 3) return;
+            if (key.split('_').length < 2) return; // need at least key_field
             _supabase.from('communication_plan')
                 .upsert([{ key: key, value: value, updated_at: new Date().toISOString() }], { onConflict: 'key' })
-                .then().catch();
+                .then(function() {
+                    // Brief visual feedback on the field itself
+                    var orig = el.style.borderColor;
+                    el.style.borderColor = '#34c759';
+                    el.style.transition = 'border-color 0.3s';
+                    setTimeout(function() { el.style.borderColor = orig; }, 1500);
+                })
+                .catch(function(err) {
+                    console.warn('CP auto-save error:', err);
+                });
         });
 
         // ═══ BRAND IDENTITY ═══════════════════════════════════════
