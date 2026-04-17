@@ -2977,6 +2977,51 @@
 
         async function gatherDashboardContext() {
             var ctx = { timestamp: new Date().toLocaleString('es-ES'), client: CLIENT_CONFIG };
+
+            // ── PERFIL VERIFICADO DE LA WEB PÚBLICA ────────────────────────
+            // Datos extraídos y verificados directamente de gerardfanals.online
+            ctx.siteProfile = {
+                nombre: 'Gerard Fanals',
+                titulo: 'CEO & Automation Architect',
+                web: 'https://gerardfanals.online',
+                descripcion: 'Especialista en LLMs y automatización inteligente de procesos para escalar negocios.',
+                historialLaboral: [
+                    { empresa: 'IArtesana', rol: 'CEO & Founder', periodo: '2023 - Actualidad', descripcion: 'Transformación digital para negocios tradicionales a través de automatizaciones y agentes de IA interactivos.' },
+                    { empresa: 'IA de Barrio', rol: 'Fundador Técnico', periodo: '2025 - Actualidad', descripcion: 'Portales administrativos y herramientas con IA para democratizar el acceso tecnológico a los comercios locales.' },
+                    { empresa: 'Nuracom', rol: 'CEO & Founder', periodo: '2016 - 2021', descripcion: 'Tecnología exterior. Redes de internet en Menorca, +1000 clientes.' },
+                    { empresa: 'Fanals Seguretat 24h', rol: 'CEO & Founder', periodo: '1997 - 2023', descripcion: 'Seguridad privada con tecnología de vanguardia. 26 años liderando el sector.' }
+                ],
+                conocimientos: [
+                    'IA Business Architect: prospección, automatización, consultoría de negocio con IA',
+                    'Agentes de IA: voz (Voice AI), atención y ventas autónomas',
+                    'Automatización con n8n: flujos complejos, APIs, bases de datos',
+                    'Apps para Negocios: Low-code, No-code, Full-stack, portales admin',
+                    'Video Gen & Visuals: Heygen IV, modelos Replicate',
+                    'Ecosistema de vanguardia: MCP Protocol, Gemini 2.5, Manus AI, Llama 4'
+                ],
+                proyectosEnMarcha: {
+                    descripcion: 'Hoja de ruta 2026: Una especialización mensual para dominar todas las verticales de negocio con IA.',
+                    totalProyectos: 12,
+                    mesActual: 'Abril 2026 - Freelance / Marca Personal',
+                    lista: [
+                        { mes: 'Abril 2026 (ACTUAL)', sector: 'Freelance / Marca Personal', desc: 'Optimización del ADN digital, autoridad y prospección automatizada.' },
+                        { mes: 'Mayo 2026', sector: 'E-commerce / Tienda Online', desc: 'Automatización de ventas, inventario y atención al cliente 24/7.' },
+                        { mes: 'Junio 2026', sector: 'Legal / Asesoría / Consultoría', desc: 'Análisis documental inteligente y generación de informes automatizados.' },
+                        { mes: 'Julio 2026', sector: 'Hotel / Restaurante / Turismo', desc: 'Agentes de reserva por voz y personalización de la experiencia del cliente.' },
+                        { mes: 'Agosto 2026', sector: 'Startup Tech / SaaS', desc: 'Escalado de producto y optimización de flujos de desarrollo con IA.' },
+                        { mes: 'Septiembre 2026', sector: 'Clínica / Salud / Bienestar', desc: 'Sistemas de triaje inteligente y gestión eficiente de citas médicas.' },
+                        { mes: 'Octubre 2026', sector: 'Agencia de Marketing', desc: 'Generación masiva de contenido creativo y campañas híper-segmentadas.' },
+                        { mes: 'Noviembre 2026', sector: 'Constructora / Ingeniería', desc: 'Monitorización de obras con visión artificial y gestión de recursos.' },
+                        { mes: 'Diciembre 2026', sector: 'Academia / Formación', desc: 'Plataformas de aprendizaje adaptativo y tutores IA 1 a 1.' },
+                        { mes: 'Enero 2027', sector: 'Inmobiliaria', desc: 'Análisis predictivo de mercado y tours virtuales inteligentes.' },
+                        { mes: 'Febrero 2027', sector: 'Estudio Creativo / Productora', desc: 'Post-producción acelerada y diseño generativo de alto impacto.' },
+                        { mes: 'Marzo 2027', sector: 'Side Project / Lanza tu Proyecto', desc: 'Metodología para llevar cualquier idea de negocio al mercado en semanas.' }
+                    ]
+                },
+                metodologia: ['S1 Agentes: automatización de atención y procesos', 'S2 Vibe Coding: desarrollo rápido de soluciones', 'S3 IA Audiovisual: contenido visual de alto impacto', 'S4 Lifehacking: optimización de productividad radical'],
+                primerReunion: 'Gratuita, sin compromiso. Análisis del negocio e identificación de oportunidades de automatización con IA.'
+            };
+
             try {
                 // ── ARTÍCULOS ──────────────────────────────────────────────
                 var { data: articles } = await _supabase.from('articles').select('id, title, slug, tag, published, created_at').order('created_at', { ascending: false });
