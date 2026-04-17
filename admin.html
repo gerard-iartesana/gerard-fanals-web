@@ -764,6 +764,7 @@
                             🎫 Tickets de soporte abiertos<br>
                             📈 SEO: score, keywords y problemas detectados<br>
                             📊 Analytics: eventos y páginas más visitadas (30 días)
+                            🌐 Web pública: contenido de gerardfanals.online en tiempo real
                             💡 Sugerencias y análisis de tu web
                             </span>
                         </div>
@@ -3114,6 +3115,50 @@
                     siteSettings.forEach(function(s) { ctx.siteSettings[s.key] = s.value; });
                 }
 
+                // ── WEB PÚBLICA ────────────────────────────────────────────
+                // Fetch key public pages and extract their text content
+                function _extractPageText(html) {
+                    var tmp = document.createElement('div');
+                    tmp.innerHTML = html;
+                    // Remove scripts, styles, nav, footer
+                    ['script','style','nav','footer','header','noscript'].forEach(function(tag) {
+                        tmp.querySelectorAll(tag).forEach(function(el) { el.remove(); });
+                    });
+                    var title = (html.match(/<title[^>]*>([^<]+)<\/title>/i)||[])[1] || '';
+                    var desc = (html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)||
+                                html.match(/<meta[^>]+content="([^"]+)"[^>]+name="description"/i)||[])[1] || '';
+                    var h1s = (tmp.innerHTML.match(/<h1[^>]*>([^<]+)<\/h1>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();});
+                    var h2s = (tmp.innerHTML.match(/<h2[^>]*>([^<]+)<\/h2>/gi)||[]).slice(0,6).map(function(h){return h.replace(/<[^>]+>/g,'').trim();});
+                    var text = tmp.textContent.replace(/\s+/g,' ').trim().substring(0,800);
+                    return { title: title.trim(), description: desc.trim(), h1: h1s[0]||'', h2s: h2s, excerpt: text };
+                }
+                var baseUrl = 'https://' + CLIENT_CONFIG.domain;
+                var publicPages = [
+                    { name: 'homepage', url: baseUrl + '/' },
+                    { name: 'blog', url: baseUrl + '/blog' },
+                    { name: 'comunidad', url: baseUrl + '/comunidad' }
+                ];
+                ctx.publicWeb = { domain: baseUrl, pages: [] };
+                for (var pi = 0; pi < publicPages.length; pi++) {
+                    try {
+                        var pRes = await fetch(publicPages[pi].url, { signal: AbortSignal.timeout(4000) });
+                        if (pRes.ok) {
+                            var pHtml = await pRes.text();
+                            var pData = _extractPageText(pHtml);
+                            pData.url = publicPages[pi].url;
+                            pData.name = publicPages[pi].name;
+                            ctx.publicWeb.pages.push(pData);
+                        }
+                    } catch(fe) { /* page unavailable or timeout */ }
+                }
+                // Also add recent published article URLs
+                if (ctx.articles && ctx.articles.length > 0) {
+                    ctx.publicWeb.publishedArticleUrls = ctx.articles
+                        .filter(function(a) { return a.published; })
+                        .slice(0,10)
+                        .map(function(a) { return baseUrl + '/blog/' + (a.slug||''); });
+                }
+
                 // ── RESUMEN KPIs ────────────────────────────────────────────
                 ctx.kpis = {};
                 ['resumen-visitas','resumen-leads','resumen-articulos','resumen-reuniones'].forEach(function(id) {
@@ -3164,7 +3209,7 @@
                 var context = await gatherDashboardContext();
 
                 var systemPrompt = 'Eres el asistente IA del dashboard de ' + CLIENT_CONFIG.name + ' (' + CLIENT_CONFIG.domain + '). ' +
-                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, config), identidad de marca (colores, tipografía, valores, tono), plan de comunicación (estrategias, acciones PDA, próximos pasos, cronograma), tickets de soporte, SEO (score, keywords, issues, audits), GEO/AEO (FAQs globales y por artículo para motores de IA), Analytics (eventos, páginas top), y KPIs de la web. Las secciones Social, Academy, Ads y Cobros están en desarrollo y aún no tienen datos. ' +
+                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, config), identidad de marca (colores, tipografía, valores, tono), plan de comunicación (estrategias, acciones PDA, próximos pasos, cronograma), tickets de soporte, SEO (score, keywords, issues, audits), GEO/AEO (FAQs globales y por artículo para motores de IA), Analytics (eventos, páginas top), y KPIs de la web. Las secciones Social, Academy, Ads y Cobros están en desarrollo y aún no tienen datos. Además tienes acceso al contenido actual de la WEB PÚBLICA (homepage, blog, comunidad) con sus títulos, descripciones, H1, H2 y texto extraído en tiempo real. ' +
                     'Responde SIEMPRE en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
                     'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
                     'Si te preguntan datos específicos (suscriptores, reuniones, artículos, etc.) busca la información EXACTA en el contexto y responde con los datos reales. Si no hay datos sobre algo, indícalo claramente en lugar de inventar. ' +
