@@ -3315,10 +3315,16 @@
                 var gcalMsg = gcalEventId ? '\n🗓️ Sincronizado con Google Calendar' : (_gcalConnected ? '\n⚠️ No se pudo sincronizar con Google Calendar' : '');
                 addAiMessage('✅ Reunión registrada correctamente\n\n👤 ' + m.name + '\n📆 ' + (m.date || 'Sin fecha') + (m.time ? ' a las ' + m.time : '') + '\n🏷️ ' + (m.type || 'discovery') + gcalMsg + '\n\n💡 Puedes verla en la sección Reuniones.', 'bot');
 
-                // Refresh meetings if visible
-                if (document.getElementById('sec-meetings') && document.getElementById('sec-meetings').style.display !== 'none') {
-                    loadMeetings();
-                }
+                // Refresh meetings if visible - safe call in case loadMeetings is in another script block
+                setTimeout(function() {
+                    try {
+                        if (document.getElementById('sec-meetings') &&
+                            document.getElementById('sec-meetings').style.display !== 'none' &&
+                            typeof loadMeetings === 'function') {
+                            loadMeetings();
+                        }
+                    } catch(e) { console.warn('loadMeetings refresh error:', e); }
+                }, 100);
             } catch(err) {
                 addAiMessage('❌ Error registrando la reunión: ' + err.message, 'bot');
             }
@@ -6358,11 +6364,9 @@ Solo JSON, sin explicaciones ni markdown.`;
         let _meetingsTableReady = false;
 
         async function ensureMeetingsTable() {
-            // Always re-check to ensure fresh data on each section visit
-            // if (_meetingsTableReady) return true; // disabled cache
             // Try to query the table - if it fails, table doesn't exist
             const { error } = await _supabase.from('meetings').select('id').limit(1);
-            if (error && (error.code === '42P01' || (error.message && error.message.includes('meetings')))) {
+            if (error && error.code === '42P01') { // Only block on table-not-found
                 // Table doesn't exist - show message to create it
                 const list = document.getElementById('meetings-list');
                 if (list) {
@@ -6466,9 +6470,10 @@ Solo JSON, sin explicaciones ni markdown.`;
             if (!isPast && hasSynced) {
                 syncBtn = '<span style="font-size:0.65rem;padding:3px 6px;border-radius:6px;background:rgba(66,133,244,0.1);color:#4285F4" title="Sincronizado con Google Calendar">✓ GCal</span>';
             } else if (!isPast) {
-                // Show sync button always, even if GCal not connected
-                var syncTitle = _gcalConnected ? 'Sincronizar con Google Calendar' : 'Conecta Google Calendar primero para sincronizar';
-                syncBtn = '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" id="sync-' + m.id + '" style="padding:3px 8px;border-radius:8px;border:1px solid ' + (_gcalConnected ? \'#4285F4\' : \'#ccc\') + ';background:transparent;color:' + (_gcalConnected ? \'#4285F4\' : \'#999\') + ';font-size:0.72rem;cursor:pointer;font-weight:600" title="' + syncTitle + '">📅</button>';
+                var syncConnected = _gcalConnected;
+                var syncStyle = 'padding:3px 8px;border-radius:8px;border:1px solid ' + (syncConnected ? '#4285F4' : '#ccc') + ';background:transparent;color:' + (syncConnected ? '#4285F4' : '#999') + ';font-size:0.72rem;cursor:pointer;font-weight:600';
+                var syncTitle = syncConnected ? 'Sincronizar con Google Calendar' : 'Conecta Google Calendar primero';
+                syncBtn = '<button onclick="syncMeetingToGCal(\'' + m.id + '\')" id="sync-' + m.id + '" style="' + syncStyle + '" title="' + syncTitle + '">📅</button>';
             }
 
             var deleteBtn = '<button onclick="deleteMeeting(\'' + m.id + '\')" id="del-' + m.id + '" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-grey);font-size:0.72rem;cursor:pointer" title="Eliminar">🗑️</button>';
