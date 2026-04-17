@@ -6735,22 +6735,41 @@ Solo JSON, sin explicaciones ni markdown.`;
 
         async function savePdaItems(eid) {
             var list = document.getElementById('pda-list-' + eid);
-            if (!list || typeof _supabase === 'undefined') return;
-            var rows = list.querySelectorAll('.pda-action-row');
-            var items = [];
-            rows.forEach(function(row) {
-                var txt = row.querySelector('.pda-action-txt').value.trim();
-                var mes = row.querySelector('.pda-month-sel').value;
-                if (txt) items.push({texto: txt, mes: mes});
+            // Find the save button for this strategy
+            var btn = null;
+            document.querySelectorAll('[onclick*="savePdaItems"]').forEach(function(b) {
+                if (b.getAttribute('onclick').indexOf("'" + eid + "'") > -1) btn = b;
             });
-            _pdaActions[eid] = items;
-            var key = 'pda_actions_' + eid;
-            var { error } = await _supabase.from('communication_plan')
-                .upsert([{key: key, value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
-            if (!error) {
-                _cpStatus('pda', '✅ Acciones de "' + (document.getElementById('pda-title-' + eid) ? document.getElementById('pda-title-' + eid).textContent : eid) + '" guardadas', 'ok');
-            } else {
-                _cpStatus('pda', '❌ Error: ' + error.message, 'err');
+            var origText = btn ? btn.innerHTML : '';
+            if (btn) { btn.innerHTML = '⏳ Guardando...'; btn.disabled = true; }
+            try {
+                if (!list) throw new Error('Lista no encontrada: pda-list-' + eid);
+                if (typeof _supabase === 'undefined') throw new Error('Supabase no inicializado');
+                var rows = list.querySelectorAll('.pda-action-row');
+                var items = [];
+                rows.forEach(function(row) {
+                    var txt = row.querySelector('.pda-action-txt').value.trim();
+                    var mes = row.querySelector('.pda-month-sel').value;
+                    if (txt) items.push({texto: txt, mes: mes});
+                });
+                _pdaActions[eid] = items;
+                var key = 'pda_actions_' + eid;
+                var res = await _supabase.from('communication_plan')
+                    .upsert([{key: key, value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
+                if (res.error) throw res.error;
+                if (btn) { btn.innerHTML = '✅ Guardado'; btn.style.background = '#34c759'; }
+                setTimeout(function() {
+                    if (btn) { btn.innerHTML = origText; btn.disabled = false; btn.style.background = ''; }
+                }, 2500);
+            } catch(e) {
+                if (btn) {
+                    btn.innerHTML = '❌ ' + (e.message || 'Error');
+                    btn.style.background = '#ff3b30';
+                    btn.disabled = false;
+                }
+                setTimeout(function() {
+                    if (btn) { btn.innerHTML = origText; btn.style.background = ''; }
+                }, 4000);
             }
             renderChronoLinked();
         }
