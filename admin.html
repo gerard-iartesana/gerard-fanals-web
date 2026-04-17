@@ -3118,27 +3118,30 @@
                 // ── WEB PÚBLICA ────────────────────────────────────────────
                 // Fetch key public pages and extract their text content
                 function _extractPageText(html) {
-                    var tmp = document.createElement('div');
-                    tmp.innerHTML = html;
-                    // Remove scripts, styles, nav, footer
-                    ['script','style','nav','footer','header','noscript'].forEach(function(tag) {
-                        tmp.querySelectorAll(tag).forEach(function(el) { el.remove(); });
+                    // Use DOMParser for proper full-document HTML parsing
+                    var doc;
+                    try { doc = (new DOMParser()).parseFromString(html, 'text/html'); } catch(e) { return { error: e.message }; }
+                    // Remove noise elements
+                    ['script','style','noscript','svg','iframe','button'].forEach(function(tag) {
+                        doc.querySelectorAll(tag).forEach(function(el) { el.remove(); });
                     });
-                    var title = (html.match(/<title[^>]*>([^<]+)<\/title>/i)||[])[1] || '';
-                    var desc = (html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)||
-                                html.match(/<meta[^>]+content="([^"]+)"[^>]+name="description"/i)||[])[1] || '';
-                    var h1s = (tmp.innerHTML.match(/<h1[^>]*>(.*?)<\/h1>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();}).filter(Boolean);
-                    var h2s = (tmp.innerHTML.match(/<h2[^>]*>(.*?)<\/h2>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();}).filter(Boolean);
-                    var h3s = (tmp.innerHTML.match(/<h3[^>]*>(.*?)<\/h3>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();}).filter(Boolean);
-                    // Extract ALL text (not limited) so historial laboral and deep sections are visible
-                    var fullText = tmp.textContent.replace(/\s+/g,' ').trim();
+                    var title = doc.title || '';
+                    var metaDesc = doc.querySelector('meta[name="description"]');
+                    var desc = metaDesc ? (metaDesc.getAttribute('content')||'') : '';
+                    var h1s = Array.from(doc.querySelectorAll('h1')).map(function(h){return h.textContent.trim();}).filter(Boolean);
+                    var h2s = Array.from(doc.querySelectorAll('h2')).map(function(h){return h.textContent.trim();}).filter(Boolean);
+                    var h3s = Array.from(doc.querySelectorAll('h3')).map(function(h){return h.textContent.trim();}).filter(Boolean).slice(0,15);
+                    // Get full body text - DOMParser correctly handles the full document
+                    var body = doc.body || doc.documentElement;
+                    var fullText = body.innerText || body.textContent || '';
+                    fullText = fullText.replace(/\s+/g,' ').trim();
                     return {
                         title: title.trim(),
                         description: desc.trim(),
                         h1: h1s[0]||'',
-                        h2s: h2s, // all H2s (historial laboral, conocimientos, etc.)
-                        h3s: h3s.slice(0,15),
-                        fullText: fullText.substring(0, 5000) // up from 800 to 5000
+                        h2s: h2s,
+                        h3s: h3s,
+                        fullText: fullText.substring(0, 6000)
                     };
                 }
                 var baseUrl = 'https://' + CLIENT_CONFIG.domain;
@@ -3148,27 +3151,45 @@
                     { name: 'comunidad', url: baseUrl + '/comunidad' }
                 ];
                 ctx.publicWeb = { domain: baseUrl, pages: [], fetchErrors: [] };
-                // Helper: fetch with manual timeout (AbortSignal.timeout not supported everywhere)
+                // Helper: fetch with manual timeout
                 async function _fetchWithTimeout(url, ms) {
                     return Promise.race([
                         fetch(url),
                         new Promise(function(_, rej) { setTimeout(function(){ rej(new Error('timeout '+ ms + 'ms')); }, ms); })
                     ]);
                 }
-                for (var pi = 0; pi < publicPages.length; pi++) {
-                    try {
-                        var pRes = await _fetchWithTimeout(publicPages[pi].url, 5000);
-                        if (pRes.ok) {
-                            var pHtml = await pRes.text();
-                            var pData = _extractPageText(pHtml);
-                            pData.url = publicPages[pi].url;
-                            pData.name = publicPages[pi].name;
-                            ctx.publicWeb.pages.push(pData);
-                        } else {
-                            ctx.publicWeb.fetchErrors.push(publicPages[pi].url + ': HTTP ' + pRes.status);
+                // PRIMARY: Use Vercel API endpoint (server-side scraping, no CORS issues)
+                var webScraped = false;
+                try {
+                    var apiRes = await _fetchWithTimeout('/api/scrape-public', 8000);
+                    if (apiRes.ok) {
+                        var apiData = await apiRes.json();
+                        if (apiData.pages && apiData.pages.length > 0) {
+                            ctx.publicWeb.pages = apiData.pages;
+                            ctx.publicWeb.scrapedAt = apiData.scrapedAt;
+                            webScraped = true;
                         }
-                    } catch(fe) {
-                        ctx.publicWeb.fetchErrors.push(publicPages[pi].url + ': ' + fe.message);
+                    }
+                } catch(apiErr) {
+                    ctx.publicWeb.fetchErrors.push('API scrape-public: ' + apiErr.message);
+                }
+                // FALLBACK: Browser-side fetch + DOMParser if API failed
+                if (!webScraped) {
+                    for (var pi = 0; pi < publicPages.length; pi++) {
+                        try {
+                            var pRes = await _fetchWithTimeout(publicPages[pi].url, 5000);
+                            if (pRes.ok) {
+                                var pHtml = await pRes.text();
+                                var pData = _extractPageText(pHtml);
+                                pData.url = publicPages[pi].url;
+                                pData.name = publicPages[pi].name;
+                                ctx.publicWeb.pages.push(pData);
+                            } else {
+                                ctx.publicWeb.fetchErrors.push(publicPages[pi].url + ': HTTP ' + pRes.status);
+                            }
+                        } catch(fe) {
+                            ctx.publicWeb.fetchErrors.push(publicPages[pi].url + ': ' + fe.message);
+                        }
                     }
                 }
                 // Also add recent published article URLs
