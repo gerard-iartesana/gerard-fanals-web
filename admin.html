@@ -763,6 +763,7 @@
                             🗺️ Plan de comunicación: estrategias, acciones y cronograma<br>
                             🎫 Tickets de soporte abiertos<br>
                             📈 SEO: score, keywords y problemas detectados<br>
+                            📊 Analytics: eventos y páginas más visitadas (30 días)
                             💡 Sugerencias y análisis de tu web
                             </span>
                         </div>
@@ -3074,12 +3075,58 @@
                 var { data: seoKeywords } = await _supabase.from('seo_keywords').select('keyword, position, volume').order('position', { ascending: true }).limit(10).catch(function() { return { data: null }; });
                 if (seoKeywords) ctx.topKeywords = seoKeywords;
 
+                // ── GEO / AEO ──────────────────────────────────────────────
+                // Global FAQs (structured data for AI engines)
+                var { data: geoFaqs } = await _supabase.from('faqs').select('question, answer, type').eq('type','global');
+                ctx.geoAeo = {
+                    globalFaqsCount: (geoFaqs || []).length,
+                    globalFaqs: (geoFaqs || []).map(function(f) { return { q: f.question, a: (f.answer||'').substring(0,120) }; }),
+                    articleFaqsCount: ctx.articlesWithFaqs,
+                    articlesWithoutFaqs: ctx.articlesWithoutFaqs
+                };
+
+                // ── SEO AUDITS ─────────────────────────────────────────────
+                var { data: seoAudits } = await _supabase.from('seo_audits').select('url, score, status, created_at').order('created_at', { ascending: false }).limit(5).catch(function() { return { data: null }; });
+                if (seoAudits) {
+                    ctx.seoAudits = {
+                        recent: seoAudits.map(function(a) { return { url: a.url, score: a.score, status: a.status, date: a.created_at ? a.created_at.substring(0,10) : '' }; })
+                    };
+                }
+
+                // ── ANALYTICS ─────────────────────────────────────────────
+                var thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000).toISOString();
+                var { data: analyticsEvents } = await _supabase.from('analytics_events').select('event_type, page, created_at').gte('created_at', thirtyDaysAgo).order('created_at', { ascending: false }).limit(200).catch(function() { return { data: null }; });
+                if (analyticsEvents && analyticsEvents.length > 0) {
+                    var evByType = {};
+                    analyticsEvents.forEach(function(e) { evByType[e.event_type] = (evByType[e.event_type] || 0) + 1; });
+                    var topPages = {};
+                    analyticsEvents.forEach(function(e) { if (e.page) topPages[e.page] = (topPages[e.page] || 0) + 1; });
+                    var topPagesSorted = Object.entries(topPages).sort(function(a,b){return b[1]-a[1];}).slice(0,5).map(function(p){return{page:p[0],visits:p[1]};});
+                    ctx.analytics = { last30Days: analyticsEvents.length, eventsByType: evByType, topPages: topPagesSorted };
+                } else {
+                    ctx.analytics = { last30Days: 0, note: 'Sin datos de analytics o sección en desarrollo' };
+                }
+
+                // ── SITE SETTINGS ──────────────────────────────────────────
+                var { data: siteSettings } = await _supabase.from('site_settings').select('key, value').catch(function() { return { data: null }; });
+                if (siteSettings && siteSettings.length > 0) {
+                    ctx.siteSettings = {};
+                    siteSettings.forEach(function(s) { ctx.siteSettings[s.key] = s.value; });
+                }
+
                 // ── RESUMEN KPIs ────────────────────────────────────────────
                 ctx.kpis = {};
                 ['resumen-visitas','resumen-leads','resumen-articulos','resumen-reuniones'].forEach(function(id) {
                     var el = document.getElementById(id);
                     if (el) ctx.kpis[id.replace('resumen-','')] = el.textContent.trim();
                 });
+
+                // ── INVENTARIO DE SECCIONES ────────────────────────────────
+                ctx.dashboardSections = {
+                    implemented: ['overview','articles','new-article','seo','geo-aeo','meetings','newsletter','plan-comunicacion','identidad','soporte','asistente'],
+                    inDevelopment: ['analytics','social','academy','ads','cobros'],
+                    note: 'Las secciones en desarrollo pueden aparecer en el menú pero aún no tienen datos persistentes'
+                };
 
                 ctx.domain = CLIENT_CONFIG.domain;
                 ctx.siteStatus = 'Online';
@@ -3117,7 +3164,7 @@
                 var context = await gatherDashboardContext();
 
                 var systemPrompt = 'Eres el asistente IA del dashboard de ' + CLIENT_CONFIG.name + ' (' + CLIENT_CONFIG.domain + '). ' +
-                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, configuración), identidad de marca (valores, tono de voz, mensajes, públicos objetivo), plan de comunicación (estrategias, públicos, mensajes clave, acciones PDA, próximos pasos), tickets de soporte, SEO (score, keywords, issues) y KPIs de la web. ' +
+                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, config), identidad de marca (colores, tipografía, valores, tono), plan de comunicación (estrategias, acciones PDA, próximos pasos, cronograma), tickets de soporte, SEO (score, keywords, issues, audits), GEO/AEO (FAQs globales y por artículo para motores de IA), Analytics (eventos, páginas top), y KPIs de la web. Las secciones Social, Academy, Ads y Cobros están en desarrollo y aún no tienen datos. ' +
                     'Responde SIEMPRE en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
                     'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
                     'Si te preguntan datos específicos (suscriptores, reuniones, artículos, etc.) busca la información EXACTA en el contexto y responde con los datos reales. Si no hay datos sobre algo, indícalo claramente en lugar de inventar. ' +
