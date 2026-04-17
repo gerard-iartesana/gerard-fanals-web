@@ -6725,8 +6725,25 @@ Solo JSON, sin explicaciones ni markdown.`;
         function addPdaItem(eid) {
             var list = document.getElementById('pda-list-' + eid);
             if (!list) return;
-            var placeholder = list.querySelector('p');
-            if (placeholder) placeholder.remove();
+            // If in read-view mode (no form rows), restore existing saved items first
+            var existingFormRows = list.querySelectorAll('.pda-action-row');
+            if (existingFormRows.length === 0) {
+                list.innerHTML = '';
+                (_pdaActions[eid] || []).forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.innerHTML = _actionItemHTML(item.texto, item.mes);
+                    list.appendChild(div.firstElementChild);
+                });
+            } else {
+                // Remove placeholder <p> if present
+                var placeholder = list.querySelector('p');
+                if (placeholder) placeholder.remove();
+                // Remove non-form elements (edit btn, cron line, etc.)
+                list.querySelectorAll('button, div:not(.pda-action-row), p').forEach(function(el) {
+                    el.remove();
+                });
+            }
+            // Add new empty row
             var div = document.createElement('div');
             div.innerHTML = _actionItemHTML('', '');
             list.appendChild(div.firstElementChild);
@@ -6865,6 +6882,23 @@ Solo JSON, sin explicaciones ni markdown.`;
                             + '<span style="font-size:0.73rem;color:var(--text-main);line-height:1.4">' + a.texto + '</span>'
                             + '</div>';
                     }).join('');
+                }
+                // Also update/add a visible badge on the card header so user sees it without in-card scroll
+                var card = document.getElementById('cp-cronograma-' + mes);
+                if (card) {
+                    var badge = card.querySelector('.cron-action-badge');
+                    if (linked.length > 0) {
+                        if (!badge) {
+                            badge = document.createElement('span');
+                            badge.className = 'cron-action-badge';
+                            badge.style.cssText = 'display:inline-block;background:#5856d6;color:white;border-radius:10px;font-size:0.65rem;font-weight:700;padding:1px 8px;margin-left:8px;vertical-align:middle';
+                            var header = card.querySelector('span');
+                            if (header) header.parentNode.insertBefore(badge, header.nextSibling);
+                        }
+                        badge.textContent = linked.length + ' acción' + (linked.length > 1 ? 'es' : '');
+                    } else if (badge) {
+                        badge.remove();
+                    }
                 }
             });
         }
