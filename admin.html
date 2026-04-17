@@ -759,6 +759,7 @@
                             📝 Artículos, borradores y FAQs<br>
                             📅 Reuniones próximas y pasadas<br>
                             📧 Newsletter: suscriptores, envíos y configuración<br>
+                            🎨 Identidad de marca: valores, tono de voz y mensajes clave<br>
                             🗺️ Plan de comunicación: estrategias, acciones y cronograma<br>
                             🎫 Tickets de soporte abiertos<br>
                             📈 SEO: score, keywords y problemas detectados<br>
@@ -3015,6 +3016,13 @@
                     try { ctx.communicationPlan[row.key] = JSON.parse(row.value); } catch(e) { ctx.communicationPlan[row.key] = row.value; }
                 });
 
+                // ── IDENTIDAD DE MARCA ─────────────────────────────────────
+                var { data: biRows } = await _supabase.from('brand_identity').select('key, value');
+                ctx.brandIdentity = {};
+                (biRows || []).forEach(function(row) {
+                    try { ctx.brandIdentity[row.key] = JSON.parse(row.value); } catch(e) { ctx.brandIdentity[row.key] = row.value; }
+                });
+
                 // ── SEO ────────────────────────────────────────────────────
                 var scoreEl = document.getElementById('resumen-seo-score');
                 ctx.seoScore = scoreEl ? scoreEl.textContent.trim() : 'N/A';
@@ -3066,7 +3074,7 @@
                 var context = await gatherDashboardContext();
 
                 var systemPrompt = 'Eres el asistente IA del dashboard de ' + CLIENT_CONFIG.name + ' (' + CLIENT_CONFIG.domain + '). ' +
-                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, configuración), plan de comunicación (estrategias, públicos, mensajes clave, acciones PDA, próximos pasos), tickets de soporte, SEO (score, keywords, issues) y KPIs de la web. ' +
+                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, configuración), identidad de marca (valores, tono de voz, mensajes, públicos objetivo), plan de comunicación (estrategias, públicos, mensajes clave, acciones PDA, próximos pasos), tickets de soporte, SEO (score, keywords, issues) y KPIs de la web. ' +
                     'Responde SIEMPRE en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
                     'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
                     'Si te preguntan datos específicos (suscriptores, reuniones, artículos, etc.) busca la información EXACTA en el contexto y responde con los datos reales. Si no hay datos sobre algo, indícalo claramente en lugar de inventar. ' +
