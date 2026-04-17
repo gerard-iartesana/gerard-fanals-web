@@ -1750,39 +1750,39 @@
                         </h2>
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
                             <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border-color)">
-                                <div id="bi-colores-preview1" style="height:50px;background:#007AFF;cursor:pointer;position:relative">
-                                    <input type="color" id="bi-colores-picker1" value="#007AFF" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('bi-colores-preview1').style.background=h;document.getElementById('bi-colores-hex1').value=h.toUpperCase()">
+                                <div id="colores-prev1" style="height:50px;background:#007AFF;cursor:pointer;position:relative">
+                                    <input type="color" id="bi-colores-picker1" value="#007AFF" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('colores-prev1').style.background=h;document.getElementById('bi-colores-hex1').value=h.toUpperCase()">
                                 </div>
                                 <div style="padding:8px 10px;display:flex;flex-direction:column;gap:4px">
                                     <input type="text" id="bi-colores-label1" class="editor-input" value="Primario" placeholder="Nombre" style="font-size:0.72rem;font-weight:700;padding:3px 6px;border-radius:6px">
-                                    <input type="text" id="bi-colores-hex1" class="editor-input" value="#007AFF" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('bi-colores-preview1').style.background=v;document.getElementById('bi-colores-picker1').value=v}">
+                                    <input type="text" id="bi-colores-hex1" class="editor-input" value="#007AFF" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('colores-prev1').style.background=v;document.getElementById('bi-colores-picker1').value=v}">
                                 </div>
                             </div>
                             <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border-color)">
-                                <div id="bi-colores-preview2" style="height:50px;background:#5856D6;cursor:pointer;position:relative">
-                                    <input type="color" id="bi-colores-picker2" value="#5856D6" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('bi-colores-preview2').style.background=h;document.getElementById('bi-colores-hex2').value=h.toUpperCase()">
+                                <div id="colores-prev2" style="height:50px;background:#5856D6;cursor:pointer;position:relative">
+                                    <input type="color" id="bi-colores-picker2" value="#5856D6" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('colores-prev2').style.background=h;document.getElementById('bi-colores-hex2').value=h.toUpperCase()">
                                 </div>
                                 <div style="padding:8px 10px;display:flex;flex-direction:column;gap:4px">
                                     <input type="text" id="bi-colores-label2" class="editor-input" value="Secundario" placeholder="Nombre" style="font-size:0.72rem;font-weight:700;padding:3px 6px;border-radius:6px">
-                                    <input type="text" id="bi-colores-hex2" class="editor-input" value="#5856D6" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('bi-colores-preview2').style.background=v;document.getElementById('bi-colores-picker2').value=v}">
+                                    <input type="text" id="bi-colores-hex2" class="editor-input" value="#5856D6" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('colores-prev2').style.background=v;document.getElementById('bi-colores-picker2').value=v}">
                                 </div>
                             </div>
                             <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border-color)">
-                                <div id="bi-colores-preview3" style="height:50px;background:#34C759;cursor:pointer;position:relative">
-                                    <input type="color" id="bi-colores-picker3" value="#34C759" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('bi-colores-preview3').style.background=h;document.getElementById('bi-colores-hex3').value=h.toUpperCase()">
+                                <div id="colores-prev3" style="height:50px;background:#34C759;cursor:pointer;position:relative">
+                                    <input type="color" id="bi-colores-picker3" value="#34C759" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('colores-prev3').style.background=h;document.getElementById('bi-colores-hex3').value=h.toUpperCase()">
                                 </div>
                                 <div style="padding:8px 10px;display:flex;flex-direction:column;gap:4px">
                                     <input type="text" id="bi-colores-label3" class="editor-input" value="Éxito" placeholder="Nombre" style="font-size:0.72rem;font-weight:700;padding:3px 6px;border-radius:6px">
-                                    <input type="text" id="bi-colores-hex3" class="editor-input" value="#34C759" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('bi-colores-preview3').style.background=v;document.getElementById('bi-colores-picker3').value=v}">
+                                    <input type="text" id="bi-colores-hex3" class="editor-input" value="#34C759" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('colores-prev3').style.background=v;document.getElementById('bi-colores-picker3').value=v}">
                                 </div>
                             </div>
                             <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border-color)">
-                                <div id="bi-colores-preview4" style="height:50px;background:#1A1A2E;cursor:pointer;position:relative">
-                                    <input type="color" id="bi-colores-picker4" value="#1A1A2E" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('bi-colores-preview4').style.background=h;document.getElementById('bi-colores-hex4').value=h.toUpperCase()">
+                                <div id="colores-prev4" style="height:50px;background:#1A1A2E;cursor:pointer;position:relative">
+                                    <input type="color" id="bi-colores-picker4" value="#1A1A2E" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none" oninput="var h=this.value;document.getElementById('colores-prev4').style.background=h;document.getElementById('bi-colores-hex4').value=h.toUpperCase()">
                                 </div>
                                 <div style="padding:8px 10px;display:flex;flex-direction:column;gap:4px">
                                     <input type="text" id="bi-colores-label4" class="editor-input" value="Oscuro" placeholder="Nombre" style="font-size:0.72rem;font-weight:700;padding:3px 6px;border-radius:6px">
-                                    <input type="text" id="bi-colores-hex4" class="editor-input" value="#1A1A2E" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('bi-colores-preview4').style.background=v;document.getElementById('bi-colores-picker4').value=v}">
+                                    <input type="text" id="bi-colores-hex4" class="editor-input" value="#1A1A2E" placeholder="#000000" style="font-size:0.72rem;color:var(--text-grey);padding:3px 6px;border-radius:6px;font-family:monospace" oninput="var v=this.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){document.getElementById('colores-prev4').style.background=v;document.getElementById('bi-colores-picker4').value=v}">
                                 </div>
                             </div>
                         </div>
@@ -7448,7 +7448,7 @@ Solo JSON, sin explicaciones ni markdown.`;
                     // Color fields: restore preview + picker
                     if (key.startsWith('colores_hex') && /^#[0-9A-Fa-f]{6}$/.test(val)) {
                         var num = key.replace('colores_hex','');
-                        var prev = document.getElementById('bi-colores-preview' + num);
+                        var prev = document.getElementById('colores-prev' + num);
                         var pick = document.getElementById('bi-colores-picker' + num);
                         var hexIn = document.getElementById('bi-colores-hex' + num);
                         if (prev) prev.style.background = val;
