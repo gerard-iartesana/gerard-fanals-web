@@ -754,12 +754,15 @@
                 <div style="border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);overflow:hidden">
                     <div id="ai-chat-messages" style="height:480px;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:12px">
                         <div style="align-self:flex-start;max-width:80%;padding:14px 18px;border-radius:18px 18px 18px 4px;background:linear-gradient(135deg,rgba(88,86,214,0.1),rgba(0,122,255,0.08));font-size:0.88rem;line-height:1.6">
-                            👋 ¡Hola! Soy tu asistente IA. Puedo ayudarte con:<br>
+                            👋 ¡Hola! Soy tu asistente IA con acceso completo al dashboard. Puedo ayudarte con:<br>
                             <span style="color:var(--text-grey);font-size:0.8rem">
-                            • Estado de tus artículos y SEO<br>
-                            • Información de reuniones<br>
-                            • Sugerencias para mejorar tu web<br>
-                            • Cualquier duda sobre tu dashboard
+                            📝 Artículos, borradores y FAQs<br>
+                            📅 Reuniones próximas y pasadas<br>
+                            📧 Newsletter: suscriptores, envíos y configuración<br>
+                            🗺️ Plan de comunicación: estrategias, acciones y cronograma<br>
+                            🎫 Tickets de soporte abiertos<br>
+                            📈 SEO: score, keywords y problemas detectados<br>
+                            💡 Sugerencias y análisis de tu web
                             </span>
                         </div>
                     </div>
@@ -2943,45 +2946,91 @@
         }
 
         async function gatherDashboardContext() {
-            var ctx = {};
+            var ctx = { timestamp: new Date().toLocaleString('es-ES'), client: CLIENT_CONFIG };
             try {
-                // Articles
+                // ── ARTÍCULOS ──────────────────────────────────────────────
                 var { data: articles } = await _supabase.from('articles').select('id, title, slug, tag, published, created_at').order('created_at', { ascending: false });
                 ctx.articles = (articles || []).map(function(a) {
                     return { title: a.title, tag: a.tag, published: a.published, date: a.created_at ? a.created_at.substring(0,10) : '' };
                 });
                 ctx.totalArticles = ctx.articles.length;
                 ctx.publishedArticles = ctx.articles.filter(function(a) { return a.published; }).length;
+                ctx.draftArticles = ctx.totalArticles - ctx.publishedArticles;
 
-                // FAQs
-                var { data: faqs } = await _supabase.from('faqs').select('article_id, type');
+                // ── FAQs ───────────────────────────────────────────────────
+                var { data: faqs } = await _supabase.from('faqs').select('article_id, type, question');
                 var faqArticleIds = new Set();
                 (faqs || []).forEach(function(f) { if (f.article_id && f.type === 'article') faqArticleIds.add(f.article_id); });
                 ctx.articlesWithFaqs = faqArticleIds.size;
                 ctx.articlesWithoutFaqs = ctx.publishedArticles - ctx.articlesWithFaqs;
                 ctx.globalFaqs = (faqs || []).filter(function(f) { return f.type === 'global'; }).length;
+                ctx.totalFaqs = (faqs || []).length;
 
-                // Meetings
+                // ── REUNIONES ──────────────────────────────────────────────
                 var now = new Date().toISOString();
                 var { data: upcoming } = await _supabase.from('meetings').select('contact_name, meeting_date, meeting_type, status, notes').gte('meeting_date', now).order('meeting_date', { ascending: true });
+                var { data: pastMeetings } = await _supabase.from('meetings').select('contact_name, meeting_date, meeting_type, status').lt('meeting_date', now).order('meeting_date', { ascending: false }).limit(5);
                 ctx.upcomingMeetings = (upcoming || []).map(function(m) {
                     var d = new Date(m.meeting_date);
-                    return {
-                        name: m.contact_name,
-                        date: d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
-                        time: d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                        type: m.meeting_type,
-                        status: m.status,
-                        notes: m.notes
-                    };
+                    return { name: m.contact_name, date: d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }), time: d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }), type: m.meeting_type, status: m.status, notes: m.notes };
                 });
                 ctx.totalUpcomingMeetings = ctx.upcomingMeetings.length;
+                ctx.recentPastMeetings = (pastMeetings || []).map(function(m) {
+                    var d = new Date(m.meeting_date);
+                    return { name: m.contact_name, date: d.toLocaleDateString('es-ES'), type: m.meeting_type, status: m.status };
+                });
 
-                // SEO score
+                // ── NEWSLETTER ─────────────────────────────────────────────
+                var { data: subscribers } = await _supabase.from('newsletter_subscribers').select('id, name, email, created_at').order('created_at', { ascending: false });
+                ctx.newsletter = {
+                    totalSubscribers: (subscribers || []).length,
+                    recentSubscribers: (subscribers || []).slice(0,5).map(function(s) { return { name: s.name, email: s.email, date: s.created_at ? s.created_at.substring(0,10) : '' }; })
+                };
+                var { data: nlConfig } = await _supabase.from('newsletter_config').select('*').limit(1).single();
+                if (nlConfig) {
+                    var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+                    ctx.newsletter.schedule = days[nlConfig.send_day] + ' a las ' + nlConfig.send_time;
+                    ctx.newsletter.lastSent = nlConfig.last_sent_at ? new Date(nlConfig.last_sent_at).toLocaleDateString('es-ES') : 'Nunca';
+                }
+                var { data: nlSends } = await _supabase.from('newsletter_sends').select('sent_at, recipient_count, article_count').order('sent_at', { ascending: false }).limit(3);
+                ctx.newsletter.recentSends = (nlSends || []).map(function(s) {
+                    return { date: new Date(s.sent_at).toLocaleDateString('es-ES'), recipients: s.recipient_count, articles: s.article_count };
+                });
+
+                // ── SOPORTE / TICKETS ──────────────────────────────────────
+                var { data: tickets } = await _supabase.from('support_tickets').select('id, subject, status, priority, created_at, contact_name').order('created_at', { ascending: false }).limit(10);
+                var openTickets = (tickets || []).filter(function(t) { return t.status === 'open' || t.status === 'pending'; });
+                ctx.support = {
+                    totalRecent: (tickets || []).length,
+                    openTickets: openTickets.length,
+                    tickets: (tickets || []).map(function(t) {
+                        return { subject: t.subject, status: t.status, priority: t.priority, contact: t.contact_name, date: t.created_at ? t.created_at.substring(0,10) : '' };
+                    })
+                };
+
+                // ── PLAN DE COMUNICACIÓN ────────────────────────────────────
+                var { data: cpRows } = await _supabase.from('communication_plan').select('key, value');
+                ctx.communicationPlan = {};
+                (cpRows || []).forEach(function(row) {
+                    try { ctx.communicationPlan[row.key] = JSON.parse(row.value); } catch(e) { ctx.communicationPlan[row.key] = row.value; }
+                });
+
+                // ── SEO ────────────────────────────────────────────────────
                 var scoreEl = document.getElementById('resumen-seo-score');
                 ctx.seoScore = scoreEl ? scoreEl.textContent.trim() : 'N/A';
+                var { data: seoIssues } = await _supabase.from('seo_issues').select('type, title, status').order('created_at', { ascending: false }).limit(10).catch(function() { return { data: null }; });
+                if (seoIssues) ctx.seoIssues = seoIssues;
+                var { data: seoKeywords } = await _supabase.from('seo_keywords').select('keyword, position, volume').order('position', { ascending: true }).limit(10).catch(function() { return { data: null }; });
+                if (seoKeywords) ctx.topKeywords = seoKeywords;
 
-                ctx.domain = 'gerardfanals.online';
+                // ── RESUMEN KPIs ────────────────────────────────────────────
+                ctx.kpis = {};
+                ['resumen-visitas','resumen-leads','resumen-articulos','resumen-reuniones'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) ctx.kpis[id.replace('resumen-','')] = el.textContent.trim();
+                });
+
+                ctx.domain = CLIENT_CONFIG.domain;
                 ctx.siteStatus = 'Online';
             } catch(e) {
                 ctx.error = e.message;
@@ -3017,9 +3066,11 @@
                 var context = await gatherDashboardContext();
 
                 var systemPrompt = 'Eres el asistente IA del dashboard de ' + CLIENT_CONFIG.name + ' (' + CLIENT_CONFIG.domain + '). ' +
-                    'Responde en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
+                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, configuración), plan de comunicación (estrategias, públicos, mensajes clave, acciones PDA, próximos pasos), tickets de soporte, SEO (score, keywords, issues) y KPIs de la web. ' +
+                    'Responde SIEMPRE en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
                     'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
-                    'Aquí tienes el contexto actual del dashboard:\n\n' +
+                    'Si te preguntan datos específicos (suscriptores, reuniones, artículos, etc.) busca la información EXACTA en el contexto y responde con los datos reales. Si no hay datos sobre algo, indícalo claramente en lugar de inventar. ' +
+                    'Contexto actual del dashboard (fecha: ' + new Date().toLocaleDateString('es-ES') + '):\n\n' +
                     JSON.stringify(context, null, 2) + '\n\n' +
                     'Historial de conversación:\n' +
                     _aiChatHistory.map(function(h) { return h.role + ': ' + h.text; }).join('\n') + '\n\n' +
