@@ -3017,11 +3017,27 @@
                 });
 
                 // ── IDENTIDAD DE MARCA ─────────────────────────────────────
-                var { data: biRows } = await _supabase.from('brand_identity').select('key, value');
+                // Source 1: _biCache (populated when Identidad section is loaded)
                 ctx.brandIdentity = {};
+                if (typeof _biCache !== 'undefined' && Object.keys(_biCache).length > 0) {
+                    ctx.brandIdentity = JSON.parse(JSON.stringify(_biCache));
+                }
+                // Source 2: Supabase direct query (fallback/merge)
+                var { data: biRows } = await _supabase.from('brand_identity').select('key,value');
                 (biRows || []).forEach(function(row) {
-                    try { ctx.brandIdentity[row.key] = JSON.parse(row.value); } catch(e) { ctx.brandIdentity[row.key] = row.value; }
+                    if (!ctx.brandIdentity[row.key]) {
+                        try { ctx.brandIdentity[row.key] = JSON.parse(row.value); } catch(e) { ctx.brandIdentity[row.key] = row.value; }
+                    }
                 });
+                // Source 3: DOM scan for any bi-* fields visible in page (last resort)
+                if (Object.keys(ctx.brandIdentity).length === 0) {
+                    document.querySelectorAll('[id^="bi-"]').forEach(function(el) {
+                        if ((el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') && el.value.trim()) {
+                            var key = el.id.replace('bi-', '').replace(/-/g, '_');
+                            ctx.brandIdentity[key] = el.value.trim();
+                        }
+                    });
+                }
 
                 // ── SEO ────────────────────────────────────────────────────
                 var scoreEl = document.getElementById('resumen-seo-score');
