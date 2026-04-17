@@ -3147,18 +3147,29 @@
                     { name: 'blog', url: baseUrl + '/blog' },
                     { name: 'comunidad', url: baseUrl + '/comunidad' }
                 ];
-                ctx.publicWeb = { domain: baseUrl, pages: [] };
+                ctx.publicWeb = { domain: baseUrl, pages: [], fetchErrors: [] };
+                // Helper: fetch with manual timeout (AbortSignal.timeout not supported everywhere)
+                async function _fetchWithTimeout(url, ms) {
+                    return Promise.race([
+                        fetch(url),
+                        new Promise(function(_, rej) { setTimeout(function(){ rej(new Error('timeout '+ ms + 'ms')); }, ms); })
+                    ]);
+                }
                 for (var pi = 0; pi < publicPages.length; pi++) {
                     try {
-                        var pRes = await fetch(publicPages[pi].url, { signal: AbortSignal.timeout(4000) });
+                        var pRes = await _fetchWithTimeout(publicPages[pi].url, 5000);
                         if (pRes.ok) {
                             var pHtml = await pRes.text();
                             var pData = _extractPageText(pHtml);
                             pData.url = publicPages[pi].url;
                             pData.name = publicPages[pi].name;
                             ctx.publicWeb.pages.push(pData);
+                        } else {
+                            ctx.publicWeb.fetchErrors.push(publicPages[pi].url + ': HTTP ' + pRes.status);
                         }
-                    } catch(fe) { /* page unavailable or timeout */ }
+                    } catch(fe) {
+                        ctx.publicWeb.fetchErrors.push(publicPages[pi].url + ': ' + fe.message);
+                    }
                 }
                 // Also add recent published article URLs
                 if (ctx.articles && ctx.articles.length > 0) {
@@ -3218,7 +3229,7 @@
                 var context = await gatherDashboardContext();
 
                 var systemPrompt = 'Eres el asistente IA del dashboard de ' + CLIENT_CONFIG.name + ' (' + CLIENT_CONFIG.domain + '). ' +
-                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, config), identidad de marca (colores, tipografía, valores, tono), plan de comunicación (estrategias, acciones PDA, próximos pasos, cronograma), tickets de soporte, SEO (score, keywords, issues, audits), GEO/AEO (FAQs globales y por artículo para motores de IA), Analytics (eventos, páginas top), y KPIs de la web. Las secciones Social, Academy, Ads y Cobros están en desarrollo y aún no tienen datos. Además tienes acceso al contenido actual de la WEB PÚBLICA (homepage, blog, comunidad) con sus títulos, descripciones, H1, H2 y texto extraído en tiempo real. ' +
+                    'Tienes acceso COMPLETO a todos los datos del dashboard: artículos, FAQs, reuniones (próximas y pasadas), newsletter (suscriptores, envíos, config), identidad de marca (colores, tipografía, valores, tono), plan de comunicación (estrategias, acciones PDA, próximos pasos, cronograma), tickets de soporte, SEO (score, keywords, issues, audits), GEO/AEO (FAQs globales y por artículo para motores de IA), Analytics (eventos, páginas top), y KPIs de la web. Las secciones Social, Academy, Ads y Cobros están en desarrollo y aún no tienen datos. Además tienes acceso al contenido actual de la WEB PÚBLICA (homepage, blog, comunidad) con sus títulos, descripciones, H1, H2 y texto extraído en tiempo real. La homepage contiene secciones de: Historial Laboral (IArtesana CEO&Founder 2023-, IA de Barrio Fundador 2025-, Nuracom CEO 2016-2021, Fanals Seguretat 24h), Conocimientos (IA Business Architect, Agentes IA, Automatización n8n, Apps, Video Gen), y Proyectos. Si ctx.publicWeb.pages tiene datos, úsalos. Si ctx.publicWeb.fetchErrors tiene errores, indícalos. ' +
                     'Responde SIEMPRE en español, de forma concisa y útil. Usa emojis para hacer la respuesta visual. ' +
                     'No uses markdown con ** ni ##, usa texto plano con emojis y saltos de línea. ' +
                     'Si te preguntan datos específicos (suscriptores, reuniones, artículos, etc.) busca la información EXACTA en el contexto y responde con los datos reales. Si no hay datos sobre algo, indícalo claramente en lugar de inventar. ' +
