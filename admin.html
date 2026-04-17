@@ -6795,8 +6795,22 @@ Solo JSON, sin explicaciones ni markdown.`;
         function addProximoItem() {
             var list = document.getElementById('proximos-list');
             if (!list) return;
-            var placeholder = list.querySelector('p');
-            if (placeholder) placeholder.remove();
+            // If in read-view mode (no form rows), restore existing saved items first
+            var existingFormRows = list.querySelectorAll('.pda-action-row');
+            if (existingFormRows.length === 0) {
+                list.innerHTML = '';
+                (_proximosActions || []).forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.innerHTML = _actionItemHTML(item.texto, item.mes);
+                    list.appendChild(div.firstElementChild);
+                });
+            } else {
+                var placeholder = list.querySelector('p');
+                if (placeholder) placeholder.remove();
+                list.querySelectorAll('button, div:not(.pda-action-row), p').forEach(function(el) {
+                    el.remove();
+                });
+            }
             var div = document.createElement('div');
             div.innerHTML = _actionItemHTML('', '');
             list.appendChild(div.firstElementChild);
@@ -6805,23 +6819,87 @@ Solo JSON, sin explicaciones ni markdown.`;
 
         async function saveProximos() {
             var list = document.getElementById('proximos-list');
-            if (!list || typeof _supabase === 'undefined') return;
-            var rows = list.querySelectorAll('.pda-action-row');
-            var items = [];
-            rows.forEach(function(row) {
-                var txt = row.querySelector('.pda-action-txt').value.trim();
-                var mes = row.querySelector('.pda-month-sel').value;
-                if (txt) items.push({texto: txt, mes: mes});
-            });
-            _proximosActions = items;
-            var { error } = await _supabase.from('communication_plan')
-                .upsert([{key:'proximos_actions', value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
-            if (!error) {
-                _cpStatus('concl', '✅ Próximos pasos guardados', 'ok');
-            } else {
-                _cpStatus('concl', '❌ Error: ' + error.message, 'err');
+            var btn = document.querySelector('[onclick="saveProximos()"]');
+            var origText = btn ? btn.innerHTML : '';
+            if (btn) { btn.innerHTML = '⏳ Guardando...'; btn.disabled = true; }
+            try {
+                if (!list) throw new Error('Lista no encontrada');
+                if (typeof _supabase === 'undefined') throw new Error('Supabase no inicializado');
+                var rows = list.querySelectorAll('.pda-action-row');
+                var items = [];
+                rows.forEach(function(row) {
+                    var txt = row.querySelector('.pda-action-txt').value.trim();
+                    var mes = row.querySelector('.pda-month-sel').value;
+                    if (txt) items.push({texto: txt, mes: mes});
+                });
+                _proximosActions = items;
+                var res = await _supabase.from('communication_plan')
+                    .upsert([{key:'proximos_actions', value: JSON.stringify(items), updated_at: new Date().toISOString()}], {onConflict:'key'});
+                if (res.error) throw res.error;
+                if (btn) { btn.innerHTML = '✅ Guardado'; btn.style.background = '#34c759'; }
+                renderProximosReadView(items);
+                setTimeout(function() {
+                    if (btn) { btn.innerHTML = origText; btn.disabled = false; btn.style.background = ''; }
+                }, 2500);
+            } catch(e) {
+                if (btn) {
+                    btn.innerHTML = '❌ ' + (e.message || 'Error');
+                    btn.style.background = '#ff3b30';
+                    btn.disabled = false;
+                }
+                setTimeout(function() {
+                    if (btn) { btn.innerHTML = origText; btn.style.background = ''; }
+                }, 4000);
             }
             renderChronoLinked();
+        }
+
+        function renderProximosReadView(items) {
+            var list = document.getElementById('proximos-list');
+            if (!list) return;
+            list.innerHTML = '';
+            if (!items || items.length === 0) {
+                list.innerHTML = '<p style="font-size:0.75rem;color:var(--text-grey);font-style:italic;margin:0">Sin pasos. Pulsa + Paso para añadir.</p>';
+                return;
+            }
+            var monthsUsed = {};
+            items.forEach(function(item) {
+                if (item.mes) {
+                    if (!monthsUsed[item.mes]) monthsUsed[item.mes] = 0;
+                    monthsUsed[item.mes]++;
+                }
+            });
+            items.forEach(function(item) {
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid rgba(0,0,0,0.06)';
+                var mesLabel = item.mes ? (item.mes.charAt(0).toUpperCase() + item.mes.slice(1)) : '';
+                row.innerHTML = '<span style="color:#ff9500;flex-shrink:0;font-size:0.65rem">▶</span>'
+                    + '<span style="flex:1;font-size:0.8rem;color:var(--text-main)">' + item.texto + '</span>'
+                    + (mesLabel ? '<span style="font-size:0.68rem;color:white;background:#ff9500;padding:2px 9px;border-radius:10px;flex-shrink:0">' + mesLabel + '</span>' : '');
+                list.appendChild(row);
+            });
+            var cronLine = document.createElement('div');
+            cronLine.style.cssText = 'margin-top:8px;font-size:0.7rem;color:#ff9500;font-weight:600';
+            var monthList = Object.keys(monthsUsed).map(function(m) {
+                return m.charAt(0).toUpperCase() + m.slice(1) + ' (' + monthsUsed[m] + ')';
+            }).join(' · ');
+            cronLine.innerHTML = '📅 Añadido al cronograma: ' + (monthList || '—');
+            list.appendChild(cronLine);
+            var editBtn = document.createElement('button');
+            editBtn.innerHTML = '✏️ Editar pasos';
+            editBtn.style.cssText = 'margin-top:8px;padding:4px 12px;border-radius:8px;border:1px solid var(--border-color);background:transparent;cursor:pointer;font-size:0.72rem;color:var(--text-grey);font-family:Inter,sans-serif;display:block';
+            editBtn.onclick = function() {
+                list.innerHTML = '';
+                if (!items || items.length === 0) {
+                    list.innerHTML = '<p style="font-size:0.75rem;color:var(--text-grey);font-style:italic;margin:0">Pulsa + Paso para añadir un paso</p>';
+                }
+                (items || []).forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.innerHTML = _actionItemHTML(item.texto, item.mes);
+                    list.appendChild(div.firstElementChild);
+                });
+            };
+            list.appendChild(editBtn);
         }
 
         // renderChronoLinked: uses _pdaActions cache (primary) + DOM fallback
