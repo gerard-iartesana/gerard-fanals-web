@@ -2157,7 +2157,7 @@
                             </div>
                             <div style="display:flex;gap:8px;margin-top:8px">
                                 <button onclick="addProximoItem()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">+ Paso</button>
-                                <button onclick="saveProximos()" style="padding:8px 18px;border-radius:10px;border:none;background:var(--accent);color:white;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px" style="font-size:0.75rem">Guardar pasos</button>
+                                <button id="btn-save-proximos" onclick="saveProximos()" style="padding:8px 18px;border-radius:10px;border:none;background:var(--accent);color:white;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:6px">💾 Guardar pasos</button>
                             </div>
                         </div></div></div>
                 </div>
@@ -6819,7 +6819,7 @@ Solo JSON, sin explicaciones ni markdown.`;
 
         async function saveProximos() {
             var list = document.getElementById('proximos-list');
-            var btn = document.querySelector('[onclick="saveProximos()"]');
+            var btn = document.getElementById('btn-save-proximos');
             var origText = btn ? btn.innerHTML : '';
             if (btn) { btn.innerHTML = '⏳ Guardando...'; btn.disabled = true; }
             try {
