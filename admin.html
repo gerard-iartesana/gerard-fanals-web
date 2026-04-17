@@ -765,6 +765,7 @@
                             📈 SEO: score, keywords y problemas detectados<br>
                             📊 Analytics: eventos y páginas más visitadas (30 días)
                             🌐 Web pública: contenido de gerardfanals.online en tiempo real
+                            📅 Registrar reuniones: "Registra reunión con [nombre] el [fecha] a las [hora]"
                             💡 Sugerencias y análisis de tu web
                             </span>
                         </div>
@@ -3269,6 +3270,57 @@
 
         var _aiChatHistory = [];
 
+        async function confirmAiMeeting() {
+            var m = window._pendingMeeting;
+            if (!m) { addAiMessage('❌ No hay reunión pendiente de confirmar.', 'bot'); return; }
+            window._pendingMeeting = null;
+
+            try {
+                // Build datetime ISO
+                var dateISO;
+                if (m.date) {
+                    var dt = m.date + (m.time ? 'T' + m.time + ':00' : 'T09:00:00');
+                    dateISO = new Date(dt).toISOString();
+                } else {
+                    dateISO = new Date().toISOString();
+                }
+
+                // Try Google Calendar first if connected
+                var gcalEventId = null;
+                if (_gcalConnected) {
+                    try {
+                        gcalEventId = await createGCalEvent(m.name, dateISO, 60, m.notes || '', m.email || '');
+                    } catch(gcalErr) { console.warn('GCal error:', gcalErr); }
+                }
+
+                // Save to Supabase
+                var insertData = {
+                    contact_name: m.name,
+                    contact_email: m.email || null,
+                    contact_phone: null,
+                    meeting_date: dateISO,
+                    meeting_type: m.type || 'discovery',
+                    status: 'pending',
+                    notes: m.notes || null,
+                    source: 'asistente-ia'
+                };
+                if (gcalEventId) insertData.gcal_event_id = gcalEventId;
+
+                var { error } = await _supabase.from('meetings').insert(insertData);
+                if (error) throw error;
+
+                var gcalMsg = gcalEventId ? '\n🗓️ Sincronizado con Google Calendar' : (_gcalConnected ? '\n⚠️ No se pudo sincronizar con Google Calendar' : '');
+                addAiMessage('✅ Reunión registrada correctamente\n\n👤 ' + m.name + '\n📆 ' + (m.date || 'Sin fecha') + (m.time ? ' a las ' + m.time : '') + '\n🏷️ ' + (m.type || 'discovery') + gcalMsg + '\n\n💡 Puedes verla en la sección Reuniones.', 'bot');
+
+                // Refresh meetings if visible
+                if (document.getElementById('sec-meetings') && document.getElementById('sec-meetings').style.display !== 'none') {
+                    loadMeetings();
+                }
+            } catch(err) {
+                addAiMessage('❌ Error registrando la reunión: ' + err.message, 'bot');
+            }
+        }
+
         async function sendAiChat() {
             var input = document.getElementById('ai-chat-input');
             var msg = input.value.trim();
@@ -3289,6 +3341,57 @@
             // Show typing
             var typingId = 'typing-' + Date.now();
             addAiMessage('<div id="' + typingId + '" style="display:flex;gap:4px;padding:4px 0"><span style="width:8px;height:8px;border-radius:50%;background:var(--text-grey);animation:aiBounce 1.4s infinite ease-in-out both"></span><span style="width:8px;height:8px;border-radius:50%;background:var(--text-grey);animation:aiBounce 1.4s infinite ease-in-out both;animation-delay:0.16s"></span><span style="width:8px;height:8px;border-radius:50%;background:var(--text-grey);animation:aiBounce 1.4s infinite ease-in-out both;animation-delay:0.32s"></span></div>', 'bot', true);
+
+            // ── DETECCIÓN DE INTENCIÓN: REGISTRAR REUNIÓN ──────────────────
+            var meetingIntent = /registra|añade|crea|agenda|programa|apunta|anota/i.test(msg) &&
+                                /reuni[oó]n|cita|meeting|llamada|sesi[oó]n/i.test(msg);
+
+            if (meetingIntent) {
+                try {
+                    // Use Gemini to extract structured meeting data from natural language
+                    var extractPrompt = 'Extrae los datos de la reunión del siguiente mensaje y responde SOLO con un JSON válido (sin markdown, sin explicación).\n' +
+                        'Campos: { "name": "nombre del cliente", "email": "email o null", "date": "YYYY-MM-DD o null", "time": "HH:MM o null", "type": "discovery|followup|consulting|demo|otro", "notes": "notas o null" }\n' +
+                        'Hoy es: ' + new Date().toLocaleDateString('es-ES') + ' (' + new Date().toISOString().substring(0,10) + ')\n' +
+                        'Mensaje: "' + msg + '"';
+                    var extractRes = await callGemini(extractPrompt, 'gemini-2.5-flash');
+                    var rawJson = (extractRes.candidates?.[0]?.content?.parts?.[0]?.text || '{}').replace(/```json|```/g,'').trim();
+                    var mtgData = JSON.parse(rawJson);
+
+                    removeTyping(typingId);
+                    input.disabled = false;
+                    document.getElementById('ai-chat-send').disabled = false;
+
+                    if (!mtgData.name) {
+                        addAiMessage('📅 Para registrar la reunión necesito al menos el nombre del cliente. ¿Puedes decirme más detalles?', 'bot');
+                        return;
+                    }
+
+                    // Build confirmation card
+                    var gcalNote = _gcalConnected ? '🗓️ Se sincronizará con Google Calendar' : '⚠️ Google Calendar no conectado (solo Supabase)';
+                    var confirmId = 'mtg-confirm-' + Date.now();
+                    var confirmHtml =
+                        '📅 Voy a registrar esta reunión:\n\n' +
+                        '👤 ' + mtgData.name + '\n' +
+                        (mtgData.email ? '📧 ' + mtgData.email + '\n' : '') +
+                        '📆 ' + (mtgData.date || '(sin fecha — editar en Reuniones)') + (mtgData.time ? ' a las ' + mtgData.time : '') + '\n' +
+                        '🏷️ Tipo: ' + (mtgData.type || 'discovery') + '\n' +
+                        (mtgData.notes ? '📝 ' + mtgData.notes + '\n' : '') +
+                        '\n' + gcalNote + '\n\n' +
+                        '¿Confirmas que la registro?';
+
+                    // Store pending meeting in window for confirm button
+                    window._pendingMeeting = mtgData;
+
+                    addAiMessage(confirmHtml + '\n\n<button onclick="confirmAiMeeting()" style="background:#007AFF;color:#fff;border:none;border-radius:10px;padding:8px 18px;font-size:0.85rem;font-weight:600;cursor:pointer;margin-top:6px">✅ Confirmar reunión</button>  <button onclick="window._pendingMeeting=null;addAiMessage(\'❌ Reunión cancelada.\',\'bot\')" style="background:rgba(255,59,48,0.12);color:#ff3b30;border:none;border-radius:10px;padding:8px 18px;font-size:0.85rem;font-weight:600;cursor:pointer;margin-top:6px">Cancelar</button>', 'bot');
+
+                } catch(err) {
+                    removeTyping(typingId);
+                    input.disabled = false;
+                    document.getElementById('ai-chat-send').disabled = false;
+                    addAiMessage('❌ Error al procesar la reunión: ' + err.message, 'bot');
+                }
+                return;
+            }
 
             try {
                 // Gather context
