@@ -3127,10 +3127,19 @@
                     var title = (html.match(/<title[^>]*>([^<]+)<\/title>/i)||[])[1] || '';
                     var desc = (html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)||
                                 html.match(/<meta[^>]+content="([^"]+)"[^>]+name="description"/i)||[])[1] || '';
-                    var h1s = (tmp.innerHTML.match(/<h1[^>]*>([^<]+)<\/h1>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();});
-                    var h2s = (tmp.innerHTML.match(/<h2[^>]*>([^<]+)<\/h2>/gi)||[]).slice(0,6).map(function(h){return h.replace(/<[^>]+>/g,'').trim();});
-                    var text = tmp.textContent.replace(/\s+/g,' ').trim().substring(0,800);
-                    return { title: title.trim(), description: desc.trim(), h1: h1s[0]||'', h2s: h2s, excerpt: text };
+                    var h1s = (tmp.innerHTML.match(/<h1[^>]*>(.*?)<\/h1>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();}).filter(Boolean);
+                    var h2s = (tmp.innerHTML.match(/<h2[^>]*>(.*?)<\/h2>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();}).filter(Boolean);
+                    var h3s = (tmp.innerHTML.match(/<h3[^>]*>(.*?)<\/h3>/gi)||[]).map(function(h){return h.replace(/<[^>]+>/g,'').trim();}).filter(Boolean);
+                    // Extract ALL text (not limited) so historial laboral and deep sections are visible
+                    var fullText = tmp.textContent.replace(/\s+/g,' ').trim();
+                    return {
+                        title: title.trim(),
+                        description: desc.trim(),
+                        h1: h1s[0]||'',
+                        h2s: h2s, // all H2s (historial laboral, conocimientos, etc.)
+                        h3s: h3s.slice(0,15),
+                        fullText: fullText.substring(0, 5000) // up from 800 to 5000
+                    };
                 }
                 var baseUrl = 'https://' + CLIENT_CONFIG.domain;
                 var publicPages = [
